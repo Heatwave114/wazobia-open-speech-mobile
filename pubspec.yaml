@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -23,6 +23,12 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+  flutter_sound: ^3.1.4
+  intl: ^0.16.1
+  firebase_auth: ^0.14.0+5
+  cloud_firestore: ^0.12.9+5
+  provider: ^4.0.4
+  flutter_country_picker: ^0.1.6
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +73,32 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat/Montserrat-Regular.ttf
+    - family: AdventPro
+      fonts:
+        - asset: assets/fonts/AdventPro/AdventPro-Regular.ttf
+        - asset: assets/fonts/AdventPro/AdventPro-Bold.ttf
+          weight: 700
+    - family: Abel
+      fonts:
+        - asset: assets/fonts/Abel/Abel-Regular.ttf
+    - family: ComicNeue
+      fonts:
+        - asset: assets/fonts/ComicNeue/ComicNeue-Regular.ttf
+        - asset: assets/fonts/ComicNeue/ComicNeue-Bold.ttf
+          weight: 700
+    - family: IndieFLower
+      fonts:
+        - asset: assets/fonts/IndieFLower/IndieFLower-Regular.ttf
+    - family: PTSans
+      fonts:
+        - asset: assets/fonts/PTSans/PTSans-Regular.ttf
+        - asset: assets/fonts/PTSans/PTSans-Bold.ttf
+          weight: 700
+     
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

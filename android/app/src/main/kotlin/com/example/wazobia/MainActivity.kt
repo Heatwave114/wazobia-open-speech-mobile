@@ -1,4 +1,4 @@
-package com.example.wazobia
+package com.ml5g.wazobia
 
 import android.os.Bundle
 import io.flutter.app.FlutterActivity

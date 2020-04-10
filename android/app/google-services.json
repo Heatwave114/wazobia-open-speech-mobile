@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "231523797998",
+    "firebase_url": "https://wazobia-90dbb.firebaseio.com",
+    "project_id": "wazobia-90dbb",
+    "storage_bucket": "wazobia-90dbb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231523797998:android:75547f84f35bb20ad51cff",
+        "android_client_info": {
+          "package_name": "com.ml5g.wazobia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "231523797998-kj91m91urj5ak4b5s1p3tg2mlsovlkun.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB37VNhkszMYZunuZxhJiIEabTklH36HL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "231523797998-kj91m91urj5ak4b5s1p3tg2mlsovlkun.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
