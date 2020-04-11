@@ -1,10 +1,18 @@
 // External
 import 'package:flutter/material.dart';
+import 'package:flutter_country_picker/country.dart';
+import 'package:provider/provider.dart';
 
 // Internal
 import './authenticate_screen.dart';
+import './contribute/donate_voice_screen.dart';
+import './contribute/validate_screen.dart';
 import '../helpers/auth.dart';
 import '../helpers/listen_devil.dart';
+import '../models/user.dart';
+import '../providers/firebase_helper.dart';
+import '../providers/user.dart' as user;
+import '../widgets/centrally_used.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -31,6 +39,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
+    final FireBaseHelper _firebaseHelper = Provider.of<FireBaseHelper>(context);
+    final user.User _user = Provider.of<user.User>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -63,19 +73,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
             SizedBox(
               height: 20,
             ),
-            _dashboard([
-              // Info self
-              _dashItem('ID', 'qjefi3whfn;23nf'),
-              _dashItem('Country', 'Nigeria'),
-              _dashItem('Telephone', '+234-8132192117'),
-              _dashItem('Gender', 'male'),
-            ], _dashWidth),
-            _dashboard([
-              // Info wazobia
-              _dashItem('Texts read', '8'),
-              _dashItem('Validations', '16'),
-              _dashItem('invitations', '4'),
-            ], _dashWidth),
+            StreamBuilder(
+                stream: _firebaseHelper.users.document(_user.instance.uid).snapshots(),
+                builder: (context, snapshot) {
+                  final _centrallyUsed = CentrallyUsed();
+                  if (!snapshot.hasData) return _centrallyUsed.waitingCircle();
+                  final User user = User.fromFireStore(snapshot.data);
+                  final Country userCountry = Country.findByIsoCode(user.country);
+                  return _dashboard([
+                    // Info self
+                    _dashItem('ID', user.uid),
+                    _dashItem('Country', userCountry.name),
+                    _dashItem('Telephone', '+${userCountry.dialingCode}-${user.telephone.substring(1)}'),
+                    _dashItem('Gender', user.gender),
+                  ], _dashWidth);
+                }),
+            StreamBuilder(
+                stream: _firebaseHelper.users.document(_user.instance.uid).snapshots(),
+                builder: (context, snapshot) {
+                  final _centrallyUsed = CentrallyUsed();
+                  if (!snapshot.hasData) return _centrallyUsed.waitingCircle();
+                  final User user = User.fromFireStore(snapshot.data);
+                  return _dashboard([
+                    // Info wazobia
+                    _dashItem('Texts read', user.textsRead.toString()),
+                    _dashItem('Validations', user.validations.toString()),
+                    _dashItem('invitations', user.invitations.toString()),
+                  ], _dashWidth);
+                }),
             Container(
               width: double.infinity,
               margin: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -107,7 +132,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             color: Colors.deepOrange,
                           ),
                           title: Text('Donate your voice'),
-                          onTap: () async {print((await Auth().currentUser()).uid);},
+                          onTap: () async {
+                            Navigator.of(context).pushNamed(DonateVoiceScreen.routeName);
+                          },
                         ),
                         ListTile(
                           // selected: true,

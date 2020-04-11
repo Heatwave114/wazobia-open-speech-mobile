@@ -41,6 +41,9 @@ class User with ChangeNotifier {
       'country': country,
       'telephone': telephone,
       'gender': gender,
+      'textsread': 0,
+      'validations': 0,
+      'invitations': 0,
     });
   }
 
@@ -55,7 +58,7 @@ class User with ChangeNotifier {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CentrallyUsed().waitingCircle();
         }
-        if (snapshot.hasData && !snapshot.data.isAnonymous && _instance.isEmailVerified) {
+        if (snapshot.hasData && !snapshot.data.isAnonymous) {
           return DashboardScreen();
         }
         return AuthenticateScreen();

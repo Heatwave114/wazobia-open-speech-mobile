@@ -1,6 +1,5 @@
 // External
 import 'package:flutter/material.dart';
-import 'package:flutter_country_picker/country.dart';
 import 'package:flutter_country_picker/flutter_country_picker.dart';
 
 // Internal
@@ -581,14 +580,14 @@ class _AuthFormState extends State<AuthForm> {
                       FocusScope.of(context).requestFocus(_telephoneFocusNode);
                     },
                     onSaved: (value) {
-                      _authData['country'] = value.trim();
+                      _authData['country'] = _selectedCountry.isoCode;
                     },
                   ),
                 if (this.widget.authMode == AuthMode.JoinUs) _spacer,
                 if (this.widget.authMode == AuthMode.JoinUs)
                   TextFormField(
                     // Telephone
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelStyle: _style['formlabel'],
                       prefixText: '+${_selectedCountry.dialingCode} ',

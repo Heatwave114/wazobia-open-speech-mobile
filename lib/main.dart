@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Internal
+import './helpers/auth.dart';
+import './providers/firebase_helper.dart';
 import './providers/user.dart';
 import './screens/authenticate_screen.dart';
 import './screens/dashboard_screen.dart';
+import './screens/contribute/donate_voice_screen.dart';
+import './screens/contribute/validate_screen.dart';
 import './widgets/centrally_used.dart';
 
 void main() => runApp(MyApp());
@@ -16,7 +20,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: User()),
+        ChangeNotifierProvider.value(
+            value: User()..setInstance(Auth().currentUser())),
+        ChangeNotifierProvider.value(value: FireBaseHelper()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -46,6 +52,8 @@ class MyApp extends StatelessWidget {
         routes: {
           AuthenticateScreen.routeName: (ctx) => AuthenticateScreen(),
           DashboardScreen.routeName: (ctx) => DashboardScreen(),
+          DonateVoiceScreen.routeName: (ctx) => DonateVoiceScreen(),
+          ValidateScreen.routeName: (ctx) => ValidateScreen(),
         },
       ),
     );
