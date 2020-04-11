@@ -670,7 +670,7 @@ class _AuthFormState extends State<AuthForm> {
                           } else if (_result == 'female') {
                             _genderController.text = 'female';
                           }
-
+                          FocusScope.of(context).requestFocus(_passwordFocusNode);
                           // Focus.of(context).unfocus();
                         },
                       ),
