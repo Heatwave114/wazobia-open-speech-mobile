@@ -1,4 +1,6 @@
+// External
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class User {
   final String uid;
@@ -10,13 +12,13 @@ class User {
   final int invitations;
 
   const User({
-    this.uid,
-    this.country,
-    this.telephone,
-    this.gender,
-    this.textsRead,
-    this.validations,
-    this.invitations,
+    @required this.uid,
+    @required this.country,
+    @required this.telephone,
+    @required this.gender,
+    @required this.textsRead,
+    @required this.validations,
+    @required this.invitations,
   });
 
   User.fromFireStore(DocumentSnapshot user)
@@ -33,7 +35,7 @@ class User {
       'uid': this.uid,
       'country': this.country,
       'telephone': this.telephone,
-      'gender': this.telephone,
+      'gender': this.gender,
       'textsread': this.textsRead,
       'validations': this.validations,
       'invitations': this.invitations,

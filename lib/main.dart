@@ -29,7 +29,16 @@ class MyApp extends StatelessWidget {
         // title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.green,
-          primaryColor: Color(0xFF4FA978),
+          primaryColor: const Color(0xFF4FA978),
+          appBarTheme: AppBarTheme(
+            textTheme: TextTheme(
+              title: const TextStyle(
+                fontFamily: 'AdventPro',
+                fontWeight: FontWeight.bold,
+                fontSize: 21.0
+              ),
+            ),
+          ),
         ),
         home: Scaffold(
           body: Consumer<User>(

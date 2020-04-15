@@ -13,6 +13,7 @@ import '../models/user.dart';
 import '../providers/firebase_helper.dart';
 import '../providers/user.dart' as user;
 import '../widgets/centrally_used.dart';
+import '../widgets/dash_widgets.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -36,6 +37,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   //   _listenDevil.releaseFlauto();
   // }
 
+  final _moreKey = GlobalKey();
+  RelativeRect buttonMenuPosition(BuildContext c) {
+    final RenderBox bar = c.findRenderObject();
+    final RenderBox overlay = Overlay.of(c).context.findRenderObject();
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+    return position;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
@@ -44,24 +59,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('DashBoard',
-            style: TextStyle(
-              fontFamily: 'AdventPro',
-              fontWeight: FontWeight.bold,
-            )),
+        title: const Text(
+          'DashBoard',
+        ),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.power_settings_new),
-              onPressed: () {
+            padding: EdgeInsets.only(right: 15.0),
+            key: this._moreKey,
+            icon: const Icon(Icons.menu),
+            onPressed: () async {
+              final position = buttonMenuPosition(this._moreKey.currentContext);
+              final _result = await showMenu(
+                context: context,
+                position: position,
+                items: <PopupMenuItem<String>>[
+                  const PopupMenuItem<String>(
+                      child: const InkWell(
+                        child: const Text('logout'),
+                      ),
+                      value: 'logout'),
+                  const PopupMenuItem<String>(
+                      child: const InkWell(
+                        child: const Text('update account'),
+                      ),
+                      value: 'update account'),
+                ],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              );
+              if (_result == 'logout') {
                 Navigator.of(context)
                     .pushReplacementNamed(AuthenticateScreen.routeName);
                 Auth().signOut();
-                // print(Auth().currentUser());
-              }),
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () =>
-                Navigator.of(context).pushNamed(AuthenticateScreen.routeName),
+              }
+              if (_result == 'update account') {
+                // TO DO
+                // Show a dialog to update account details with circular progress indicator after
+              }
+            },
           ),
         ],
       ),
@@ -70,35 +106,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
-              height: 20,
+            const SizedBox(
+              height: 10.0,
             ),
             StreamBuilder(
-                stream: _firebaseHelper.users.document(_user.instance.uid).snapshots(),
+                stream: _firebaseHelper.users
+                    .document(_user.instance.uid)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   final _centrallyUsed = CentrallyUsed();
                   if (!snapshot.hasData) return _centrallyUsed.waitingCircle();
                   final User user = User.fromFireStore(snapshot.data);
-                  final Country userCountry = Country.findByIsoCode(user.country);
-                  return _dashboard([
+                  final Country userCountry =
+                      Country.findByIsoCode(user.country);
+                  return DashWidgets.dashboard([
                     // Info self
-                    _dashItem('ID', user.uid),
-                    _dashItem('Country', userCountry.name),
-                    _dashItem('Telephone', '+${userCountry.dialingCode}-${user.telephone.substring(1)}'),
-                    _dashItem('Gender', user.gender),
+                    DashWidgets.dashItem('ID', user.uid),
+                    DashWidgets.dashItem('Country', userCountry.name),
+                    DashWidgets.dashItem('Telephone',
+                        '+${userCountry.dialingCode}-${user.telephone.substring(1)}'),
+                    DashWidgets.dashItem('Gender', user.gender),
                   ], _dashWidth);
                 }),
             StreamBuilder(
-                stream: _firebaseHelper.users.document(_user.instance.uid).snapshots(),
+                stream: _firebaseHelper.users
+                    .document(_user.instance.uid)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   final _centrallyUsed = CentrallyUsed();
                   if (!snapshot.hasData) return _centrallyUsed.waitingCircle();
                   final User user = User.fromFireStore(snapshot.data);
-                  return _dashboard([
+                  return DashWidgets.dashboard([
                     // Info wazobia
-                    _dashItem('Texts read', user.textsRead.toString()),
-                    _dashItem('Validations', user.validations.toString()),
-                    _dashItem('invitations', user.invitations.toString()),
+                    DashWidgets.dashItem(
+                        'Texts read', user.textsRead.toString()),
+                    DashWidgets.dashItem(
+                        'Validations', user.validations.toString()),
+                    DashWidgets.dashItem(
+                        'invitations', user.invitations.toString()),
                   ], _dashWidth);
                 }),
             Container(
@@ -116,7 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 20.0),
-                          child: Text(
+                          child: const Text(
                             'Contribute',
                             style: TextStyle(
                               fontSize: 20.0,
@@ -127,32 +172,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         ListTile(
                           // selected: true,
-                          leading: Icon(
+                          leading: const Icon(
                             Icons.mic,
                             color: Colors.deepOrange,
                           ),
-                          title: Text('Donate your voice'),
+                          title: const Text('Donate your voice'),
                           onTap: () async {
-                            Navigator.of(context).pushNamed(DonateVoiceScreen.routeName);
+                            Navigator.of(context)
+                                .pushNamed(DonateVoiceScreen.routeName);
                           },
                         ),
                         ListTile(
                           // selected: true,
-                          leading: Icon(
+                          leading: const Icon(
                             Icons.check,
-                            color: Color(0xff2A6041),
+                            color: const Color(0xff2A6041),
                           ),
                           title: Text('Validate'),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context)
+                                .pushNamed(ValidateScreen.routeName);
+                          },
                         ),
                         Divider(),
                         ListTile(
                           // selected: true,
-                          leading: Icon(
+                          leading: const Icon(
                             Icons.share,
-                            color: Color(0xff2A6041),
+                            color: const Color(0xff2A6041),
                           ),
-                          title: Text('Invite to wazobia'),
+                          title: const Text('Invite to wazobia'),
                           onTap: () {},
                         ),
                       ],
@@ -163,54 +212,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _dashboard(List<Widget> dashes, double _dashWidth) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-      child: Card(
-        elevation: 2.0,
-        child: Container(
-          width: _dashWidth,
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[...dashes],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _dashItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-              fontFamily: 'Abel',
-              fontWeight: FontWeight.bold,
-              // color: Color(0xFF4FA978),
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontFamily: 'Abel',
-              // color: Color(0xFF4FA978),
-            ),
-          ),
-        ],
       ),
     );
   }

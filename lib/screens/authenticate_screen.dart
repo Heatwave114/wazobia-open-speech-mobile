@@ -1,8 +1,10 @@
 // External
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_country_picker/flutter_country_picker.dart';
 
 // Internal
+import '../customs/custom_checkbox.dart' as custm;
 import '../helpers/auth.dart';
 import '../providers/user.dart';
 import '../screens/dashboard_screen.dart';
@@ -15,14 +17,17 @@ enum AuthMode {
 
 class AuthenticateScreen extends StatefulWidget {
   static const routeName = 'authenticate';
+  AuthMode _authMode = AuthMode.Authenticate;
+
+  void loadJoinUs() {
+    this._authMode = AuthMode.JoinUs;
+  }
 
   @override
   _AuthenticateScreenState createState() => _AuthenticateScreenState();
 }
 
 class _AuthenticateScreenState extends State<AuthenticateScreen> {
-  AuthMode _authMode = AuthMode.Authenticate;
-
   @override
   Widget build(BuildContext context) {
     final Size _deviceSize = MediaQuery.of(context).size;
@@ -41,9 +46,9 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
               color: Theme.of(context).primaryColor,
               height: 60.0,
               width: double.infinity,
-              child: Text(
+              child: const Text(
                 'Welcome to Wazobia',
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 25.0,
                     color: Colors.white,
                     fontFamily: 'AdventPro'),
@@ -84,8 +89,9 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                                 style: TextStyle(
                                   fontFamily: 'ComicNeue',
                                   fontSize: 16.0,
-                                  fontWeight: _authMode != null &&
-                                          _authMode == AuthMode.Authenticate
+                                  fontWeight: this.widget._authMode != null &&
+                                          this.widget._authMode ==
+                                              AuthMode.Authenticate
                                       ? FontWeight.bold
                                       : FontWeight.normal,
                                   color: Color(0xff2A6041),
@@ -93,13 +99,13 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                               )),
                               onTap: () {
                                 setState(() {
-                                  this._authMode = AuthMode.Authenticate;
+                                  this.widget._authMode = AuthMode.Authenticate;
                                 });
                               },
                             ),
                           ),
                         ),
-                        VerticalDivider(
+                        const VerticalDivider(
                           width: 0.0,
                           color: Colors.green,
                         ),
@@ -120,8 +126,9 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                                 style: TextStyle(
                                   fontFamily: 'ComicNeue',
                                   fontSize: 16.0,
-                                  fontWeight: _authMode != null &&
-                                          _authMode == AuthMode.JoinUs
+                                  fontWeight: this.widget._authMode != null &&
+                                          this.widget._authMode ==
+                                              AuthMode.JoinUs
                                       ? FontWeight.bold
                                       : FontWeight.normal,
                                   color: Color(0xff2A6041),
@@ -129,7 +136,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
                               )),
                               onTap: () {
                                 setState(() {
-                                  this._authMode = AuthMode.JoinUs;
+                                  this.widget._authMode = AuthMode.JoinUs;
                                 });
                               },
                             ),
@@ -145,7 +152,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 35.0),
               // height: _deviceSize.height * .6,
-              child: AuthForm(this._authMode),
+              child: AuthForm(this.widget._authMode),
             ),
           ],
         ),
@@ -157,7 +164,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
 class AuthForm extends StatefulWidget {
   final AuthMode authMode;
 
-  AuthForm(this.authMode);
+  const AuthForm(this.authMode);
 
   set setAuthMode(AuthMode authMode) => authMode = authMode;
 
@@ -203,7 +210,7 @@ class _AuthFormState extends State<AuthForm> {
     'gender': '',
   };
 
-  String _smsCode;
+  // String _smsCode;
   Auth _auth = Auth();
   User _user = User();
   Country _selectedCountry = Country.NG;
@@ -222,6 +229,8 @@ class _AuthFormState extends State<AuthForm> {
     );
     return position;
   }
+
+  var _agreedToTerms = false;
 
   var _passwordIsVisible = false;
   void _togglePasswordVisibility() {
@@ -307,7 +316,7 @@ class _AuthFormState extends State<AuthForm> {
       // });
 
       // print(error.message);
-      //print(errorMessage);
+      // print(errorMessage);
       //_showAlertDialog(context: context, message: errorMessage);
       _showSnackBar(errorMessage);
     }
@@ -322,7 +331,7 @@ class _AuthFormState extends State<AuthForm> {
         // behavior: SnackBarBehavior.floating,
         content: Text(
           message,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 13,
             fontFamily: 'ComicNeue',
           ),
@@ -346,12 +355,12 @@ class _AuthFormState extends State<AuthForm> {
       builder: (ctx) => AlertDialog(
         title: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
               fontFamily: 'Abel', fontSize: 20.0, fontWeight: FontWeight.bold),
         ),
         content: Text(
           content,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Abel',
             fontSize: 17.0,
             // fontWeight: FontWeight.bold
@@ -359,7 +368,7 @@ class _AuthFormState extends State<AuthForm> {
         ),
         actions: <Widget>[
           FlatButton(
-            child: Text('Okay'),
+            child: const Text('Okay'),
             onPressed: () {
               if (this.widget.authMode == AuthMode.JoinUs) {
                 Navigator.of(context).pop();
@@ -441,41 +450,42 @@ class _AuthFormState extends State<AuthForm> {
     // }
   }
 
-  Future<bool> _smsCodeDialog(String message) {
-    return showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Enter verification code sent to your number'),
-        content: TextField(
-          onChanged: (value) {
-            this._smsCode = value;
-          },
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Submit'),
-            onPressed: () {
-              _auth.currentUser().then((user) {
-                if (user != null) {
-                  Navigator.of(ctx).pop();
-                  Navigator.of(context)
-                      .pushReplacementNamed(DashboardScreen.routeName);
-                } else {}
-              });
-            },
-          )
-        ],
-      ),
-    );
-  }
+// SMS SMS SMS
+  // Future<bool> _smsCodeDialog(String message) {
+  //   return showDialog(
+  //     barrierDismissible: false,
+  //     context: context,
+  //     builder: (ctx) => AlertDialog(
+  //       title: Text('Enter verification code sent to your number'),
+  //       content: TextField(
+  //         onChanged: (value) {
+  //           this._smsCode = value;
+  //         },
+  //       ),
+  //       actions: <Widget>[
+  //         FlatButton(
+  //           child: Text('Submit'),
+  //           onPressed: () {
+  //             _auth.currentUser().then((user) {
+  //               if (user != null) {
+  //                 Navigator.of(ctx).pop();
+  //                 Navigator.of(context)
+  //                     .pushReplacementNamed(DashboardScreen.routeName);
+  //               } else {}
+  //             });
+  //           },
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Map<String, dynamic> _style = {
-    'formlabel': TextStyle(fontFamily: 'Montserrat', fontSize: 14.0),
+    'formlabel': const TextStyle(fontFamily: 'Montserrat', fontSize: 14.0),
   };
 
   Widget _showAuthForm() {
-    final Widget _spacer = SizedBox(
+    final Widget _spacer = const SizedBox(
       height: 8,
     );
     _countryController.text =
@@ -505,7 +515,7 @@ class _AuthFormState extends State<AuthForm> {
                         fontFamily: 'ComicNeue',
                         fontSize: 16.00,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xff2A6041),
+                        color: const Color(0xff2A6041),
                       ),
                     ),
                   ),
@@ -642,7 +652,7 @@ class _AuthFormState extends State<AuthForm> {
                       labelText: 'Gender',
                       suffix: GestureDetector(
                         key: this._moreKey,
-                        child: Icon(
+                        child: const Icon(
                           Icons.arrow_drop_down,
                         ),
                         onTap: () async {
@@ -658,10 +668,10 @@ class _AuthFormState extends State<AuthForm> {
                                   ),
                                   value: 'male'),
                               const PopupMenuItem<String>(
-                                  child: Text('female'), value: 'female'),
+                                  child: const Text('female'), value: 'female'),
                             ],
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
                           );
                           if (_result == 'male') {
@@ -669,7 +679,8 @@ class _AuthFormState extends State<AuthForm> {
                           } else if (_result == 'female') {
                             _genderController.text = 'female';
                           }
-                          FocusScope.of(context).requestFocus(_passwordFocusNode);
+                          FocusScope.of(context)
+                              .requestFocus(_passwordFocusNode);
                           // Focus.of(context).unfocus();
                         },
                       ),
@@ -733,7 +744,7 @@ class _AuthFormState extends State<AuthForm> {
 
                     focusNode: _confirmPasswordFocusNode,
                     onFieldSubmitted: (_) {
-                      if (this.widget.authMode == AuthMode.JoinUs &&
+                      if (_agreedToTerms &&
                           _passwordController.text.isNotEmpty &&
                           _genderController.text.isNotEmpty) {
                         _submit();
@@ -747,8 +758,80 @@ class _AuthFormState extends State<AuthForm> {
                       }
                     },
                   ),
+                _spacer,
+                _spacer,
+                if (this.widget.authMode == AuthMode.JoinUs)
+                  Row(
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: custm.CustomCheckbox(
+                          value: _agreedToTerms,
+                          useTapTarget: false,
+                          onChanged: (toggle) {
+                            // User user =
+                            //     Provider.of<User>(context, listen: false)
+                            //       ..setRememberMe(toggle);
+                            // print(user.rememberMe);
+                            setState(() {
+                              _agreedToTerms = toggle;
+                            });
+                          },
+                        ),
+                      ),
+                      RichText(
+                        // overflow: TextOverflow.ellipsis,
+                        text: TextSpan(
+                          style: TextStyle(color: Colors.black, fontSize: 14),
+                          children: <TextSpan>[
+                            const TextSpan(text: 'I agree to '),
+                            TextSpan(
+                              text: 'terms and conditions',
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  // Navigate to Terms and Conditions Page
+                                  // Navigator.of(context)
+                                  //     .pushNamed(
+                                  //         TermsConditionsScreen.routeName);
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (_) {
+                                      return GestureDetector(
+                                        onTap: () {},
+                                        child: Container(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              .70,
+                                          child: Center(
+                                              child: Padding(
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: const Text(
+                                              'You must consent to this terms and conditions before you gain acces to wazobia.',
+                                              style: const TextStyle(
+                                                  fontSize: 20.0,
+                                                  fontFamily: 'PTSans'),
+                                            ),
+                                          )),
+                                        ),
+                                        behavior: HitTestBehavior.opaque,
+                                      );
+                                    },
+                                  );
+                                },
+                              style: TextStyle(
+                                color: Theme.of(context).accentColor,
+                                decoration: TextDecoration.underline,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  padding: EdgeInsets.symmetric(vertical: 15.0),
                   child: Center(
                     child: _isLoading
                         ? CentrallyUsed().waitingCircle()
@@ -763,23 +846,25 @@ class _AuthFormState extends State<AuthForm> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            label: Text('Submit'),
-                            icon: Icon(
+                            label: const Text('Submit'),
+                            icon: const Icon(
                               Icons.check,
-                              color: Color(0xff2A6041),
+                              color: const Color(0xff2A6041),
                             ),
-                            onPressed: _isLoading
-                                ? null
-                                : () {
-                                    // print(_user);
-                                    // () async {print((await Auth().currentUser()).uid);}();
-                                    _submit();
-                                    // print('${_selectedCountry.name}');
+                            onPressed:
+                                this.widget.authMode == AuthMode.JoinUs &&
+                                        !_agreedToTerms
+                                    ? null
+                                    : () {
+                                        // print(_user);
+                                        // () async {print((await Auth().currentUser()).uid);}();
+                                        _submit();
+                                        // print('${_selectedCountry.name}');
 
-                                    // Persist Auth ?
-                                    // print(_rememberMe);
-                                    // SSSprint(ur.rememberMe);
-                                  }),
+                                        // Persist Auth ?
+                                        // print(_rememberMe);
+                                        // SSSprint(ur.rememberMe);
+                                      }),
                   ),
                 )
               ],
