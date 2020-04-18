@@ -859,6 +859,7 @@ class _AuthFormState extends State<AuthForm> {
                                         // print(_user);
                                         // () async {print((await Auth().currentUser()).uid);}();
                                         _submit();
+                                        // print(this.widget.authMode.index);
                                         // print('${_selectedCountry.name}');
 
                                         // Persist Auth ?

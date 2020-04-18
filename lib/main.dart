@@ -12,6 +12,12 @@ import './screens/contribute/donate_voice_screen.dart';
 import './screens/contribute/validate_screen.dart';
 import './widgets/centrally_used.dart';
 
+
+// Sound _
+import './helpers/listening_devil.dart';
+import './helpers/sound_devil.dart';
+
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -41,22 +47,25 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: Scaffold(
-          body: Consumer<User>(
-            builder: (ctx, user, _) {
-              return FutureBuilder(
-                future: user.getLandingPage(),
-                builder: (ctx, userSnapshot) {
-                  if (userSnapshot.connectionState == ConnectionState.waiting) {
-                    return CentrallyUsed().waitingCircle();
-                  } else if (userSnapshot.connectionState ==
-                      ConnectionState.done) {
-                    return userSnapshot.data;
-                  }
-                  return null;
-                },
-              );
-            },
-          ),
+          // body: ListeningDevil(dashWidth: double.infinity),
+          body: SoundDevil(),
+          
+          // Consumer<User>(
+          //   builder: (ctx, user, _) {
+          //     return FutureBuilder(
+          //       future: user.getLandingPage(),
+          //       builder: (ctx, userSnapshot) {
+          //         if (userSnapshot.connectionState == ConnectionState.waiting) {
+          //           return CentrallyUsed().waitingCircle();
+          //         } else if (userSnapshot.connectionState ==
+          //             ConnectionState.done) {
+          //           return userSnapshot.data;
+          //         }
+          //         return null;
+          //       },
+          //     );
+          //   },
+          // ),
         ),
         routes: {
           AuthenticateScreen.routeName: (ctx) => AuthenticateScreen(),

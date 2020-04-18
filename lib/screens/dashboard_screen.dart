@@ -8,7 +8,6 @@ import './authenticate_screen.dart';
 import './contribute/donate_voice_screen.dart';
 import './contribute/validate_screen.dart';
 import '../helpers/auth.dart';
-import '../helpers/listen_devil.dart';
 import '../models/user.dart';
 import '../providers/firebase_helper.dart';
 import '../providers/user.dart' as user;
@@ -22,21 +21,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  ListenDevil _listenDevil;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _listenDevil.init();
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _listenDevil.cancelRecorderSubscriptions();
-  //   _listenDevil.releaseFlauto();
-  // }
-
+  
   final _moreKey = GlobalKey();
   RelativeRect buttonMenuPosition(BuildContext c) {
     final RenderBox bar = c.findRenderObject();
