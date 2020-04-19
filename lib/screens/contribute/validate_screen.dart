@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:timer_builder/timer_builder.dart';
 
 // Internal
+import '../../helpers/sound_devil.dart';
 import '../../widgets/dash_widgets.dart';
 
 class ValidateScreen extends StatelessWidget {
@@ -30,7 +31,8 @@ class ValidateScreen extends StatelessWidget {
               DashWidgets.dashItem('Genre', 'comedy'),
               DashWidgets.dashItem('Read time', '2 mins'),
             ], _dashWidth),
-            MediaPanel(dashWidth: _dashWidth),
+            // MediaPanel(dashWidth: _dashWidth),
+            SoundDevil()..validating(),
             TextPanel(dashWidth: _dashWidth),
           ],
         ),

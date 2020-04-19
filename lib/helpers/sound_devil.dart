@@ -26,14 +26,22 @@ enum t_MEDIA {
 /// If true, we start two instances of FlautoPlayer when the user hit the "Play" button.
 /// If true, we start two instances of FlautoRecorder and one instance of FlautoPlayer when the user hit the Record button
 const bool REENTRANCE_CONCURENCY = false;
-final exampleAudioFilePath = "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3";
-final albumArtPath = "https://file-examples.com/wp-content/uploads/2017/10/file_example_PNG_500kB.png";
+final exampleAudioFilePath =
+    "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3";
+final albumArtPath =
+    "https://file-examples.com/wp-content/uploads/2017/10/file_example_PNG_500kB.png";
 
 // void main() {
 //   runApp(new MyApp());
 // }
 
 class SoundDevil extends StatefulWidget {
+  bool validate = false;
+
+  void validating() {
+    this.validate = true;
+  }
+  
   @override
   _SoundDevilState createState() => new _SoundDevilState();
 }
@@ -151,12 +159,21 @@ class _SoundDevilState extends State<SoundDevil> {
   Future<void> setDuck() async {
     if (_duckOthers) {
       if (Platform.isIOS)
-        await playerModule.iosSetCategory(t_IOS_SESSION_CATEGORY.PLAY_AND_RECORD, t_IOS_SESSION_MODE.DEFAULT, IOS_DUCK_OTHERS | IOS_DEFAULT_TO_SPEAKER);
-      else if (Platform.isAndroid) await playerModule.androidAudioFocusRequest(ANDROID_AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+        await playerModule.iosSetCategory(
+            t_IOS_SESSION_CATEGORY.PLAY_AND_RECORD,
+            t_IOS_SESSION_MODE.DEFAULT,
+            IOS_DUCK_OTHERS | IOS_DEFAULT_TO_SPEAKER);
+      else if (Platform.isAndroid)
+        await playerModule.androidAudioFocusRequest(
+            ANDROID_AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
     } else {
       if (Platform.isIOS)
-        await playerModule.iosSetCategory(t_IOS_SESSION_CATEGORY.PLAY_AND_RECORD, t_IOS_SESSION_MODE.DEFAULT, IOS_DEFAULT_TO_SPEAKER);
-      else if (Platform.isAndroid) await playerModule.androidAudioFocusRequest(ANDROID_AUDIOFOCUS_GAIN);
+        await playerModule.iosSetCategory(
+            t_IOS_SESSION_CATEGORY.PLAY_AND_RECORD,
+            t_IOS_SESSION_MODE.DEFAULT,
+            IOS_DEFAULT_TO_SPEAKER);
+      else if (Platform.isAndroid)
+        await playerModule.androidAudioFocusRequest(ANDROID_AUDIOFOCUS_GAIN);
     }
   }
 
@@ -203,7 +220,9 @@ class _SoundDevilState extends State<SoundDevil> {
 
       _recorderSubscription = recorderModule.onRecorderStateChanged.listen((e) {
         if (e != null && e.currentPosition != null) {
-          DateTime date = new DateTime.fromMillisecondsSinceEpoch(e.currentPosition.toInt(), isUtc: true);
+          DateTime date = new DateTime.fromMillisecondsSinceEpoch(
+              e.currentPosition.toInt(),
+              isUtc: true);
           String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
 
           this.setState(() {
@@ -211,29 +230,33 @@ class _SoundDevilState extends State<SoundDevil> {
           });
         }
       });
-      _dbPeakSubscription = recorderModule.onRecorderDbPeakChanged.listen((value) {
+      _dbPeakSubscription =
+          recorderModule.onRecorderDbPeakChanged.listen((value) {
         print("got update -> $value");
         setState(() {
           this._dbLevel = value;
         });
       });
       if (REENTRANCE_CONCURENCY) {
-        try
-        {
-          Uint8List dataBuffer = (await rootBundle.load( assetSample[_codec.index] )).buffer.asUint8List( );
-          await playerModule_2.startPlayerFromBuffer( dataBuffer, codec: _codec, whenFinished: ( )
-          {
+        try {
+          Uint8List dataBuffer =
+              (await rootBundle.load(assetSample[_codec.index]))
+                  .buffer
+                  .asUint8List();
+          await playerModule_2.startPlayerFromBuffer(dataBuffer, codec: _codec,
+              whenFinished: () {
             //await playerModule_2.startPlayer(exampleAudioFilePath, codec: t_CODEC.CODEC_MP3, whenFinished: () {
-            print( 'Secondary Play finished' );
-          } );
-        } catch(e) {
+            print('Secondary Play finished');
+          });
+        } catch (e) {
           print('startRecorder error: $e');
         }
         await recorderModule_2.startRecorder(
           uri: '${tempDir.path}/flutter_sound_recorder2.aac',
           codec: t_CODEC.CODEC_AAC,
         );
-        print("Secondary record is '${tempDir.path}/flutter_sound_recorder2.aac'");
+        print(
+            "Secondary record is '${tempDir.path}/flutter_sound_recorder2.aac'");
       }
 
       this.setState(() {
@@ -334,7 +357,9 @@ class _SoundDevilState extends State<SoundDevil> {
           sliderCurrentPosition = 0.0;
         }
 
-        DateTime date = new DateTime.fromMillisecondsSinceEpoch(e.currentPosition.toInt(), isUtc: true);
+        DateTime date = new DateTime.fromMillisecondsSinceEpoch(
+            e.currentPosition.toInt(),
+            isUtc: true);
         String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
         this.setState(() {
           //this._isPlaying = true;
@@ -353,10 +378,13 @@ class _SoundDevilState extends State<SoundDevil> {
       Uint8List dataBuffer;
       String audioFilePath;
       if (_media == t_MEDIA.ASSET) {
-        dataBuffer = (await rootBundle.load(assetSample[_codec.index])).buffer.asUint8List();
+        dataBuffer = (await rootBundle.load(assetSample[_codec.index]))
+            .buffer
+            .asUint8List();
       } else if (_media == t_MEDIA.FILE) {
         // Do we want to play from buffer or from file ?
-        if (await fileExists(_path[_codec.index])) audioFilePath = this._path[_codec.index];
+        if (await fileExists(_path[_codec.index]))
+          audioFilePath = this._path[_codec.index];
       } else if (_media == t_MEDIA.BUFFER) {
         // Do we want to play from buffer or from file ?
         if (await fileExists(_path[_codec.index])) {
@@ -415,12 +443,14 @@ class _SoundDevilState extends State<SoundDevil> {
         );
       } else {
         if (audioFilePath != null) {
-          path = await playerModule.startPlayer(audioFilePath, codec: _codec, whenFinished: () {
+          path = await playerModule.startPlayer(audioFilePath, codec: _codec,
+              whenFinished: () {
             print('Play finished');
             setState(() {});
           });
         } else if (dataBuffer != null) {
-          path = await playerModule.startPlayerFromBuffer(dataBuffer, codec: _codec, whenFinished: () {
+          path = await playerModule.startPlayerFromBuffer(dataBuffer,
+              codec: _codec, whenFinished: () {
             print('Play finished');
             setState(() {});
           });
@@ -433,9 +463,12 @@ class _SoundDevilState extends State<SoundDevil> {
       }
       _addListeners();
       if (REENTRANCE_CONCURENCY && _media != t_MEDIA.REMOTE_EXAMPLE_FILE) {
-          Uint8List dataBuffer = (await rootBundle.load(assetSample[_codec.index])).buffer.asUint8List();
-          await playerModule_2.startPlayerFromBuffer(dataBuffer, codec: _codec, whenFinished: () {
-
+        Uint8List dataBuffer =
+            (await rootBundle.load(assetSample[_codec.index]))
+                .buffer
+                .asUint8List();
+        await playerModule_2.startPlayerFromBuffer(dataBuffer, codec: _codec,
+            whenFinished: () {
           //playerModule_2.startPlayer(exampleAudioFilePath, codec: t_CODEC.CODEC_MP3, whenFinished: () {
           print('Secondary Play finished');
         });
@@ -510,106 +543,108 @@ class _SoundDevilState extends State<SoundDevil> {
     print('seekToPlayer: $result');
   }
 
-  Widget makeDropdowns(BuildContext context) {
-    final mediaDropdown = Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: Text('Media:'),
-        ),
-        DropdownButton<t_MEDIA>(
-          value: _media,
-          onChanged: (newMedia) {
-            if (newMedia == t_MEDIA.REMOTE_EXAMPLE_FILE) _codec = t_CODEC.CODEC_MP3; // Actually this is the only example we use in this example
-            _media = newMedia;
-            getDuration();
-            setState(() {});
-          },
-          items: <DropdownMenuItem<t_MEDIA>>[
-            DropdownMenuItem<t_MEDIA>(
-              value: t_MEDIA.FILE,
-              child: Text('File'),
-            ),
-            DropdownMenuItem<t_MEDIA>(
-              value: t_MEDIA.BUFFER,
-              child: Text('Buffer'),
-            ),
-            DropdownMenuItem<t_MEDIA>(
-              value: t_MEDIA.ASSET,
-              child: Text('Asset'),
-            ),
-            DropdownMenuItem<t_MEDIA>(
-              value: t_MEDIA.REMOTE_EXAMPLE_FILE,
-              child: Text('Remote Example File'),
-            ),
-          ],
-        ),
-      ],
-    );
+  // Widget makeDropdowns(BuildContext context) {
+  //   final mediaDropdown = Row(
+  //     mainAxisAlignment: MainAxisAlignment.start,
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     children: <Widget>[
+  //       Padding(
+  //         padding: const EdgeInsets.only(right: 16.0),
+  //         child: Text('Media:'),
+  //       ),
+  //       DropdownButton<t_MEDIA>(
+  //         value: _media,
+  //         onChanged: (newMedia) {
+  //           if (newMedia == t_MEDIA.REMOTE_EXAMPLE_FILE)
+  //             _codec = t_CODEC
+  //                 .CODEC_MP3; // Actually this is the only example we use in this example
+  //           _media = newMedia;
+  //           getDuration();
+  //           setState(() {});
+  //         },
+  //         items: <DropdownMenuItem<t_MEDIA>>[
+  //           DropdownMenuItem<t_MEDIA>(
+  //             value: t_MEDIA.FILE,
+  //             child: Text('File'),
+  //           ),
+  //           DropdownMenuItem<t_MEDIA>(
+  //             value: t_MEDIA.BUFFER,
+  //             child: Text('Buffer'),
+  //           ),
+  //           DropdownMenuItem<t_MEDIA>(
+  //             value: t_MEDIA.ASSET,
+  //             child: Text('Asset'),
+  //           ),
+  //           DropdownMenuItem<t_MEDIA>(
+  //             value: t_MEDIA.REMOTE_EXAMPLE_FILE,
+  //             child: Text('Remote Example File'),
+  //           ),
+  //         ],
+  //       ),
+  //     ],
+  //   );
 
-    final codecDropdown = Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: Text('Codec:'),
-        ),
-        DropdownButton<t_CODEC>(
-          value: _codec,
-          onChanged: (newCodec) {
-            setCodec(newCodec);
-            _codec = newCodec;
-            getDuration();
-            setState(() {});
-          },
-          items: <DropdownMenuItem<t_CODEC>>[
-            DropdownMenuItem<t_CODEC>(
-              value: t_CODEC.CODEC_AAC,
-              child: Text('AAC'),
-            ),
-            DropdownMenuItem<t_CODEC>(
-              value: t_CODEC.CODEC_OPUS,
-              child: Text('OGG/Opus'),
-            ),
-            DropdownMenuItem<t_CODEC>(
-              value: t_CODEC.CODEC_CAF_OPUS,
-              child: Text('CAF/Opus'),
-            ),
-            DropdownMenuItem<t_CODEC>(
-              value: t_CODEC.CODEC_MP3,
-              child: Text('MP3'),
-            ),
-            DropdownMenuItem<t_CODEC>(
-              value: t_CODEC.CODEC_VORBIS,
-              child: Text('OGG/Vorbis'),
-            ),
-            DropdownMenuItem<t_CODEC>(
-              value: t_CODEC.CODEC_PCM,
-              child: Text('PCM'),
-            ),
-          ],
-        ),
-      ],
-    );
+  //   final codecDropdown = Row(
+  //     mainAxisAlignment: MainAxisAlignment.start,
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     children: <Widget>[
+  //       Padding(
+  //         padding: const EdgeInsets.only(right: 16.0),
+  //         child: Text('Codec:'),
+  //       ),
+  //       DropdownButton<t_CODEC>(
+  //         value: _codec,
+  //         onChanged: (newCodec) {
+  //           setCodec(newCodec);
+  //           _codec = newCodec;
+  //           getDuration();
+  //           setState(() {});
+  //         },
+  //         items: <DropdownMenuItem<t_CODEC>>[
+  //           DropdownMenuItem<t_CODEC>(
+  //             value: t_CODEC.CODEC_AAC,
+  //             child: Text('AAC'),
+  //           ),
+  //           DropdownMenuItem<t_CODEC>(
+  //             value: t_CODEC.CODEC_OPUS,
+  //             child: Text('OGG/Opus'),
+  //           ),
+  //           DropdownMenuItem<t_CODEC>(
+  //             value: t_CODEC.CODEC_CAF_OPUS,
+  //             child: Text('CAF/Opus'),
+  //           ),
+  //           DropdownMenuItem<t_CODEC>(
+  //             value: t_CODEC.CODEC_MP3,
+  //             child: Text('MP3'),
+  //           ),
+  //           DropdownMenuItem<t_CODEC>(
+  //             value: t_CODEC.CODEC_VORBIS,
+  //             child: Text('OGG/Vorbis'),
+  //           ),
+  //           DropdownMenuItem<t_CODEC>(
+  //             value: t_CODEC.CODEC_PCM,
+  //             child: Text('PCM'),
+  //           ),
+  //         ],
+  //       ),
+  //     ],
+  //   );
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: mediaDropdown,
-          ),
-          codecDropdown,
-        ],
-      ),
-    );
-  }
+  //   return Padding(
+  //     padding: const EdgeInsets.all(8.0),
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.start,
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: <Widget>[
+  //         Padding(
+  //           padding: const EdgeInsets.only(bottom: 16.0),
+  //           child: mediaDropdown,
+  //         ),
+  //         codecDropdown,
+  //       ],
+  //     ),
+  //   );
+  // }
 
   onPauseResumePlayerPressed() {
     switch (audioState) {
@@ -652,15 +687,21 @@ class _SoundDevilState extends State<SoundDevil> {
   }
 
   onStopPlayerPressed() {
-    return audioState == t_AUDIO_STATE.IS_PLAYING || audioState == t_AUDIO_STATE.IS_PAUSED ? stopPlayer : null;
+    return audioState == t_AUDIO_STATE.IS_PLAYING ||
+            audioState == t_AUDIO_STATE.IS_PAUSED
+        ? stopPlayer
+        : null;
   }
 
   onStartPlayerPressed() {
-    if (_media == t_MEDIA.FILE || _media == t_MEDIA.BUFFER) // A file must be already recorded to play it
+    if (_media == t_MEDIA.FILE ||
+        _media == t_MEDIA.BUFFER) // A file must be already recorded to play it
     {
       if (_path[_codec.index] == null) return null;
     }
-    if (_media == t_MEDIA.REMOTE_EXAMPLE_FILE && _codec != t_CODEC.CODEC_MP3) // in this example we use just a remote mp3 file
+    if (_media == t_MEDIA.REMOTE_EXAMPLE_FILE &&
+        _codec !=
+            t_CODEC.CODEC_MP3) // in this example we use just a remote mp3 file
       return null;
 
     // Disable the button if the selected codec is not supported
@@ -676,18 +717,25 @@ class _SoundDevilState extends State<SoundDevil> {
   }
 
   onStartRecorderPressed() {
-    if (_media == t_MEDIA.ASSET || _media == t_MEDIA.BUFFER || _media == t_MEDIA.REMOTE_EXAMPLE_FILE) return null;
+    if (_media == t_MEDIA.ASSET ||
+        _media == t_MEDIA.BUFFER ||
+        _media == t_MEDIA.REMOTE_EXAMPLE_FILE) return null;
     // Disable the button if the selected codec is not supported
     if (!_encoderSupported) return null;
-    if (audioState != t_AUDIO_STATE.IS_RECORDING && audioState != t_AUDIO_STATE.IS_RECORDING_PAUSED && audioState != t_AUDIO_STATE.IS_STOPPED) return null;
+    if (audioState != t_AUDIO_STATE.IS_RECORDING &&
+        audioState != t_AUDIO_STATE.IS_RECORDING_PAUSED &&
+        audioState != t_AUDIO_STATE.IS_STOPPED) return null;
     return startStopRecorder;
   }
 
   bool isStopped() => (audioState == t_AUDIO_STATE.IS_STOPPED);
 
   AssetImage recorderAssetImage() {
-    if (onStartRecorderPressed() == null) return AssetImage('res/icons/ic_mic_disabled.png');
-    return audioState == t_AUDIO_STATE.IS_STOPPED ? AssetImage('res/icons/ic_mic.png') : AssetImage('res/icons/ic_stop.png');
+    if (onStartRecorderPressed() == null)
+      return AssetImage('res/icons/ic_mic_disabled.png');
+    return audioState == t_AUDIO_STATE.IS_STOPPED
+        ? AssetImage('res/icons/ic_mic.png')
+        : AssetImage('res/icons/ic_stop.png');
   }
 
   setCodec(t_CODEC codec) async {
@@ -733,162 +781,396 @@ class _SoundDevilState extends State<SoundDevil> {
 
   @override
   Widget build(BuildContext context) {
+    // final dropdowns = makeDropdowns(context);
+    // final trackSwitch = Padding(
+    //   padding: const EdgeInsets.all(8.0),
+    //   child: Row(
+    //     children: <Widget>[
+    //       Padding(
+    //         padding: const EdgeInsets.only(right: 4),
+    //         child: Text('"Flauto":'),
+    //       ),
+    //       Switch(
+    //         value: _isAudioPlayer,
+    //         onChanged: audioPlayerSwitchChanged(),
+    //       ),
+    //       Padding(
+    //         padding: const EdgeInsets.only(right: 4.0),
+    //         child: Text('Duck Others:'),
+    //       ),
+    //       Switch(
+    //         value: _duckOthers,
+    //         onChanged: duckOthersSwitchChanged(),
+    //       ),
+    //     ],
+    //   ),
+    // );
 
-    final dropdowns = makeDropdowns(context);
-    final trackSwitch = Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: Text('"Flauto":'),
-          ),
-          Switch(
-            value: _isAudioPlayer,
-            onChanged: audioPlayerSwitchChanged(),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 4.0),
-            child: Text('Duck Others:'),
-          ),
-          Switch(
-            value: _duckOthers,
-            onChanged: duckOthersSwitchChanged(),
-          ),
-        ],
+    // Widget recorderSection = Column(
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Container(
+    //         margin: EdgeInsets.only(top: 12.0, bottom: 16.0),
+    //         child: Text(
+    //           this._recorderTxt,
+    //           style: TextStyle(
+    //             fontSize: 35.0,
+    //             color: Colors.black,
+    //           ),
+    //         ),
+    //       ),
+    //       _isRecording
+    //           ? LinearProgressIndicator(
+    //               value: 100.0 / 160.0 * (this._dbLevel ?? 1) / 100,
+    //               valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+    //               backgroundColor: Colors.red)
+    //           : Container(),
+    //       Row(
+    //         children: <Widget>[
+    //           Container(
+    //             width: 56.0,
+    //             height: 50.0,
+    //             child: ClipOval(
+    //               child: FlatButton(
+    //                 onPressed: onStartRecorderPressed(),
+    //                 padding: EdgeInsets.all(8.0),
+    //                 child: Icon(Icons.mic),
+    //               ),
+    //             ),
+    //           ),
+    //           Container(
+    //             width: 56.0,
+    //             height: 50.0,
+    //             child: ClipOval(
+    //               child: FlatButton(
+    //                 onPressed: onPauseResumeRecorderPressed(),
+    //                 disabledColor: Colors.white,
+    //                 padding: EdgeInsets.all(8.0),
+    //                 child: Icon(Icons.pause),
+    //               ),
+    //             ),
+    //           ),
+    //         ],
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         crossAxisAlignment: CrossAxisAlignment.center,
+    //       ),
+    //     ]);
+
+    final double _dashWidth = MediaQuery.of(context).size.width * .93;
+
+    Widget _timeText(String timeText) {
+      return Text(timeText,
+          style: TextStyle(fontSize: 35.0, fontFamily: 'Abel'));
+    }
+
+    Widget _recorderSection = Container(
+      // Record/Play Panel
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 5.0,
+        left: 10.0,
+        right: 10.0,
       ),
-    );
+      child: Card(
+        elevation: 2.0,
+        child: Container(
+          width: _dashWidth,
+          child: Container(
+            // height: MediaQuery.of(context).size.height * .45,
+            width: double.infinity,
+            padding: const EdgeInsets.all(10.0),
 
-    Widget recorderSection = Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-      Container(
-        margin: EdgeInsets.only(top: 12.0, bottom: 16.0),
-        child: Text(
-          this._recorderTxt,
-          style: TextStyle(
-            fontSize: 35.0,
-            color: Colors.black,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                    child: Center(
+                  // child: Text('00:00:00',
+                  //     style: TextStyle(fontSize: 35.0, fontFamily: 'Abel')),
+                  child: _timeText(this._recorderTxt),
+                )),
+                () {
+                  return recorderModule.isRecording
+                      ? ClipOval(
+                          child: Material(
+                            color: Colors.white,
+                            child: InkWell(
+                              // borderSide: BorderSide(
+                              //     color: Colors.green, width: 0.5),
+                              // padding: EdgeInsets.all(0.0),
+                              onTap: onStartRecorderPressed(),
+                              child: SizedBox(
+                                height: 56.0,
+                                width: 56.0,
+                                child: Icon(Icons.stop,
+                                    color: !playerModule.isStopped
+                                        ? Colors.grey
+                                        : Colors.redAccent,
+                                    size: 25.0),
+                              ),
+                              // shape: CircleBorder(),
+                            ),
+                          ),
+                        )
+                      : ClipOval(
+                          child: Material(
+                            color: Colors.white,
+                            child: InkWell(
+                              // borderSide: BorderSide(
+                              //     color: Colors.green, width: 0.5),
+                              // padding: EdgeInsets.all(0.0),
+                              onTap: onStartRecorderPressed(),
+                              child: SizedBox(
+                                height: 56.0,
+                                width: 56.0,
+                                child: Icon(Icons.mic,
+                                    color: !playerModule.isStopped
+                                        ? Colors.grey
+                                        : Colors.green,
+                                    size: 25.0),
+                              ),
+                              // shape: CircleBorder(),
+                            ),
+                          ),
+                        );
+                }(),
+              ],
+            ),
           ),
         ),
       ),
-      _isRecording ? LinearProgressIndicator(value: 100.0 / 160.0 * (this._dbLevel ?? 1) / 100, valueColor: AlwaysStoppedAnimation<Color>(Colors.green), backgroundColor: Colors.red) : Container(),
-      Row(
-        children: <Widget>[
-          Container(
-            width: 56.0,
-            height: 50.0,
-            child: ClipOval(
-              child: FlatButton(
-                onPressed: onStartRecorderPressed(),
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.mic),
-              ),
-            ),
-          ),
-          Container(
-            width: 56.0,
-            height: 50.0,
-            child: ClipOval(
-              child: FlatButton(
-                onPressed: onPauseResumeRecorderPressed(),
-                disabledColor: Colors.white,
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.pause),
-              ),
-            ),
-          ),
-        ],
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-      ),
-    ]);
+    );
 
-    Widget playerSection = Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
+    // Widget playerSection = Column(
+    //   crossAxisAlignment: CrossAxisAlignment.center,
+    //   mainAxisAlignment: MainAxisAlignment.center,
+    //   children: <Widget>[
+    //     Container(
+    //       margin: EdgeInsets.only(top: 12.0, bottom: 16.0),
+    //       child: Text(
+    //         this._playerTxt,
+    //         style: TextStyle(
+    //           fontSize: 35.0,
+    //           color: Colors.black,
+    //         ),
+    //       ),
+    //     ),
+    //     Row(
+    //       children: <Widget>[
+    //         Container(
+    //           width: 56.0,
+    //           height: 50.0,
+    //           child: ClipOval(
+    //             child: FlatButton(
+    //               onPressed: onStartPlayerPressed(),
+    //               disabledColor: Colors.white,
+    //               padding: EdgeInsets.all(8.0),
+    //               child: Icon(Icons.play_arrow),
+    //             ),
+    //           ),
+    //         ),
+    //         Container(
+    //           width: 56.0,
+    //           height: 50.0,
+    //           child: ClipOval(
+    //             child: FlatButton(
+    //               onPressed: onPauseResumePlayerPressed(),
+    //               disabledColor: Colors.white,
+    //               padding: EdgeInsets.all(8.0),
+    //               child: Icon(Icons.pause),
+    //             ),
+    //           ),
+    //         ),
+    //         Container(
+    //           width: 56.0,
+    //           height: 50.0,
+    //           child: ClipOval(
+    //             child: FlatButton(
+    //               onPressed: onStopPlayerPressed(),
+    //               disabledColor: Colors.white,
+    //               padding: EdgeInsets.all(8.0),
+    //               child: Icon(Icons.stop),
+    //             ),
+    //           ),
+    //         ),
+    //       ],
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       crossAxisAlignment: CrossAxisAlignment.center,
+    //     ),
+    //     Container(
+    //         height: 30.0,
+    //         child: Slider(
+    //             value: min(sliderCurrentPosition, maxDuration),
+    //             min: 0.0,
+    //             max: maxDuration,
+    //             // onChanged: (double value) async {
+    //             //   await playerModule.seekToPlayer(value.toInt());
+    //             // },
+    //             onChanged: null,
+    //             divisions: maxDuration == 0.0 ? 1 : maxDuration.toInt())),
+    //     Container(
+    //       height: 30.0,
+    //       child: Text(_duration != null ? "Duration: $_duration sec." : ''),
+    //     ),
+    //   ],
+    // );
+
+    Widget _playerSection = Container(
+      // Record/Play Panel
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 5.0,
+        left: 10.0,
+        right: 10.0,
+      ),
+      child: Card(
+        elevation: 2.0,
+        child: Container(
+          width: _dashWidth,
+          child: Container(
+            // height: MediaQuery.of(context).size.height * .45,
+            width: double.infinity,
+            padding: const EdgeInsets.all(10.0),
+
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: Slider(
+                      value: min(sliderCurrentPosition, maxDuration),
+                      min: 0.0,
+                      max: maxDuration,
+                      // onChanged: (double value) async {
+                      //   await playerModule.seekToPlayer(value.toInt());
+                      // },
+                      onChanged: null,
+                      divisions: maxDuration == 0.0 ? 1 : maxDuration.toInt()),
+                ),
+                Row(
+                  children: <Widget>[
+                    () {
+                      return playerModule.isStopped
+                          ? ClipOval(
+                              child: Material(
+                                color: Colors.white,
+                                child: InkWell(
+                                  // borderSide: BorderSide(
+                                  //     color: Colors.green, width: 0.5),
+                                  // padding: EdgeInsets.all(0.0),
+                                  onTap: (recorderModule.isRecording ||
+                                          recorderModule == null)
+                                      ? null
+                                      : onStartPlayerPressed(),
+                                  child: SizedBox(
+                                    height: 56.0,
+                                    width: 56.0,
+                                    child: Icon(Icons.play_arrow,
+                                        color: !recorderModule.isStopped
+                                            ? Colors.grey
+                                            : Colors.green,
+                                        size: 25.0),
+                                  ),
+                                  // shape: CircleBorder(),
+                                ),
+                              ),
+                            )
+                          : playerModule.isPaused
+                              ? ClipOval(
+                                  child: Material(
+                                    color: Colors.white,
+                                    child: InkWell(
+                                      // borderSide: BorderSide(
+                                      //     color: Colors.green, width: 0.5),
+                                      // padding: EdgeInsets.all(0.0),
+                                      onTap: onPauseResumePlayerPressed(),
+                                      child: SizedBox(
+                                        height: 56.0,
+                                        width: 56.0,
+                                        child: Icon(Icons.play_arrow,
+                                            color: !recorderModule.isStopped
+                                                ? Colors.grey
+                                                : Colors.green,
+                                            size: 25.0),
+                                      ),
+                                      // shape: CircleBorder(),
+                                    ),
+                                  ),
+                                )
+                              : ClipOval(
+                                  child: Material(
+                                    color: Colors.white,
+                                    child: InkWell(
+                                      // borderSide: BorderSide(
+                                      //     color: Colors.green, width: 0.5),
+                                      // padding: EdgeInsets.all(0.0),
+                                      onTap: onPauseResumePlayerPressed(),
+                                      child: SizedBox(
+                                        height: 56.0,
+                                        width: 56.0,
+                                        child: Icon(Icons.pause,
+                                            color: !recorderModule.isStopped
+                                                ? Colors.grey
+                                                : Colors.green,
+                                            size: 25.0),
+                                      ),
+                                      // shape: CircleBorder(),
+                                    ),
+                                  ),
+                                );
+                    }(),
+                    SizedBox(
+                      width: 5.0,
+                    ),
+                    () {
+                      return ClipOval(
+                        child: Material(
+                          color: Colors.white,
+                          child: InkWell(
+                            // borderSide: BorderSide(color: Colors.green, width: 0.5),
+                            // padding: EdgeInsets.all(0.0),
+                            onTap: onStopPlayerPressed(),
+                            child: SizedBox(
+                              height: 56.0,
+                              width: 56.0,
+                              child: Icon(Icons.stop,
+                                  color: !recorderModule.isStopped
+                                      ? Colors.grey
+                                      : Colors.deepOrange,
+                                  size: 25.0),
+                            ),
+                            // shape: CircleBorder(),
+                          ),
+                        ),
+                      );
+                    }(),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return Column(
       children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(top: 12.0, bottom: 16.0),
-          child: Text(
-            this._playerTxt,
-            style: TextStyle(
-              fontSize: 35.0,
-              color: Colors.black,
-            ),
-          ),
-        ),
-        Row(
-          children: <Widget>[
-            Container(
-              width: 56.0,
-              height: 50.0,
-              child: ClipOval(
-                child: FlatButton(
-                  onPressed: onStartPlayerPressed(),
-                  disabledColor: Colors.white,
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.play_arrow),
-                ),
-              ),
-            ),
-            Container(
-              width: 56.0,
-              height: 50.0,
-              child: ClipOval(
-                child: FlatButton(
-                  onPressed: onPauseResumePlayerPressed(),
-                  disabledColor: Colors.white,
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.pause),
-                ),
-              ),
-            ),
-            Container(
-              width: 56.0,
-              height: 50.0,
-              child: ClipOval(
-                child: FlatButton(
-                  onPressed: onStopPlayerPressed(),
-                  disabledColor: Colors.white,
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.stop),
-                ),
-              ),
-            ),
-          ],
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-        ),
-        Container(
-            height: 30.0,
-            child: Slider(
-                value: min(sliderCurrentPosition, maxDuration),
-                min: 0.0,
-                max: maxDuration,
-                onChanged: (double value) async {
-                  await playerModule.seekToPlayer(value.toInt());
-                },
-                divisions: maxDuration == 0.0 ? 1 : maxDuration.toInt())),
-        Container(
-          height: 30.0,
-          child: Text(_duration != null ? "Duration: $_duration sec." : ''),
-        ),
-      ],
-    );
+        if (!this.widget.validate) _recorderSection,
+        _playerSection,
+        // dropdowns,
+        // trackSwitch,
+        // FlatButton(
+        //     onPressed: () {
+        //       print('recorM paused: ${recorderModule.isPaused}');
+        //       print('recorM recording: ${recorderModule.isRecording}');
+        //       print('recorM stopped: ${recorderModule.isStopped}');
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Sound'),
-        ),
-        body: ListView(
-          children: <Widget>[
-            recorderSection,
-            playerSection,
-            dropdowns,
-            trackSwitch,
-          ],
-        ),
-      ),
+        //       print('playerM paused: ${playerModule.isPaused}');
+        //       print('playerM playing: ${playerModule.isPlaying}');
+        //       print('playerM stopped: ${playerModule.isStopped}');
+        //     },
+        //     child: Text('DD'))
+      ],
     );
   }
 }

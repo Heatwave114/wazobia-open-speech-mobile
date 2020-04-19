@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:timer_builder/timer_builder.dart';
 
 // Internal
+import '../../helpers/sound_devil.dart';
 import '../../widgets/dash_widgets.dart';
 
 class DonateVoiceScreen extends StatelessWidget {
@@ -30,7 +31,8 @@ class DonateVoiceScreen extends StatelessWidget {
               DashWidgets.dashItem('Genre', 'comedy'),
               DashWidgets.dashItem('Read time', '2 mins'),
             ], _dashWidth),
-            MediaPanel(dashWidth: _dashWidth),
+            // MediaPanel(dashWidth: _dashWidth),
+            SoundDevil(),
             TextPanel(dashWidth: _dashWidth),
           ],
         ),

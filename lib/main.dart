@@ -48,24 +48,25 @@ class MyApp extends StatelessWidget {
         ),
         home: Scaffold(
           // body: ListeningDevil(dashWidth: double.infinity),
-          body: SoundDevil(),
+          // body: SoundDevil(),
           
-          // Consumer<User>(
-          //   builder: (ctx, user, _) {
-          //     return FutureBuilder(
-          //       future: user.getLandingPage(),
-          //       builder: (ctx, userSnapshot) {
-          //         if (userSnapshot.connectionState == ConnectionState.waiting) {
-          //           return CentrallyUsed().waitingCircle();
-          //         } else if (userSnapshot.connectionState ==
-          //             ConnectionState.done) {
-          //           return userSnapshot.data;
-          //         }
-          //         return null;
-          //       },
-          //     );
-          //   },
-          // ),
+          body: Consumer<User>(
+            builder: (ctx, user, _) {
+              return FutureBuilder(
+                future: user.getLandingPage(),
+                builder: (ctx, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return CentrallyUsed().waitingCircle();
+                  } else if (userSnapshot.connectionState ==
+                      ConnectionState.done) {
+                    return userSnapshot.data;
+                  }
+                  return null;
+                },
+              );
+            },
+          ),
+
         ),
         routes: {
           AuthenticateScreen.routeName: (ctx) => AuthenticateScreen(),
