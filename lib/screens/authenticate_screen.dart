@@ -795,7 +795,7 @@ class _AuthFormState extends State<AuthForm> {
                                   //     .pushNamed(
                                   //         TermsConditionsScreen.routeName);
 
-                                  showModalBottomSheet(
+                                  showModalBottomSheet( //Testing
                                     context: context,
                                     builder: (_) {
                                       return GestureDetector(
