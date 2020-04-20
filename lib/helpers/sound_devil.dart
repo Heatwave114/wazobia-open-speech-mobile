@@ -13,6 +13,7 @@ import 'package:flutter_sound/flutter_sound_player.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_sound/track_player.dart';
 import 'package:flutter_sound/flutter_sound_recorder.dart';
+import 'package:wazobia/fluttter_sound.dart';
 
 enum t_MEDIA {
   FILE,
@@ -41,7 +42,7 @@ class SoundDevil extends StatefulWidget {
   void validating() {
     this.validate = true;
   }
-  
+
   @override
   _SoundDevilState createState() => new _SoundDevilState();
 }
@@ -377,7 +378,9 @@ class _SoundDevilState extends State<SoundDevil> {
       String path;
       Uint8List dataBuffer;
       String audioFilePath;
-      if (_media == t_MEDIA.ASSET) {
+      if (this.widget.validate == true) {
+        audioFilePath = exampleAudioFilePath;
+      } else if (_media == t_MEDIA.ASSET) {
         dataBuffer = (await rootBundle.load(assetSample[_codec.index]))
             .buffer
             .asUint8List();
@@ -1039,12 +1042,13 @@ class _SoundDevilState extends State<SoundDevil> {
                 Expanded(
                   child: Slider(
                       value: min(sliderCurrentPosition, maxDuration),
+                      activeColor: Colors.deepOrange,
                       min: 0.0,
                       max: maxDuration,
-                      // onChanged: (double value) async {
-                      //   await playerModule.seekToPlayer(value.toInt());
-                      // },
-                      onChanged: null,
+                      onChanged: !this.widget.validate ? null : (double value) async {
+                        await playerModule.seekToPlayer(value.toInt());
+                      },
+                      // onChanged: null,
                       divisions: maxDuration == 0.0 ? 1 : maxDuration.toInt()),
                 ),
                 Row(
@@ -1058,10 +1062,7 @@ class _SoundDevilState extends State<SoundDevil> {
                                   // borderSide: BorderSide(
                                   //     color: Colors.green, width: 0.5),
                                   // padding: EdgeInsets.all(0.0),
-                                  onTap: (recorderModule.isRecording ||
-                                          recorderModule == null)
-                                      ? null
-                                      : onStartPlayerPressed(),
+                                  onTap:  startPlayer,
                                   child: SizedBox(
                                     height: 56.0,
                                     width: 56.0,
@@ -1136,7 +1137,7 @@ class _SoundDevilState extends State<SoundDevil> {
                               child: Icon(Icons.stop,
                                   color: !recorderModule.isStopped
                                       ? Colors.grey
-                                      : Colors.deepOrange,
+                                      : Colors.red,
                                   size: 25.0),
                             ),
                             // shape: CircleBorder(),

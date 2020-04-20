@@ -794,6 +794,7 @@ class _AuthFormState extends State<AuthForm> {
                                   // Navigator.of(context)
                                   //     .pushNamed(
                                   //         TermsConditionsScreen.routeName);
+
                                   showModalBottomSheet(
                                     context: context,
                                     builder: (_) {
@@ -819,6 +820,8 @@ class _AuthFormState extends State<AuthForm> {
                                       );
                                     },
                                   );
+
+                                  
                                 },
                               style: TextStyle(
                                 color: Theme.of(context).accentColor,

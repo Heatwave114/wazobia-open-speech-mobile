@@ -8,6 +8,8 @@ import './providers/firebase_helper.dart';
 import './providers/user.dart';
 import './screens/authenticate_screen.dart';
 import './screens/dashboard_screen.dart';
+import './screens/metadata_screen.dart';
+import './screens/welcome_screen.dart';
 import './screens/contribute/donate_voice_screen.dart';
 import './screens/contribute/validate_screen.dart';
 import './widgets/centrally_used.dart';
@@ -49,6 +51,7 @@ class MyApp extends StatelessWidget {
         home: Scaffold(
           // body: ListeningDevil(dashWidth: double.infinity),
           // body: SoundDevil(),
+          // body: WelcomeScreen(),
           
           body: Consumer<User>(
             builder: (ctx, user, _) {
@@ -72,7 +75,9 @@ class MyApp extends StatelessWidget {
           AuthenticateScreen.routeName: (ctx) => AuthenticateScreen(),
           DashboardScreen.routeName: (ctx) => DashboardScreen(),
           DonateVoiceScreen.routeName: (ctx) => DonateVoiceScreen(),
+          MetaDataScreen.routeName: (ctx) => MetaDataScreen(), 
           ValidateScreen.routeName: (ctx) => ValidateScreen(),
+          WelcomeScreen.routeName: (ctx) => WelcomeScreen(),
         },
       ),
     );
