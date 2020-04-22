@@ -5,8 +5,10 @@ import 'package:flutter/foundation.dart';
 class User {
   final String uid;
   final String country;
-  final String telephone;
+  // final String telephone;
   final String gender;
+  final String age;
+  final String eduBG;
   final int textsRead;
   final int validations;
   final int invitations;
@@ -14,8 +16,10 @@ class User {
   const User({
     @required this.uid,
     @required this.country,
-    @required this.telephone,
+    // @required this.telephone,
     @required this.gender,
+    @required this.age,
+    @required this.eduBG,
     @required this.textsRead,
     @required this.validations,
     @required this.invitations,
@@ -24,8 +28,10 @@ class User {
   User.fromFireStore(DocumentSnapshot user)
       : uid = user.documentID,
         country = user['country'],
-        telephone = user['telephone'],
+        // telephone = user['telephone'],
         gender = user['gender'],
+        age = user['age'],
+        eduBG = user['edubg'],
         textsRead = user['textsread'],
         validations = user['validations'],
         invitations = user['invitations'];
@@ -34,8 +40,10 @@ class User {
     return {
       'uid': this.uid,
       'country': this.country,
-      'telephone': this.telephone,
+      // 'telephone': this.telephone,
       'gender': this.gender,
+      'age': this.age,
+      'edubg': this.eduBG,
       'textsread': this.textsRead,
       'validations': this.validations,
       'invitations': this.invitations,

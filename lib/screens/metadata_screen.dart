@@ -1,900 +1,718 @@
-// // External
-// import 'package:flutter/material.dart';
-
-// class MetaDataScreen extends StatelessWidget {
-//   static const routeName = '/meta';
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: Text('Its not Me'),
-//       ),
-//     );
-//   }
-// }
-
-
 // External
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_country_picker/flutter_country_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Internal
-import '../customs/custom_checkbox.dart' as custm;
-import '../helpers/auth.dart';
+import './account_select_screen.dart';
+import './dashboard_screen.dart';
 import '../providers/user.dart';
-import '../screens/dashboard_screen.dart';
 import '../widgets/centrally_used.dart';
+// import '../customs/custom_checkbox.dart' as custm;
 
-// enum AuthMode {
-//   JoinUs,
-//   Authenticate,
-// }
+class MetadataScreen extends StatefulWidget {
+  static const routeName = '/meta';
 
-// class MetaDataScreen extends StatefulWidget {
-//   static const routeName = 'meta';
-//   AuthMode _authMode = AuthMode.Authenticate;
+  @override
+  _MetadataScreenState createState() => _MetadataScreenState();
+}
 
-//   void loadJoinUs() {
-//     this._authMode = AuthMode.JoinUs;
-//   }
+class _MetadataScreenState extends State<MetadataScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final Size _deviceSize = MediaQuery.of(context).size;
+    return Scaffold(
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: 60.0,
+              margin: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 20.0,
+                  left: 30.0,
+                  right: 30.0),
+              // padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
+              width: double.infinity,
+              // alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  // color: Colors.green,
+                  border: Border(bottom: BorderSide(color: Colors.green[200]))),
+              child: FittedBox(
+                child: Text(
+                  'Metadata',
+                  style: TextStyle(
+                    fontSize: 50.0,
+                    fontFamily: 'ComicNeue',
+                    color: Colors.green[900],
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                  // top: MediaQuery.of(context).padding.top + 20.0,
+                  top: _deviceSize.height * .10,
+                  left: 30.0,
+                  right: 30.0),
+              child: MetadataForm(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-//   @override
-//   _MetaDataScreenState createState() => _MetaDataScreenState();
-// }
+class MetadataForm extends StatefulWidget {
+  @override
+  _MetadataFormState createState() => _MetadataFormState();
+}
 
-// class _MetaDataScreenState extends State<MetaDataScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     final Size _deviceSize = MediaQuery.of(context).size;
-//     return Scaffold(
-//       body: SingleChildScrollView(
-//         physics: BouncingScrollPhysics(),
-//         child: Column(
-//           children: <Widget>[
-//             Container(
-//               color: Theme.of(context).primaryColor,
-//               height: kBottomNavigationBarHeight,
-//             ),
-//             Container(
-//               // Welcome
-//               padding: const EdgeInsets.only(left: 15.0),
-//               color: Theme.of(context).primaryColor,
-//               height: 60.0,
-//               width: double.infinity,
-//               child: const Text(
-//                 'Welcome to Wazobia',
-//                 style: const TextStyle(
-//                     fontSize: 25.0,
-//                     color: Colors.white,
-//                     fontFamily: 'AdventPro'),
-//                 // textAlign: TextAlign.left,
-//               ),
-//             ),
-//             // Text(this._authMode == AuthMode.Authenticate ? 'Authenticate with your telephone number' : 'Join the Wazobia community!'),
-//             Container(
-//                 // Login/Join toggle
-//                 height: 40.0,
-//                 margin: const EdgeInsets.only(top: 25.00),
-//                 child: SingleChildScrollView(
-//                   physics: BouncingScrollPhysics(),
-//                   scrollDirection: Axis.horizontal,
-//                   child: Container(
-//                     width: _deviceSize.width * .8,
-//                     decoration: BoxDecoration(
-//                       border: Border.all(color: Colors.green),
-//                       borderRadius: BorderRadius.circular(10.0),
-//                     ),
-//                     child: Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                       children: <Widget>[
-//                         Expanded(
-//                           // Authenticate
-//                           child: Container(
-//                             // height: 100.00,
-//                             // width: 100.00,
-//                             child: InkWell(
-//                               borderRadius: const BorderRadius.only(
-//                                 bottomLeft: const Radius.circular(10.0),
-//                                 topLeft: const Radius.circular(10.0),
-//                               ),
-//                               child: Center(
-//                                   child: Text(
-//                                 'Sign In',
-//                                 textAlign: TextAlign.center,
-//                                 style: TextStyle(
-//                                   fontFamily: 'ComicNeue',
-//                                   fontSize: 16.0,
-//                                   fontWeight: this.widget._authMode != null &&
-//                                           this.widget._authMode ==
-//                                               AuthMode.Authenticate
-//                                       ? FontWeight.bold
-//                                       : FontWeight.normal,
-//                                   color: Color(0xff2A6041),
-//                                 ),
-//                               )),
-//                               onTap: () {
-//                                 setState(() {
-//                                   this.widget._authMode = AuthMode.Authenticate;
-//                                 });
-//                               },
-//                             ),
-//                           ),
-//                         ),
-//                         const VerticalDivider(
-//                           width: 0.0,
-//                           color: Colors.green,
-//                         ),
-//                         Expanded(
-//                           // JoinUs
-//                           child: Container(
-//                             // height: 100.00,
-//                             // width: 100.00,
-//                             child: InkWell(
-//                               borderRadius: const BorderRadius.only(
-//                                 bottomRight: const Radius.circular(10.0),
-//                                 topRight: const Radius.circular(10.0),
-//                               ),
-//                               child: Center(
-//                                   child: Text(
-//                                 'Join Us',
-//                                 textAlign: TextAlign.center,
-//                                 style: TextStyle(
-//                                   fontFamily: 'ComicNeue',
-//                                   fontSize: 16.0,
-//                                   fontWeight: this.widget._authMode != null &&
-//                                           this.widget._authMode ==
-//                                               AuthMode.JoinUs
-//                                       ? FontWeight.bold
-//                                       : FontWeight.normal,
-//                                   color: Color(0xff2A6041),
-//                                 ),
-//                               )),
-//                               onTap: () {
-//                                 setState(() {
-//                                   this.widget._authMode = AuthMode.JoinUs;
-//                                 });
-//                               },
-//                             ),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 )),
+class _MetadataFormState extends State<MetadataForm> {
+  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _eduBGController = TextEditingController();
 
-//             Container(
-//               // AuthForm
-//               padding:
-//                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 35.0),
-//               // height: _deviceSize.height * .6,
-//               child: AuthForm(this.widget._authMode),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+  // final FocusNode _countryFocusNode = FocusNode();
+  final FocusNode _genderFocusNode = FocusNode();
+  final FocusNode _nicknameFocusNode = FocusNode();
+  final FocusNode _ageFocusNode = FocusNode();
+  final FocusNode _eduBGFocusNode = FocusNode();
 
-// class AuthForm extends StatefulWidget {
-//   final AuthMode authMode;
+  GlobalKey<FormState> _metaFormKey = GlobalKey();
 
-//   const AuthForm(this.authMode);
+  @override
+  void dispose() {
+    super.dispose();
+    _countryController.dispose();
+    _genderController.dispose();
+    _eduBGController.dispose();
+    // _countryFocusNode.dispose();
+    _genderFocusNode.dispose();
+    _nicknameFocusNode.dispose();
+    _ageFocusNode.dispose();
+    _eduBGFocusNode.dispose();
+  }
 
-//   set setAuthMode(AuthMode authMode) => authMode = authMode;
+  var _isLoading = false;
+  bool _agreedToTerms = false;
 
-//   @override
-//   _AuthFormState createState() => _AuthFormState();
-// }
+  Map<String, String> _metaData = {
+    'country': '',
+    'gender': '',
+    'age': '',
+    'edubg': '',
+  };
 
-// class _AuthFormState extends State<AuthForm> {
-//   final TextEditingController _passwordController = TextEditingController();
-//   final TextEditingController _countryController = TextEditingController();
-//   final TextEditingController _genderController = TextEditingController();
+  Country _selectedCountry = Country.NG;
+  User _user = User();
 
-//   final FocusNode _emailFocusNode = FocusNode();
-//   final FocusNode _countryFocusNode = FocusNode();
-//   final FocusNode _telephoneFocusNode = FocusNode();
-//   final FocusNode _genderFocusNode = FocusNode();
-//   final FocusNode _passwordFocusNode = FocusNode();
-//   final FocusNode _confirmPasswordFocusNode = FocusNode();
+  final _eduBGExpansionKey = GlobalKey();
+  final _genderExpansionKey = GlobalKey();
+  RelativeRect buttonMenuPosition(BuildContext c) {
+    final RenderBox bar = c.findRenderObject();
+    final RenderBox overlay = Overlay.of(c).context.findRenderObject();
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+    return position;
+  }
 
-//   GlobalKey<FormState> _formKeyAuthenticate = GlobalKey();
-//   GlobalKey<FormState> _formKeyJoinUs = GlobalKey();
+  Firestore databaseRoot = Firestore.instance;
+  Future<String> _setUserData({
+    String country,
+    String gender,
+    // String nickname,
+    String age,
+    String edubg,
+  }) async {
+    // final user = Provider.of<User>(context);
+    final _userData = databaseRoot.collection('users').document();
+    // print(_userData.documentID);
+    try {
+      // SharedPreferences pref = await SharedPreferences.getInstance();
+      // bool firstTime = pref.getBool('first_time');
+      // String userID = pref.getString('userID');
 
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     _passwordController.dispose();
-//     _countryController.dispose();
-//     _genderController.dispose();
-//     _emailFocusNode.dispose();
-//     _countryFocusNode.dispose();
-//     _telephoneFocusNode.dispose();
-//     _genderFocusNode.dispose();
-//     _passwordFocusNode.dispose();
-//     _confirmPasswordFocusNode.dispose();
-//   }
+      // if (userID != null) {
+      //   // Not first time
+      //   databaseRoot.collection('users').document(userID).setData({
+      //     'country': country,
+      //     'gender': gender,
+      //     'age': age,
+      //     'edubg': edubg,
+      //     'textsread': 0,
+      //     'validations': 0,
+      //     'invitations': 0,
+      //   });
 
-//   var _isLoading = false;
+      // } else {
+      //   // First time
+      //   final _userData = databaseRoot.collection('users').document();
+      //   pref.setString('userID', _userData.documentID);
+      //   _userData.setData({});
 
-//   Map<String, String> _authData = {
-//     'email': '',
-//     'country': '',
-//     'telephone': '',
-//     'gender': '',
-//   };
+      //   // pref.setStringList('userIDs', []);
+      //   // pref.setBool('first_time', false);
+      // }
 
-//   // String _smsCode;
-//   Auth _auth = Auth();
-//   User _user = User();
-//   Country _selectedCountry = Country.NG;
+      databaseRoot.collection('users').document(_userData.documentID).setData({
+        'country': country,
+        'gender': gender,
+        // 'nickname': nickname,
+        'age': age,
+        'edubg': edubg,
+        'textsread': 0,
+        'validations': 0,
+        'invitations': 0,
+      });
 
-//   // final _moreKey = GlobalKey<State<BottomNavigationBar>>();
-//   final _moreKey = GlobalKey();
-//   RelativeRect buttonMenuPosition(BuildContext c) {
-//     final RenderBox bar = c.findRenderObject();
-//     final RenderBox overlay = Overlay.of(c).context.findRenderObject();
-//     final RelativeRect position = RelativeRect.fromRect(
-//       Rect.fromPoints(
-//         bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
-//         bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
-//       ),
-//       Offset.zero & overlay.size,
-//     );
-//     return position;
-//   }
+      this._user.setCurrentUserID(_userData.documentID);
 
-//   var _agreedToTerms = false;
+      return _userData.documentID;
+    } catch (e) {
+      // print(e);
+      var errorMessage = 'Something went wrong. Try again later';
+      if (e.toString().contains('This user already exists')) {
+        // databaseRoot.collection('users').document(_userData.documentID).delete();
+        errorMessage = 'This user already exists';
+      }
+      _showSnackBar(e);
+      // _showSnackBar('An error occured. Check your internet');
+      _showDialog('Error', errorMessage);
+    }
+    return null;
+  }
 
-//   var _passwordIsVisible = false;
-//   void _togglePasswordVisibility() {
-//     setState(() {
-//       _passwordIsVisible = !_passwordIsVisible;
-//     });
-//   }
+  Future<void> _submit() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      if (!_metaFormKey.currentState.validate()) {
+        // Invalid
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+      _metaFormKey.currentState.save();
+      final currentUserID = await _setUserData(
+        country: _metaData['country'],
+        gender: _metaData['gender'],
+        // nickname: _metaData['nickname'],
+        age: _metaData['age'],
+        edubg: _metaData['edubg'],
+      );
 
-//   Future<void> _authentiate({
-//     String email,
-//     String password,
-//   }) async {
-//     // final auth = Auth();
-//     try {
-//       if (this.widget.authMode == AuthMode.Authenticate) {
-//         await this
-//             ._auth
-//             .signInWithEmailAndPassword(email, password)
-//             .then((instance) {
-//           if (instance.isEmailVerified) {
-//             Navigator.of(context)
-//                 .pushReplacementNamed(DashboardScreen.routeName);
-//           } else {
-//             // Have to verify before login
-//             _showDialog('Alert', 'Verify your email before you login');
-//           }
-//         });
-//       } else {
-//         await this
-//             ._auth
-//             .createUserWitEmailAndPassword(email, password)
-//             .then((instance) {
-//           instance.sendEmailVerification();
-//           _user.setUserdata(
-//             country: _authData['country'],
-//             telephone: _authData['telephone'],
-//             gender: _authData['gender'],
-//           );
+      print(currentUserID);
+      print(_metaData['nickname']);
 
-//           // Have to verify after sign up
-//           _showDialog('Welcome to wazobia',
-//               'We have sent you a verification email. Verify your email before you login');
-//         });
-//         //notifyListeners();
-//         // We have sent you verification email
-//         // Navigate to Login
-//         // Navigator.of(context)
-//         //     .pushReplacementNamed(MetaDataScreen.routeName);
+      // this._user..setContext(context);
+      this._user.addUser(_metaData['nickname'], currentUserID).then((_) {
+        Navigator.of(context)
+            .pushReplacementNamed(DashboardScreen.routeName)
+            .then((_) {
+          _showDialog('Welcome', 'Thank you for joining us');
+        });
+      }).catchError((e) {
+        _showDialog('Error', e.toString());
+      });
 
-//         // _showSnackBar(
-//         //   'we have sent you a verification email. Verify your email before you login',
-//         // );
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      var errorMessage = 'Something went wrong. Try again later';
+      this._user.setCurrentUserID(null);
+      if (e.toString().contains('This user already exists')) {
+        // databaseRoot.collection('users').document(_userData.documentID).delete();
+        errorMessage = 'This user already exists';
+      }
+      _showDialog('Error', errorMessage);
+    }
+  }
 
-//       }
+  // Updating dialog
+  void _showDialog(String title, String content) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          title,
+          style: const TextStyle(
+              fontFamily: 'Abel', fontSize: 20.0, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          content,
+          style: const TextStyle(
+            fontFamily: 'Abel',
+            fontSize: 17.0,
+            // fontWeight: FontWeight.bold
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: const Text('Okay'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
 
-//       // setState(() {
-//       //   _isLoading = false;
-//       // });
+  // Updating snackbar
+  void _showSnackBar(String message) {
+    Scaffold.of(this.context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Theme.of(this.context).appBarTheme.color,
+        // behavior: SnackBarBehavior.floating,
+        content: Text(
+          message,
+          style: const TextStyle(
+            fontSize: 13,
+            fontFamily: 'ComicNeue',
+          ),
+        ),
+        action: SnackBarAction(
+          // textColor: Theme.of(this.context).primaryColor,
+          label: 'ok',
+          onPressed: () {
+            Scaffold.of(this.context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
 
-//     } catch (error) {
-//       var errorMessage = 'Authentication Failed';
-//       if (error.toString().contains(
-//           'There is no user record corresponding to this identifier. The user may have been deleted')) {
-//         errorMessage =
-//             'There is no user record corresponding to this credentials';
-//       } else if (error.toString().contains(
-//           'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
-//         errorMessage = 'An error has occured. Check your internet connection';
-//       } else if (error
-//           .toString()
-//           .contains('The email address is already in use by another account')) {
-//         errorMessage = 'The email address is already in use by another account';
-//       } else if (error.toString().contains(
-//           'The password is invalid or the user does not have a password')) {
-//         errorMessage = 'Email or password invalid';
-//       } else if (error.toString().contains(
-//           'We have blocked all requests from this device due to unusual activity. Try again later. [ Too many unsuccessful login attempts.  Please include reCaptcha verification or try again later ]')) {
-//         errorMessage = 'Too many unsuccessful login attempts. Try again later';
-//       }
+  Map<String, dynamic> _style = {
+    'formlabel': const TextStyle(fontFamily: 'Montserrat', fontSize: 14.0),
+  };
 
-//       // setState(() {
-//       //   _isLoading = false;
-//       // });
+  Widget _showMetaForm() {
+    // final user = Provider.of<User>(context);
+    final Widget _spacer = const SizedBox(
+      height: 8,
+    );
+    _countryController.text = _selectedCountry.name;
+    return SingleChildScrollView(
+      physics: BouncingScrollPhysics(),
+      child: Card(
+        child: Form(
+          key: _metaFormKey,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5.0),
+            child: Column(
+              children: <Widget>[
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: const Text(
+                          // 'Your data is private',
+                          'Please fill the form',
+                          style: const TextStyle(
+                            fontFamily: 'ComicNeue',
+                            fontSize: 16.00,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xff2A6041),
+                          ),
+                        ),
+                      ),
+                      FlatButton.icon(
+                        icon: Icon(Icons.keyboard_arrow_down),
+                        label: const Text(
+                          'Choose Existing',
+                          style: const TextStyle(
+                            fontFamily: 'ComicNeue',
+                            fontSize: 16.00,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xff2A6041),
+                          ),
+                        ),
+                        // child: Text(),
+                        onPressed: () => Navigator.of(context)
+                            .pushReplacementNamed(
+                                AccountSelectScreen.routeName),
+                      ),
+                    ]),
+                _spacer,
+                TextFormField(
+                  // Country
+                  readOnly: true,
+                  keyboardType: TextInputType.text,
+                  controller: _countryController,
+                  decoration: InputDecoration(
+                    labelStyle: _style['formlabel'],
+                    // prefixText: '+234-',
 
-//       // print(error.message);
-//       // print(errorMessage);
-//       //_showAlertDialog(context: context, message: errorMessage);
-//       _showSnackBar(errorMessage);
-//     }
-//   }
+                    labelText: 'Country',
+                    suffix: CountryPicker(
+                      showDialingCode: false,
+                      // showFlag: false,
+                      showName: false,
+                      dense: false,
 
-//   // Updating snackbar
-//   void _showSnackBar(String message) {
-//     Scaffold.of(this.context).showSnackBar(
-//       SnackBar(
-//         behavior: SnackBarBehavior.floating,
-//         backgroundColor: Theme.of(this.context).appBarTheme.color,
-//         // behavior: SnackBarBehavior.floating,
-//         content: Text(
-//           message,
-//           style: const TextStyle(
-//             fontSize: 13,
-//             fontFamily: 'ComicNeue',
-//           ),
-//         ),
-//         action: SnackBarAction(
-//           // textColor: Theme.of(this.context).primaryColor,
-//           label: 'ok',
-//           onPressed: () {
-//             Scaffold.of(this.context).hideCurrentSnackBar();
-//           },
-//         ),
-//       ),
-//     );
-//   }
+                      onChanged: (Country country) {
+                        setState(() {
+                          _selectedCountry = country;
+                        });
+                      },
+                      selectedCountry: _selectedCountry,
+                    ),
 
-//   // Updating dialog
-//   void _showDialog(String title, String content) {
-//     showDialog(
-//       barrierDismissible: false,
-//       context: context,
-//       builder: (ctx) => AlertDialog(
-//         title: Text(
-//           title,
-//           style: const TextStyle(
-//               fontFamily: 'Abel', fontSize: 20.0, fontWeight: FontWeight.bold),
-//         ),
-//         content: Text(
-//           content,
-//           style: const TextStyle(
-//             fontFamily: 'Abel',
-//             fontSize: 17.0,
-//             // fontWeight: FontWeight.bold
-//           ),
-//         ),
-//         actions: <Widget>[
-//           FlatButton(
-//             child: const Text('Okay'),
-//             onPressed: () {
-//               if (this.widget.authMode == AuthMode.JoinUs) {
-//                 Navigator.of(context).pop();
-//                 Navigator.of(context)
-//                     .pushReplacementNamed(MetaDataScreen.routeName);
-//                 return;
-//               }
-//               Navigator.of(context).pop();
-//             },
-//           )
-//         ],
-//       ),
-//     );
-//   }
+                    // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
+                  ),
+                  // focusNode: _countryFocusNode,
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_genderFocusNode);
+                  },
+                  onSaved: (value) {
+                    _metaData['country'] = _selectedCountry.isoCode;
+                  },
+                ),
+                _spacer,
+                TextFormField(
+                  // Gender
+                  readOnly: true,
+                  keyboardType: TextInputType.text,
+                  controller: _genderController,
+                  decoration: InputDecoration(
+                    labelStyle: _style['formlabel'],
+                    // prefixText: '+234-',
+                    labelText: 'Gender',
+                    suffix: GestureDetector(
+                      key: this._genderExpansionKey,
+                      child: const Icon(
+                        Icons.arrow_drop_down,
+                      ),
+                      onTap: () async {
+                        final position = buttonMenuPosition(
+                            this._genderExpansionKey.currentContext);
+                        final _result = await showMenu(
+                          context: context,
+                          position: position,
+                          items: <PopupMenuItem<String>>[
+                            const PopupMenuItem<String>(
+                                child: InkWell(
+                                  child: Text('male'),
+                                ),
+                                value: 'male'),
+                            const PopupMenuItem<String>(
+                                child: const Text('female'), value: 'female'),
+                          ],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        );
+                        if (_result == 'male') {
+                          _genderController.text = 'male';
+                        } else if (_result == 'female') {
+                          _genderController.text = 'female';
+                        }
+                        FocusScope.of(context).requestFocus(_nicknameFocusNode);
+                        // Focus.of(context).unfocus();
+                      },
+                    ),
+                    // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Choose a gender';
+                    } else if (!(value == 'male' || value == 'female')) {
+                      return 'Gender must be male or female';
+                    }
+                    return null;
+                  },
 
-//   Future<void> _submit() async {
-//     setState(() {
-//       _isLoading = true;
-//     });
-//     if (this.widget.authMode == null) {
-//       setState(() {
-//         _isLoading = false;
-//       });
-//       return;
-//     }
-//     final formKey = this.widget.authMode == AuthMode.Authenticate
-//         ? _formKeyAuthenticate
-//         : _formKeyJoinUs;
-//     if (!formKey.currentState.validate()) {
-//       // Invalid
-//       setState(() {
-//         _isLoading = false;
-//       });
-//       return;
-//     }
+                  focusNode: _genderFocusNode,
+                  onSaved: (value) {
+                    _metaData['gender'] = value.trim();
+                  },
+                ),
+                _spacer,
+                TextFormField(
+                  // Nickname Field
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelStyle: _style['formlabel'],
+                    labelText: 'Nickname',
+                    // hintText: 'e.g Abba',
+                  ),
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_ageFocusNode);
+                  },
+                  validator: (value) {
+                    final RegExp regExp = RegExp(
+                      r'^[a-zA-Z0-9\s]{1,20}$',
+                      caseSensitive: false,
+                      multiLine: false,
+                    );
+                    if (value.isEmpty) {
+                      // user['nickname'] = user['firstname'];
+                      return null;
+                    } else if (value.length > 20) {
+                      return 'Nickname too long';
+                    } else if (!regExp.hasMatch(value)) {
+                      return 'Exclude special characters';
+                    } else {
+                      return null;
+                    }
+                  },
+                  focusNode: _nicknameFocusNode,
+                  onSaved: (value) {
+                    _metaData['nickname'] = value.trim();
+                  },
+                ),
+                _spacer,
+                TextFormField(
+                  // Age
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelStyle: _style['formlabel'],
+                    labelText: 'Age',
+                  ),
+                  focusNode: _ageFocusNode,
+                  validator: (value) {
+                    final RegExp regExp = RegExp(
+                      r'^[0-9]*$',
+                      caseSensitive: false,
+                      multiLine: false,
+                    );
 
-//     setState(() {
-//       _isLoading = true;
-//     });
-//     formKey.currentState.save();
-//     await _authentiate(
-//       email: _authData['email'],
-//       password: _passwordController.text,
-//     );
-//     setState(() {
-//       _isLoading = false;
-//     });
+                    if (value.isEmpty) {
+                      return 'Enter your age';
+                    } else if (!regExp.hasMatch(value)) {
+                      return 'Age is a positive integer';
+                    } else if (!(int.parse(value) < 100 &&
+                        int.parse(value) > 2)) {
+                      return 'Age out of range';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_eduBGFocusNode);
+                  },
+                  onSaved: (value) {
+                    _metaData['age'] = value.trim();
+                  },
+                ),
+                _spacer,
+                TextFormField(
+                  // Educational Background
+                  readOnly: true,
+                  keyboardType: TextInputType.text,
+                  controller: _eduBGController,
+                  decoration: InputDecoration(
+                    labelStyle: _style['formlabel'],
+                    // prefixText: '+234-',
+                    labelText: 'Education',
+                    suffix: GestureDetector(
+                      key: this._eduBGExpansionKey,
+                      child: const Icon(
+                        Icons.arrow_drop_down,
+                      ),
+                      onTap: () async {
+                        final position = buttonMenuPosition(
+                            this._eduBGExpansionKey.currentContext);
+                        final _result = await showMenu(
+                          context: context,
+                          position: position,
+                          items: <PopupMenuItem<String>>[
+                            const PopupMenuItem<String>(
+                                child: const Text('nursery'), value: 'nursery'),
+                            const PopupMenuItem<String>(
+                                child: const Text('primary'), value: 'primary'),
+                            const PopupMenuItem<String>(
+                                child: const Text('secondary'),
+                                value: 'secondary'),
+                            const PopupMenuItem<String>(
+                                child: const Text('tertiary'),
+                                value: 'tertiary'),
+                            const PopupMenuItem<String>(
+                                child: const Text('msc'), value: 'msc'),
+                            const PopupMenuItem<String>(
+                                child: const Text('phd'), value: 'phd'),
+                            const PopupMenuItem<String>(
+                                child: const Text('none'), value: 'none'),
+                          ],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        );
+                        if (_result == 'nursery') {
+                          _eduBGController.text = 'nursery';
+                        } else if (_result == 'primary') {
+                          _eduBGController.text = 'primary';
+                        } else if (_result == 'secondary') {
+                          _eduBGController.text = 'secondary';
+                        } else if (_result == 'tertiary') {
+                          _eduBGController.text = 'tertiary';
+                        } else if (_result == 'msc') {
+                          _eduBGController.text = 'msc';
+                        } else if (_result == 'phd') {
+                          _eduBGController.text = 'phd';
+                        } else if (_result == 'none') {
+                          _eduBGController.text = 'none';
+                        }
+                      },
+                    ),
+                    // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Choose an educational background';
+                    } else if (!(value == 'nursery' ||
+                        value == 'primary' ||
+                        value == 'secondary' ||
+                        value == 'tertiary' ||
+                        value == 'msc' ||
+                        value == 'phd' ||
+                        value == 'none')) {
+                      return 'Must be one of [primary, secondary, tertiary, msc, phd, none]';
+                    }
+                    return null;
+                  },
+                  focusNode: _eduBGFocusNode,
+                  onSaved: (value) {
+                    _metaData['edubg'] = value.trim();
+                  },
+                ),
+                _spacer,
+                _spacer,
+                Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Checkbox(
+                        value: _agreedToTerms,
+                        activeColor: Colors.deepOrange[600],
+                        // useTapTarget: false,
+                        onChanged: (toggle) {
+                          // User user =
+                          //     Provider.of<User>(context, listen: false)
+                          //       ..setRememberMe(toggle);
+                          // print(user.rememberMe);
+                          setState(() {
+                            _agreedToTerms = toggle;
+                          });
+                        },
+                      ),
+                    ),
+                    RichText(
+                      // overflow: TextOverflow.ellipsis,
+                      text: TextSpan(
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                        children: <TextSpan>[
+                          const TextSpan(text: 'I agree to '),
+                          TextSpan(
+                            text: 'terms and conditions',
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // Navigate to Terms and Conditions Page
+                                // Navigator.of(context)
+                                //     .pushNamed(
+                                //         TermsConditionsScreen.routeName);
 
-//     // _user.setUserdata(
-//     //   country: _authData['country'],
-//     //   telephone: _authData['telephone'],
-//     //   gender: _authData['gender'],
-//     // );
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (_) {
+                                    return GestureDetector(
+                                      onTap: () {},
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                .70,
+                                        child: Center(
+                                            child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: const Text(
+                                            'You must consent to this terms and conditions before you gain acces to wazobia.',
+                                            style: const TextStyle(
+                                                fontSize: 20.0,
+                                                fontFamily: 'PTSans'),
+                                          ),
+                                        )),
+                                      ),
+                                      behavior: HitTestBehavior.opaque,
+                                    );
+                                  },
+                                );
 
-//     // if (this.widget.authMode == AuthMode.Authenticate) {
-//     //   setState(() {
-//     //     _isLoading = true;
-//     //   });
-//     //   formKey.currentState.save();
-//     //   await _authentiate(
-//     //     email: _authData['email'],
-//     //     password: _passwordController.text,
-//     //   );
-//     //   setState(() {
-//     //     _isLoading = false;
-//     //   });
-//     // } else {
-//     //   setState(() {
-//     //     _isLoading = true;
-//     //   });
-//     //   formKey.currentState.save();
-//     //   await _authentiate(
-//     //     email: _authData['email'],
-//     //     password: _passwordController.text,
-//     //   );
-//     //   setState(() {
-//     //     _isLoading = false;
-//     //   });
-//     // }
-//   }
+                                // Navigator.of(context).pushNamed('/meta');
+                              },
+                            style: TextStyle(
+                              // color: Theme.of(context).accentColor,
+                              color: Colors.deepOrange[400],
+                              decoration: TextDecoration.underline,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.0),
+                    child: _isLoading
+                        ? CentrallyUsed().waitingCircle()
+                        : OutlineButton.icon(
+                            label: const Text('Submit'),
+                            icon: const Icon(
+                              Icons.check,
+                              color: const Color(0xff2A6041),
+                            ),
+                            borderSide: BorderSide(
+                              color: Theme.of(context)
+                                  .primaryColor, //Color of the border
+                              style: BorderStyle.solid, //Style of the border
+                              width: 1.5, //width of the border
+                            ),
+                            //child: _isLoading ? CircularProgressIndicator() : Text('Submit'),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            onPressed:
+                                !this._agreedToTerms ? null : () => _submit(),
+                            // (){_showDialog('tt', 'content');}
+                          ))
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-// // SMS SMS SMS
-//   // Future<bool> _smsCodeDialog(String message) {
-//   //   return showDialog(
-//   //     barrierDismissible: false,
-//   //     context: context,
-//   //     builder: (ctx) => AlertDialog(
-//   //       title: Text('Enter verification code sent to your number'),
-//   //       content: TextField(
-//   //         onChanged: (value) {
-//   //           this._smsCode = value;
-//   //         },
-//   //       ),
-//   //       actions: <Widget>[
-//   //         FlatButton(
-//   //           child: Text('Submit'),
-//   //           onPressed: () {
-//   //             _auth.currentUser().then((user) {
-//   //               if (user != null) {
-//   //                 Navigator.of(ctx).pop();
-//   //                 Navigator.of(context)
-//   //                     .pushReplacementNamed(DashboardScreen.routeName);
-//   //               } else {}
-//   //             });
-//   //           },
-//   //         )
-//   //       ],
-//   //     ),
-//   //   );
-//   // }
+  String userID;
+  @override
+  Widget build(BuildContext context) {
+    // String _uid;
+    // final user = Provider.of<User>(context).getCurrentUserID().then((uid) => _uid = uid);
+    // this._context = context;
 
-//   Map<String, dynamic> _style = {
-//     'formlabel': const TextStyle(fontFamily: 'Montserrat', fontSize: 14.0),
-//   };
+    this._user.getCurrentUserID().then((uid) => userID = uid);
+    // if(userID == null) setState((){});
 
-//   Widget _showAuthForm() {
-//     final Widget _spacer = const SizedBox(
-//       height: 8,
-//     );
-//     _countryController.text =
-//         _selectedCountry.name; // Selected the country name at Join Us
-//     return SingleChildScrollView(
-//       physics: BouncingScrollPhysics(),
-//       child: Card(
-//         child: Form(
-//           key: this.widget.authMode == AuthMode.Authenticate
-//               ? _formKeyAuthenticate
-//               : _formKeyJoinUs,
-//           child: Padding(
-//             padding: const EdgeInsets.symmetric(
-//               horizontal: 5.0,
-//             ),
-//             child: Column(
-//               // crossAxisAlignment: CrossAxisAlignment.start,
-//               children: <Widget>[
-//                 Row(children: <Widget>[
-//                   Padding(
-//                     padding: const EdgeInsets.symmetric(vertical: 10.0),
-//                     child: Text(
-//                       widget.authMode == AuthMode.Authenticate
-//                           ? 'Sign in to access you account '
-//                           : 'Join the Wazobia community!',
-//                       style: const TextStyle(
-//                         fontFamily: 'ComicNeue',
-//                         fontSize: 16.00,
-//                         fontWeight: FontWeight.w600,
-//                         color: const Color(0xff2A6041),
-//                       ),
-//                     ),
-//                   ),
-//                 ]),
-//                 TextFormField(
-//                   // Email
-//                   keyboardType: TextInputType.emailAddress,
-//                   decoration: InputDecoration(
-//                     labelStyle: _style['formlabel'],
-//                     labelText: 'Email',
-//                     hintText: this.widget.authMode == AuthMode.Authenticate
-//                         ? '' //Nickname or (TO DO)
-//                         : 'e.g wazobia@waz.net',
-//                   ),
-//                   focusNode: _emailFocusNode,
-//                   onFieldSubmitted: (_) {
-//                     final focusedFormEmail =
-//                         this.widget.authMode == AuthMode.Authenticate
-//                             ? _passwordFocusNode
-//                             : _countryFocusNode;
-//                     FocusScope.of(context).requestFocus(focusedFormEmail);
-//                   },
-//                   validator: (value) {
-//                     final RegExp regExp = RegExp(
-//                       r"[a-z0-9!#$%&'*+/=?^`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b",
-//                       caseSensitive: false,
-//                       multiLine: false,
-//                     );
-//                     if (value.isEmpty) {
-//                       return this.widget.authMode == AuthMode.Authenticate
-//                           ? 'This field is required'
-//                           : 'Email Field can not be empty';
-//                     } else if (!regExp.hasMatch(value)) {
-//                       return 'Enter a valid Email';
-//                     } else {
-//                       return null;
-//                     }
-//                   },
-//                   onSaved: (value) {
-//                     _authData['email'] = value.trim();
-//                   },
-//                 ),
-//                 if (this.widget.authMode == AuthMode.JoinUs)
-//                   TextFormField(
-//                     // Country
-//                     readOnly: true,
-//                     keyboardType: TextInputType.text,
-//                     controller: _countryController,
-//                     decoration: InputDecoration(
-//                       labelStyle: _style['formlabel'],
-//                       // prefixText: '+234-',
-
-//                       labelText: 'Country',
-//                       suffix: CountryPicker(
-//                         showDialingCode: false,
-//                         // showFlag: false,
-//                         showName: false,
-//                         dense: false,
-
-//                         onChanged: (Country country) {
-//                           setState(() {
-//                             _selectedCountry = country;
-//                           });
-//                         },
-//                         selectedCountry: _selectedCountry,
-//                       ),
-
-//                       // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
-//                     ),
-//                     focusNode: _countryFocusNode,
-//                     onFieldSubmitted: (_) {
-//                       FocusScope.of(context).requestFocus(_telephoneFocusNode);
-//                     },
-//                     onSaved: (value) {
-//                       _authData['country'] = _selectedCountry.isoCode;
-//                     },
-//                   ),
-//                 if (this.widget.authMode == AuthMode.JoinUs) _spacer,
-//                 if (this.widget.authMode == AuthMode.JoinUs)
-//                   TextFormField(
-//                     // Telephone
-//                     keyboardType: TextInputType.number,
-//                     decoration: InputDecoration(
-//                       labelStyle: _style['formlabel'],
-//                       prefixText: '+${_selectedCountry.dialingCode} ',
-//                       labelText: 'Telephone',
-//                       // hintText: '8*********',
-//                       // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
-//                     ),
-//                     focusNode: _telephoneFocusNode,
-//                     onFieldSubmitted: (_) {
-//                       FocusScope.of(context).requestFocus(_genderFocusNode);
-//                     }, // r'^[0-9]$'
-//                     validator: (value) {
-//                       final RegExp regExp = RegExp(
-//                         r'^[0-9]*$',
-//                         caseSensitive: false,
-//                         multiLine: false,
-//                       );
-//                       if (value.isEmpty) {
-//                         return 'Enter your Telephone number without leading 0';
-//                       } else if (!regExp.hasMatch(value)) {
-//                         return 'Telephone number contains only numbers';
-//                       } else if (value.startsWith('0')) {
-//                         return 'Remove leading 0';
-//                       } else if (value.length <= 5) {
-//                         return 'Telephone number too short';
-//                       } else if (value.length >= 15) {
-//                         return 'Telephone number too long';
-//                       }
-
-//                       // else if (!(value.length == 10)) {
-//                       //   return value.length < 10
-//                       //       ? 'Telephone number too short'
-//                       //       : 'Telephone number too long';
-//                       // }
-
-//                       return null;
-//                     },
-//                     onSaved: (value) {
-//                       _authData['telephone'] = '0${value.trim()}';
-//                     },
-//                   ),
-//                 if (this.widget.authMode == AuthMode.JoinUs) _spacer,
-//                 if (this.widget.authMode == AuthMode.JoinUs)
-//                   TextFormField(
-//                     // Gender
-//                     readOnly: true,
-//                     keyboardType: TextInputType.text,
-//                     controller: _genderController,
-//                     decoration: InputDecoration(
-//                       labelStyle: _style['formlabel'],
-//                       // prefixText: '+234-',
-//                       labelText: 'Gender',
-//                       suffix: GestureDetector(
-//                         key: this._moreKey,
-//                         child: const Icon(
-//                           Icons.arrow_drop_down,
-//                         ),
-//                         onTap: () async {
-//                           final position =
-//                               buttonMenuPosition(this._moreKey.currentContext);
-//                           final _result = await showMenu(
-//                             context: context,
-//                             position: position,
-//                             items: <PopupMenuItem<String>>[
-//                               const PopupMenuItem<String>(
-//                                   child: InkWell(
-//                                     child: Text('male'),
-//                                   ),
-//                                   value: 'male'),
-//                               const PopupMenuItem<String>(
-//                                   child: const Text('female'), value: 'female'),
-//                             ],
-//                             shape: RoundedRectangleBorder(
-//                               borderRadius: BorderRadius.circular(5.0),
-//                             ),
-//                           );
-//                           if (_result == 'male') {
-//                             _genderController.text = 'male';
-//                           } else if (_result == 'female') {
-//                             _genderController.text = 'female';
-//                           }
-//                           FocusScope.of(context)
-//                               .requestFocus(_passwordFocusNode);
-//                           // Focus.of(context).unfocus();
-//                         },
-//                       ),
-
-//                       // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
-//                     ),
-//                     focusNode: _genderFocusNode,
-//                     onSaved: (value) {
-//                       _authData['gender'] = value.trim();
-//                     },
-//                   ),
-//                 _spacer,
-//                 TextFormField(
-//                   // Password Field
-//                   obscureText: !_passwordIsVisible,
-//                   controller: _passwordController,
-//                   decoration: InputDecoration(
-//                       suffixIcon: IconButton(
-//                         icon: Icon(_passwordIsVisible
-//                             ? Icons.visibility
-//                             : Icons.visibility_off),
-//                         onPressed: _togglePasswordVisibility,
-//                       ),
-//                       labelText: 'Password',
-//                       labelStyle: _style['formlabel']),
-//                   focusNode: _passwordFocusNode,
-//                   onFieldSubmitted: (_) {
-//                     if (this.widget.authMode == AuthMode.Authenticate) {
-//                       _submit();
-//                     } else {
-//                       FocusScope.of(context)
-//                           .requestFocus(_confirmPasswordFocusNode);
-//                     }
-//                   },
-//                   validator: (value) {
-//                     if (this.widget.authMode == AuthMode.Authenticate)
-//                       return null;
-//                     final RegExp regExp =
-//                         RegExp(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})");
-//                     if (value.isEmpty) {
-//                       return 'Password is required';
-//                     } else if (!regExp.hasMatch(value)) {
-//                       return 'Use 1 of each [a-z, A-Z, 0-9] combine 8 or more';
-//                     } else {
-//                       return null;
-//                     }
-//                   },
-//                   onSaved: (value) {
-//                     _authData['password'] = value;
-//                   },
-//                 ),
-//                 _spacer,
-//                 if (this.widget.authMode == AuthMode.JoinUs)
-//                   TextFormField(
-//                     // ConfirmPassword Field
-//                     // toolbarOptions: ToolbarOptions(copy: true,),
-//                     obscureText: true,
-//                     decoration: InputDecoration(
-//                         labelText: 'Confirm Password',
-//                         labelStyle: _style['formlabel']),
-
-//                     focusNode: _confirmPasswordFocusNode,
-//                     onFieldSubmitted: (_) {
-//                       if (_agreedToTerms &&
-//                           _passwordController.text.isNotEmpty &&
-//                           _genderController.text.isNotEmpty) {
-//                         _submit();
-//                       }
-//                     },
-//                     validator: (value) {
-//                       if (_passwordController.text != value) {
-//                         return 'Passwords do not match';
-//                       } else {
-//                         return null;
-//                       }
-//                     },
-//                   ),
-//                 _spacer,
-//                 _spacer,
-//                 if (this.widget.authMode == AuthMode.JoinUs)
-//                   Row(
-//                     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: <Widget>[
-//                       Padding(
-//                         padding: const EdgeInsets.only(right: 10),
-//                         child: custm.CustomCheckbox(
-//                           value: _agreedToTerms,
-//                           useTapTarget: false,
-//                           onChanged: (toggle) {
-//                             // User user =
-//                             //     Provider.of<User>(context, listen: false)
-//                             //       ..setRememberMe(toggle);
-//                             // print(user.rememberMe);
-//                             setState(() {
-//                               _agreedToTerms = toggle;
-//                             });
-//                           },
-//                         ),
-//                       ),
-//                       RichText(
-//                         // overflow: TextOverflow.ellipsis,
-//                         text: TextSpan(
-//                           style: TextStyle(color: Colors.black, fontSize: 14),
-//                           children: <TextSpan>[
-//                             const TextSpan(text: 'I agree to '),
-//                             TextSpan(
-//                               text: 'terms and conditions',
-//                               recognizer: TapGestureRecognizer()
-//                                 ..onTap = () {
-//                                   // Navigate to Terms and Conditions Page
-//                                   // Navigator.of(context)
-//                                   //     .pushNamed(
-//                                   //         TermsConditionsScreen.routeName);
-//                                   showModalBottomSheet(
-//                                     context: context,
-//                                     builder: (_) {
-//                                       return GestureDetector(
-//                                         onTap: () {},
-//                                         child: Container(
-//                                           height: MediaQuery.of(context)
-//                                                   .size
-//                                                   .height *
-//                                               .70,
-//                                           child: Center(
-//                                               child: Padding(
-//                                             padding: const EdgeInsets.all(15.0),
-//                                             child: const Text(
-//                                               'You must consent to this terms and conditions before you gain acces to wazobia.',
-//                                               style: const TextStyle(
-//                                                   fontSize: 20.0,
-//                                                   fontFamily: 'PTSans'),
-//                                             ),
-//                                           )),
-//                                         ),
-//                                         behavior: HitTestBehavior.opaque,
-//                                       );
-//                                     },
-//                                   );
-//                                 },
-//                               style: TextStyle(
-//                                 color: Theme.of(context).accentColor,
-//                                 decoration: TextDecoration.underline,
-//                               ),
-//                             )
-//                           ],
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 Padding(
-//                   padding: EdgeInsets.symmetric(vertical: 15.0),
-//                   child: Center(
-//                     child: _isLoading
-//                         ? CentrallyUsed().waitingCircle()
-//                         : OutlineButton.icon(
-//                             borderSide: BorderSide(
-//                               color: Theme.of(context)
-//                                   .primaryColor, //Color of the border
-//                               style: BorderStyle.solid, //Style of the border
-//                               width: 1.5, //width of the border
-//                             ),
-//                             //child: _isLoading ? CircularProgressIndicator() : Text('Submit'),
-//                             shape: RoundedRectangleBorder(
-//                               borderRadius: BorderRadius.circular(50),
-//                             ),
-//                             label: const Text('Submit'),
-//                             icon: const Icon(
-//                               Icons.check,
-//                               color: const Color(0xff2A6041),
-//                             ),
-//                             onPressed:
-//                                 this.widget.authMode == AuthMode.JoinUs &&
-//                                         !_agreedToTerms
-//                                     ? null
-//                                     : () {
-//                                         // print(_user);
-//                                         // () async {print((await Auth().currentUser()).uid);}();
-//                                         _submit();
-//                                         // print(this.widget.authMode.index);
-//                                         // print('${_selectedCountry.name}');
-
-//                                         // Persist Auth ?
-//                                         // print(_rememberMe);
-//                                         // SSSprint(ur.rememberMe);
-//                                       }),
-//                   ),
-//                 )
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return _showAuthForm();
-//   }
-// }
-
+    return Column(
+      children: <Widget>[
+        // Text(userID),
+        _showMetaForm(),
+      ],
+    );
+  }
+}

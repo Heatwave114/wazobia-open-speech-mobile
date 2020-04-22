@@ -30,6 +30,7 @@ dependencies:
   provider: ^4.0.4
   flutter_country_picker: ^0.1.6
   timer_builder: ^1.3.0
+  shared_preferences: ^0.5.6+3
   # intl: ^0.16.1
 
 dev_dependencies:

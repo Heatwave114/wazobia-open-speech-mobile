@@ -97,6 +97,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       });
       _tabController.index--;
     } else if (!back && _tabController.index < _tabController.length - 1) {
+      setState(() {});
       _tabController.index++;
     }
   }
@@ -269,9 +270,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         ),
                         TabPageSelector(
                           color: Colors.white,
-                          selectedColor: Colors.green,
+                          selectedColor: Colors.black,
                           controller: _tabController,
-                          indicatorSize: 4,
+                          indicatorSize: 5.0,
                         ),
                         FlatButton(
                           child: Text(
@@ -281,9 +282,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           onPressed: !(_tabController.index ==
                                   _tabController.length - 1)
                               ? () => _nextPreviousPage(false)
-                              : () => _agreedToTerms
-                                  ? Navigator.of(context)
-                                      .pushNamed(MetaDataScreen.routeName)
+                              : _agreedToTerms
+                                  ? () {
+                                      Navigator.of(context)
+                                          .pushNamed(MetadataScreen.routeName);
+                                    }
                                   : null,
                         )
                       ],
@@ -298,162 +301,3 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
   }
 }
-
-// // Core
-// import 'dart:math';
-
-// // External
-// import 'package:flutter/material.dart';
-
-// class WelcomeScreen extends StatefulWidget {
-//   static const routeName = '/welcome';
-//   @override
-//   _WelcomeScreenState createState() => _WelcomeScreenState();
-// }
-
-// class _WelcomeScreenState extends State<WelcomeScreen>
-//     with SingleTickerProviderStateMixin {
-//   // static const List<String> placeholders = [
-//   //   'darkblue',
-//   //   'greener',
-//   //   'greenwater',
-//   //   'grey',
-//   //   'lemon',
-//   //   'peach',
-//   //   'peacher',
-//   //   'silver',
-//   //   'whitesand',
-//   //   'yellow'
-//   // ];
-
-//   final _random = new Random();
-//   TabController _tabController;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _tabController = TabController(vsync: this, length: 5);
-//   }
-
-//   @override
-//   void dispose() {
-//     _tabController.dispose();
-//     super.dispose();
-//   }
-
-//   Map<String, dynamic> _promotionTheme = {
-//     'color': Color(0xffede0d1),
-//     'textsize': 15.0,
-//   };
-
-//   // void _nextPage(int delta) {
-//   //   final int newIndex = _tabController.index + delta;
-//   //   if (newIndex < 0 || newIndex >= _tabController.length) return;
-//   //   _tabController.animateTo(newIndex);
-//   // }
-
-//   void _nextPromotion() {
-//     // while (true) {
-//     //   Future.delayed(const Duration(seconds: 3), () {
-//     //     _tabController.index++;
-//     //     //print(_tabController.index);
-//     //     if (_tabController.index == 5) _tabController.index = 0;
-//     //     //print(_tabController.index);
-//     //     setState(() {});
-//     //   });
-//     // }
-
-//     // Future.delayed(Duration(seconds: 3), () {
-//     //   (_) {
-//     //     setState(() {
-//     //       this._tabController.animateTo(this._tabController.index++);
-//     //       if (this._tabController.index == 5) this._tabController.index = 0;
-//     //       sleep(const Duration(seconds: 3));
-//     //     });
-//     //   }
-//     // });
-
-//     Future.delayed(
-//       Duration(seconds: 5),
-//       () {
-//         this._tabController.animateTo(
-//               // not 4 but promotions.length - 1;
-//               this._tabController.index == 4 ? 0 : this._tabController.index++,
-//             );
-//         setState(() {});
-//       },
-//     );
-//   }
-
-//   Widget _buildPromotion(String link) {
-//     return Stack(
-//       fit: StackFit.expand,
-//       children: <Widget>[
-
-//       ],
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // print(this._tabController.index);
-//     // WidgetsBinding.instance.addPostFrameCallback((_) => (){})
-
-//     this._nextPromotion();
-
-//     final internalHeight = MediaQuery.of(context).size.height -
-//         MediaQuery.of(context).padding.vertical -
-//         //Scaffold.of(context).appBarMaxHeight -
-//         43; // Note 43 set in home_screen as Bnav height
-//     return
-//         // ClipRRect(
-//         //   // borderRadius: BorderRadius.circular(10),
-//         //   borderRadius: BorderRadius.circular(0.0),
-//         //   child:
-//         SizedBox(
-//       // width: MediaQuery.of(context).size.width,
-//       // width: double.infinity,
-//       // height: internalHeight * .25,
-//       height: internalHeight * .30,
-//       child: Stack(
-//         // fit: StackFit.expand,
-//         children: <Widget>[
-//           TabBarView(
-//             physics: const BouncingScrollPhysics(),
-//             controller: _tabController,
-//             children: <Widget>[
-
-//               // _buildPromotion('https://picsum.photos/700/400'),
-//               // _buildPromotion('https://picsum.photos/700/350'),
-//               // _buildPromotion('https://picsum.photos/700/360'),
-//               // _buildPromotion('https://picsum.photos/700/370'),
-//               // _buildPromotion('https://picsum.photos/700/380'),
-
-//             ],
-//           ),
-//           Column(
-//             mainAxisAlignment: MainAxisAlignment.end,
-//             children: <Widget>[
-//               // label was here before
-//               // const SizedBox(height: 5.0),
-//               Align(
-//                 alignment: Alignment.bottomCenter,
-//                 child: Padding(
-//                   padding: const EdgeInsets.only(bottom: 5.0),
-//                   child: TabPageSelector(
-//                     color: Colors.white,
-//                     selectedColor: Colors.transparent,
-//                     controller: _tabController,
-//                     indicatorSize: 4,
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ],
-//       ),
-//     );
-//     // )
-//     // ;
-//   }
-// }

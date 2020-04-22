@@ -405,9 +405,12 @@ class _AuthFormState extends State<AuthForm> {
       return;
     }
 
+// No need for this below because its above
     setState(() {
       _isLoading = true;
     });
+// No need for this above because its above
+
     formKey.currentState.save();
     await _authentiate(
       email: _authData['email'],
@@ -558,6 +561,7 @@ class _AuthFormState extends State<AuthForm> {
                     _authData['email'] = value.trim();
                   },
                 ),
+                if (this.widget.authMode == AuthMode.JoinUs) _spacer,
                 if (this.widget.authMode == AuthMode.JoinUs)
                   TextFormField(
                     // Country
@@ -687,6 +691,14 @@ class _AuthFormState extends State<AuthForm> {
 
                       // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
                     ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Choose a gender';
+                      } else if (!(value == 'male' || value == 'female')) {
+                        return 'Gender must be male or female';
+                      }
+                      return null;
+                    },
                     focusNode: _genderFocusNode,
                     onSaved: (value) {
                       _authData['gender'] = value.trim();
@@ -795,7 +807,7 @@ class _AuthFormState extends State<AuthForm> {
                                   //     .pushNamed(
                                   //         TermsConditionsScreen.routeName);
 
-                                  showModalBottomSheet( //Testing
+                                  showModalBottomSheet(
                                     context: context,
                                     builder: (_) {
                                       return GestureDetector(
@@ -821,7 +833,7 @@ class _AuthFormState extends State<AuthForm> {
                                     },
                                   );
 
-                                  
+                                  // Navigator.of(context).pushNamed('/meta');
                                 },
                               style: TextStyle(
                                 color: Theme.of(context).accentColor,
