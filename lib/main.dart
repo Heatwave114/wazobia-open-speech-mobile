@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Internal
 import './helpers/auth.dart';
 import './providers/firebase_helper.dart';
+import './providers/sound_tin.dart';
 import './providers/user.dart';
 import './screens/account_select_screen.dart';
 import './screens/authenticate_screen.dart';
@@ -28,11 +29,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: User()
-            // ..setInstance(Auth().currentUser())
+        ChangeNotifierProvider.value(
+            value: User()..setInstance(Auth().currentUser())
             // ..setPref(SharedPreferences.getInstance())
             ),
         ChangeNotifierProvider.value(value: FireBaseHelper()),
+        ChangeNotifierProvider.value(value: SoundTin()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

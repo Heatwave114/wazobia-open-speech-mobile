@@ -30,6 +30,14 @@ class Auth implements BaseAuth {
     return _firebaseAuth;
   }
 
+  Future<FirebaseUser> signInAnonymously() async {
+    final authResult = await _firebaseAuth.signInAnonymously();
+    FirebaseUser user =  authResult.user;
+    return user;
+  }
+  
+  
+
   @override
   Future<void> verifyPhoneNumber(String phoneNumber) async {
     String _smsCode;

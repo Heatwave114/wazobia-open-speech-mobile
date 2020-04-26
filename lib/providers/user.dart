@@ -1,10 +1,12 @@
 // Core
 import 'dart:convert';
+import 'dart:async';
+import 'dart:io';
 
 // External
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,6 +20,7 @@ import '../widgets/centrally_used.dart';
 
 class User with ChangeNotifier {
   Firestore databaseRoot = Firestore.instance;
+  FirebaseStorage storageRoot = FirebaseStorage.instance;
   FirebaseUser _instance;
   Auth _auth = Auth();
   Future<SharedPreferences> _pref = () async {
@@ -45,6 +48,33 @@ class User with ChangeNotifier {
   FirebaseUser get instance => _instance;
   Future<SharedPreferences> get pref => _pref;
 
+  ////////////
+  // Storage
+  ///////////
+  
+  // Upload voice
+  Future<void> uploadVoice({
+    @required File voiceToUpload,
+    @required String title,
+  }) async {
+    var voiceName = title + DateTime.now().millisecondsSinceEpoch.toString();
+    final StorageReference firebaseStorageRef = storageRoot.ref()
+    .child(voiceName);
+    StorageUploadTask uploadTask = firebaseStorageRef.putFile(voiceToUpload);
+    StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
+    var downloadUrl = await storageSnapshot.ref.getDownloadURL();
+    if (uploadTask.isComplete) {
+      var url = downloadUrl.toString();
+      print(url);
+      // return CloudStorageResult(
+      //   imageUrl: url,
+      //   imageFileName: imageFileName,
+      //   );
+    }
+    return null;
+  }
+
+  
   ///////////////////////
   /// Shared Preferences
   /// ///////////////////
@@ -93,30 +123,30 @@ class User with ChangeNotifier {
     }
   }
 
-// // Updating snackbar
-// void _showSnackBar(String message) {
-//     Scaffold.of(this.context).showSnackBar(
-//       SnackBar(
-//         behavior: SnackBarBehavior.floating,
-//         backgroundColor: Theme.of(this.context).appBarTheme.color,
-//         // behavior: SnackBarBehavior.floating,
-//         content: Text(
-//           message,
-//           style: const TextStyle(
-//             fontSize: 13,
-//             fontFamily: 'ComicNeue',
-//           ),
-//         ),
-//         action: SnackBarAction(
-//           // textColor: Theme.of(this.context).primaryColor,
-//           label: 'ok',
-//           onPressed: () {
-//             Scaffold.of(this.context).hideCurrentSnackBar();
-//           },
-//         ),
-//       ),
-//     );
-//   }
+// Updating snackbar
+void _showSnackBar(String message) {
+    Scaffold.of(this.context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Theme.of(this.context).appBarTheme.color,
+        // behavior: SnackBarBehavior.floating,
+        content: Text(
+          message,
+          style: const TextStyle(
+            fontSize: 13,
+            fontFamily: 'ComicNeue',
+          ),
+        ),
+        action: SnackBarAction(
+          // textColor: Theme.of(this.context).primaryColor,
+          label: 'ok',
+          onPressed: () {
+            Scaffold.of(this.context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
 
 // // Updating dialog
 //   void _showDialog(String title, String content) {
@@ -237,6 +267,18 @@ class User with ChangeNotifier {
   //     },
   //   );
   // }
+
+  Future<void> _connectionStatus() async {
+    try {
+      // final result =
+      await InternetAddress.lookup('google.com');
+      // if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      //   print('connected');
+      // }
+    } on SocketException catch (_) {
+      _showSnackBar('Check your internet connection');
+    }
+  }
 
   Future<Widget> getLandingPage() async {
     final firstTime = await getFirstTime();

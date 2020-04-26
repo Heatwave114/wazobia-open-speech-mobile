@@ -1,10 +1,16 @@
+// Core
+import 'dart:io';
+
 // External
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:timer_builder/timer_builder.dart';
+// import 'package:timer_builder/timer_builder.dart';
+import 'package:provider/provider.dart';
 
 // Internal
 import '../../helpers/sound_devil.dart';
+import '../../providers/sound_tin.dart';
+import '../../providers/user.dart';
 import '../../widgets/dash_widgets.dart';
 
 class DonateVoiceScreen extends StatelessWidget {
@@ -41,100 +47,100 @@ class DonateVoiceScreen extends StatelessWidget {
   }
 }
 
-class MediaPanel extends StatefulWidget {
-  final double dashWidth;
+// class MediaPanel extends StatefulWidget {
+//   final double dashWidth;
 
-  const MediaPanel({
-    Key key,
-    @required this.dashWidth,
-  }) : super(key: key);
+//   const MediaPanel({
+//     Key key,
+//     @required this.dashWidth,
+//   }) : super(key: key);
 
-  @override
-  _MediaPanelState createState() => _MediaPanelState();
-}
+//   @override
+//   _MediaPanelState createState() => _MediaPanelState();
+// }
 
-class _MediaPanelState extends State<MediaPanel> {
-  // Displays counter text xx:xx:xx
-  Widget _timeText(String timeText) {
-    return Text(timeText, style: TextStyle(fontSize: 35.0, fontFamily: 'Abel'));
-  }
+// class _MediaPanelState extends State<MediaPanel> {
+//   // Displays counter text xx:xx:xx
+//   Widget _timeText(String timeText) {
+//     return Text(timeText, style: TextStyle(fontSize: 35.0, fontFamily: 'Abel'));
+//   }
 
-  // When recording started
-  DateTime _startedRecordingNow;
-  bool _readyToPlay = false;
+//   // When recording started
+//   DateTime _startedRecordingNow;
+//   bool _readyToPlay = false;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // Record/Play Panel
-      width: double.infinity,
-      margin: const EdgeInsets.only(
-        bottom: 5.0,
-        left: 10.0,
-        right: 10.0,
-      ),
-      child: Card(
-        elevation: 2.0,
-        child: Container(
-          width: widget.dashWidth,
-          child: Container(
-            // height: MediaQuery.of(context).size.height * .45,
-            width: double.infinity,
-            padding: const EdgeInsets.all(10.0),
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       // Record/Play Panel
+//       width: double.infinity,
+//       margin: const EdgeInsets.only(
+//         bottom: 5.0,
+//         left: 10.0,
+//         right: 10.0,
+//       ),
+//       child: Card(
+//         elevation: 2.0,
+//         child: Container(
+//           width: widget.dashWidth,
+//           child: Container(
+//             // height: MediaQuery.of(context).size.height * .45,
+//             width: double.infinity,
+//             padding: const EdgeInsets.all(10.0),
 
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Expanded(
-                    child: Center(
-                  // child: Text('00:00:00',
-                  //     style: TextStyle(fontSize: 35.0, fontFamily: 'Abel')),
-                  child: _startedRecordingNow == null
-                      ? _timeText('00:00:00')
-                      : TimerBuilder.periodic(Duration(milliseconds: 100),
-                          builder: (context) {
-                          return _timeText(
-                              '${DateTime.now().difference(_startedRecordingNow).toString().split('.').first.padLeft(8, "0")}');
-                        }),
-                )),
-                () {
-                  return _startedRecordingNow == null
-                      ? OutlineButton(
-                          borderSide:
-                              BorderSide(color: Colors.green, width: 0.5),
-                          // padding: EdgeInsets.all(0.0),
-                          onPressed: () {
-                            setState(() {
-                              _startedRecordingNow = DateTime.now();
-                              _readyToPlay = !_readyToPlay;
-                            });
-                          },
-                          child: Icon(Icons.mic,
-                              color: Colors.deepOrange, size: 25.0),
-                          shape: CircleBorder(),
-                        )
-                      : OutlineButton(
-                          borderSide:
-                              BorderSide(color: Colors.green, width: 0.5),
-                          // padding: EdgeInsets.all(0.0),
-                          onPressed: () {
-                            setState(() {
-                              _startedRecordingNow = null;
-                            });
-                          },
-                          child:
-                              Icon(Icons.stop, color: Colors.red, size: 25.0),
-                          shape: CircleBorder(),
-                        );
-                }(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: <Widget>[
+//                 Expanded(
+//                     child: Center(
+//                   // child: Text('00:00:00',
+//                   //     style: TextStyle(fontSize: 35.0, fontFamily: 'Abel')),
+//                   child: _startedRecordingNow == null
+//                       ? _timeText('00:00:00')
+//                       : TimerBuilder.periodic(Duration(milliseconds: 100),
+//                           builder: (context) {
+//                           return _timeText(
+//                               '${DateTime.now().difference(_startedRecordingNow).toString().split('.').first.padLeft(8, "0")}');
+//                         }),
+//                 )),
+//                 () {
+//                   return _startedRecordingNow == null
+//                       ? OutlineButton(
+//                           borderSide:
+//                               BorderSide(color: Colors.green, width: 0.5),
+//                           // padding: EdgeInsets.all(0.0),
+//                           onPressed: () {
+//                             setState(() {
+//                               _startedRecordingNow = DateTime.now();
+//                               _readyToPlay = !_readyToPlay;
+//                             });
+//                           },
+//                           child: Icon(Icons.mic,
+//                               color: Colors.deepOrange, size: 25.0),
+//                           shape: CircleBorder(),
+//                         )
+//                       : OutlineButton(
+//                           borderSide:
+//                               BorderSide(color: Colors.green, width: 0.5),
+//                           // padding: EdgeInsets.all(0.0),
+//                           onPressed: () {
+//                             setState(() {
+//                               _startedRecordingNow = null;
+//                             });
+//                           },
+//                           child:
+//                               Icon(Icons.stop, color: Colors.red, size: 25.0),
+//                           shape: CircleBorder(),
+//                         );
+//                 }(),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class TextPanel extends StatefulWidget {
   final double dashWidth;
@@ -152,6 +158,9 @@ class _TextPanelState extends State<TextPanel> {
 
   @override
   Widget build(BuildContext context) {
+    String donatedVoicePath =
+        Provider.of<SoundTin>(context).getDonatedVoicePath;
+    final user = Provider.of<User>(context);
     return Column(children: <Widget>[
       Container(
         width: double.infinity,
@@ -220,6 +229,15 @@ class _TextPanelState extends State<TextPanel> {
                               onPressed:
                                   // null
                                   () {
+                                if (donatedVoicePath == null) {
+                                  print('No path yet');
+                                  return;
+                                }
+                                print(donatedVoicePath);
+                                user.uploadVoice(
+                                    voiceToUpload: File(donatedVoicePath),
+                                    title: 'test-test');
+
                                 // print(_user);
                                 // () async {print((await Auth().currentUser()).uid);}();
                                 // _submit();

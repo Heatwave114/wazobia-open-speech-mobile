@@ -1,8 +1,10 @@
+// Core
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data' show Uint8List;
 
+// External
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
 import 'package:flutter/services.dart' show rootBundle;
@@ -13,7 +15,11 @@ import 'package:flutter_sound/flutter_sound_player.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_sound/track_player.dart';
 import 'package:flutter_sound/flutter_sound_recorder.dart';
-import 'package:wazobia/fluttter_sound.dart';
+import 'package:provider/provider.dart';
+
+// Internal
+// import 'package:wazobia/fluttter_sound.dart';
+import '../providers/sound_tin.dart';
 
 enum t_MEDIA {
   FILE,
@@ -217,6 +223,7 @@ class _SoundDevilState extends State<SoundDevil> {
         uri: '${tempDir.path}/${recorderModule.slotNo}-${paths[_codec.index]}',
         codec: _codec,
       );
+      Provider.of<SoundTin>(context, listen: false).setDonatedVoicePath = path;
       print('startRecorder: $path');
 
       _recorderSubscription = recorderModule.onRecorderStateChanged.listen((e) {
@@ -465,17 +472,17 @@ class _SoundDevilState extends State<SoundDevil> {
         }
       }
       _addListeners();
-      if (REENTRANCE_CONCURENCY && _media != t_MEDIA.REMOTE_EXAMPLE_FILE) {
-        Uint8List dataBuffer =
-            (await rootBundle.load(assetSample[_codec.index]))
-                .buffer
-                .asUint8List();
-        await playerModule_2.startPlayerFromBuffer(dataBuffer, codec: _codec,
-            whenFinished: () {
-          //playerModule_2.startPlayer(exampleAudioFilePath, codec: t_CODEC.CODEC_MP3, whenFinished: () {
-          print('Secondary Play finished');
-        });
-      }
+      // if (REENTRANCE_CONCURENCY && _media != t_MEDIA.REMOTE_EXAMPLE_FILE) {
+      //   Uint8List dataBuffer =
+      //       (await rootBundle.load(assetSample[_codec.index]))
+      //           .buffer
+      //           .asUint8List();
+      //   await playerModule_2.startPlayerFromBuffer(dataBuffer, codec: _codec,
+      //       whenFinished: () {
+      //     //playerModule_2.startPlayer(exampleAudioFilePath, codec: t_CODEC.CODEC_MP3, whenFinished: () {
+      //     print('Secondary Play finished');
+      //   });
+      // }
 
       print('startPlayer: $path');
       // await flutterSoundModule.setVolume(1.0);
@@ -497,14 +504,14 @@ class _SoundDevilState extends State<SoundDevil> {
     } catch (err) {
       print('error: $err');
     }
-    if (REENTRANCE_CONCURENCY) {
-      try {
-        String result = await playerModule_2.stopPlayer();
-        print('stopPlayer_2: $result');
-      } catch (err) {
-        print('error: $err');
-      }
-    }
+    // if (REENTRANCE_CONCURENCY) {
+    //   try {
+    //     String result = await playerModule_2.stopPlayer();
+    //     print('stopPlayer_2: $result');
+    //   } catch (err) {
+    //     print('error: $err');
+    //   }
+    // }
 
     this.setState(() {
       //this._isPlaying = false;

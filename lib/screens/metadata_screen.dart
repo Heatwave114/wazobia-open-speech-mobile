@@ -213,8 +213,8 @@ class _MetadataFormState extends State<MetadataForm> {
         edubg: _metaData['edubg'],
       );
 
-      print(currentUserID);
-      print(_metaData['nickname']);
+      //print(currentUserID);
+      //print(_metaData['nickname']);
 
       // this._user..setContext(context);
       this._user.addUser(_metaData['nickname'], currentUserID).then((_) {
