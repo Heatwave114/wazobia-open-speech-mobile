@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 // Internal
 // import 'package:wazobia/fluttter_sound.dart';
 import '../providers/sound_tin.dart';
+import '../widgets/centrally_used.dart';
 
 enum t_MEDIA {
   FILE,
@@ -866,6 +867,11 @@ class _SoundDevilState extends State<SoundDevil> {
     //         crossAxisAlignment: CrossAxisAlignment.center,
     //       ),
     //     ]);
+
+    // To clear isrecording was called on null error
+    if (playerModule==null || recorderModule==null ){
+      return CentrallyUsed().waitingCircle();
+    }
 
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
 

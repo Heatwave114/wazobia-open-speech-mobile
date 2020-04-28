@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Internal
 import './account_select_screen.dart';
 import './dashboard_screen.dart';
+import '../helpers/auth.dart';
+import '../models/user.dart' as userM;
 import '../providers/user.dart';
 import '../widgets/centrally_used.dart';
 // import '../customs/custom_checkbox.dart' as custm;
@@ -102,6 +104,7 @@ class _MetadataFormState extends State<MetadataForm> {
   bool _agreedToTerms = false;
 
   Map<String, String> _metaData = {
+    'nickname': '',
     'country': '',
     'gender': '',
     'age': '',
@@ -110,6 +113,7 @@ class _MetadataFormState extends State<MetadataForm> {
 
   Country _selectedCountry = Country.NG;
   User _user = User();
+  Auth _auth = Auth();
 
   final _eduBGExpansionKey = GlobalKey();
   final _genderExpansionKey = GlobalKey();
@@ -127,15 +131,16 @@ class _MetadataFormState extends State<MetadataForm> {
   }
 
   Firestore databaseRoot = Firestore.instance;
-  Future<String> _setUserData({
+  userM.User _setUserData({
+    String nickname,
     String country,
     String gender,
     // String nickname,
     String age,
     String edubg,
-  }) async {
+  }) {
     // final user = Provider.of<User>(context);
-    final _userData = databaseRoot.collection('users').document();
+    // final _userData = databaseRoot.collection('users').document();
     // print(_userData.documentID);
     try {
       // SharedPreferences pref = await SharedPreferences.getInstance();
@@ -164,20 +169,27 @@ class _MetadataFormState extends State<MetadataForm> {
       //   // pref.setBool('first_time', false);
       // }
 
-      databaseRoot.collection('users').document(_userData.documentID).setData({
-        'country': country,
-        'gender': gender,
-        // 'nickname': nickname,
-        'age': age,
-        'edubg': edubg,
-        'textsread': 0,
-        'validations': 0,
-        'invitations': 0,
-      });
+      // databaseRoot.collection('users').document(_userData.documentID).setData({
+      //   'country': country,
+      //   'gender': gender,
+      //   // 'nickname': nickname,
+      //   'age': age,
+      //   'edubg': edubg,
+      //   'textsread': 0,
+      //   'validations': 0,
+      //   'invitations': 0,
+      // });
+      final userM.User userModel = userM.User(
+        nickname: nickname,
+        country: country,
+        gender: gender,
+        age: age,
+        eduBG: edubg,
+      );
 
-      this._user.setCurrentUserID(_userData.documentID);
+      this._user.setCurrentUser(nickname);
 
-      return _userData.documentID;
+      return userModel;
     } catch (e) {
       // print(e);
       var errorMessage = 'Something went wrong. Try again later';
@@ -185,7 +197,7 @@ class _MetadataFormState extends State<MetadataForm> {
         // databaseRoot.collection('users').document(_userData.documentID).delete();
         errorMessage = 'This user already exists';
       }
-      _showSnackBar(e);
+      // _showSnackBar(e);
       // _showSnackBar('An error occured. Check your internet');
       _showDialog('Error', errorMessage);
     }
@@ -205,7 +217,8 @@ class _MetadataFormState extends State<MetadataForm> {
         return;
       }
       _metaFormKey.currentState.save();
-      final currentUserID = await _setUserData(
+      final userModel = _setUserData(
+        nickname: _metaData['nickname'],
         country: _metaData['country'],
         gender: _metaData['gender'],
         // nickname: _metaData['nickname'],
@@ -217,27 +230,45 @@ class _MetadataFormState extends State<MetadataForm> {
       //print(_metaData['nickname']);
 
       // this._user..setContext(context);
-      this._user.addUser(_metaData['nickname'], currentUserID).then((_) {
-        Navigator.of(context)
-            .pushReplacementNamed(DashboardScreen.routeName)
-            .then((_) {
-          _showDialog('Welcome', 'Thank you for joining us');
+
+      this._auth.signInAnonymously().then((_) {
+        this._user.addUser(userModel).catchError((e) {
+          this._user.setCurrentUser(null);
+          var errorMessage = 'Something went wrong. Try again later';
+          if (e.toString().contains('This user already exists')) {
+            // databaseRoot.collection('users').document(_userData.documentID).delete();
+            errorMessage = 'This user already exists';
+          }
+          _showDialog('Error', errorMessage);
         });
-      }).catchError((e) {
-        _showDialog('Error', e.toString());
+        this._user.setCurrentUser(_metaData['nickname']);
+        Navigator.of(context).pushReplacementNamed(DashboardScreen.routeName);
+      }).catchError((e) async {
+        this._user.setCurrentUser(null);
+        var errorMessage = 'An error occured. Try again later.';
+        if (e.message.toString().contains(
+            'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
+          errorMessage = 'An error occured. Check your internet connection.';
+        }
+        this._user.setContext(context);
+        this._user.showSnackBar(errorMessage);
       });
 
       setState(() {
         _isLoading = false;
       });
     } catch (e) {
+      this._user.setCurrentUser(null);
       var errorMessage = 'Something went wrong. Try again later';
-      this._user.setCurrentUserID(null);
       if (e.toString().contains('This user already exists')) {
         // databaseRoot.collection('users').document(_userData.documentID).delete();
         errorMessage = 'This user already exists';
+      } else if (e.message.toString().contains(
+          'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
+        errorMessage = 'An error occured. Check your internet connection.';
       }
       _showDialog('Error', errorMessage);
+      // print(e);
     }
   }
 
@@ -705,7 +736,7 @@ class _MetadataFormState extends State<MetadataForm> {
     // final user = Provider.of<User>(context).getCurrentUserID().then((uid) => _uid = uid);
     // this._context = context;
 
-    this._user.getCurrentUserID().then((uid) => userID = uid);
+    // this._user.getCurrentUserID().then((uid) => userID = uid);
     // if(userID == null) setState((){});
 
     return Column(

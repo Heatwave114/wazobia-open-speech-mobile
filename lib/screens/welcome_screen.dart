@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 
 // Internal
 import '../customs/custom_checkbox.dart' as custm;
+import '../providers/user.dart';
 import '../screens/metadata_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
   bool _agreedToTerms = false;
+  User _user = User();
 
   @override
   void initState() {
@@ -284,6 +286,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               ? () => _nextPreviousPage(false)
                               : _agreedToTerms
                                   ? () {
+                                    this._user.setFirstTime(false);
                                       Navigator.of(context)
                                           .pushNamed(MetadataScreen.routeName);
                                     }

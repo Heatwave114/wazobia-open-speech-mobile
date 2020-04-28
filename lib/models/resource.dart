@@ -1,3 +1,4 @@
+// External
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
@@ -14,7 +15,6 @@ class Resource {
     @required this.genre,
     @required this.text,
     @required this.readTime,
-    
   });
 
   Resource.fromFireStore(DocumentSnapshot resource)

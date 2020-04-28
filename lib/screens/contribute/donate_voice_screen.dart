@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 
 // Internal
 import '../../helpers/sound_devil.dart';
+import '../../models/user.dart' as userM;
+import '../../providers/firebase_helper.dart';
 import '../../providers/sound_tin.dart';
 import '../../providers/user.dart';
 import '../../widgets/dash_widgets.dart';
@@ -16,31 +18,47 @@ import '../../widgets/dash_widgets.dart';
 class DonateVoiceScreen extends StatelessWidget {
   static const routeName = '/voice';
   // final ScrollController _scrollController = ScrollController();
+  User _user = User();
 
   @override
   Widget build(BuildContext context) {
     // _scrollController
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
+    final resourcesStream = Provider.of<FireBaseHelper>(context).resources.snapshots();
+
+    ///////////////////// TODO
+    ///
+    ///
+    ///
+    ///
+    /// Pick at random
+    ///
+   
     return Scaffold(
       appBar: AppBar(
         title: Text('Donate Your Voice'),
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
-        child: Column(
-          children: <Widget>[
-            const SizedBox(
-              height: 10.0,
-            ),
-            DashWidgets.dashboard([
-              DashWidgets.dashItem('Title', 'The Waterloo'),
-              DashWidgets.dashItem('Genre', 'comedy'),
-              DashWidgets.dashItem('Read time', '2 mins'),
-            ], _dashWidth),
-            // MediaPanel(dashWidth: _dashWidth),
-            SoundDevil(),
-            TextPanel(dashWidth: _dashWidth),
-          ],
+        child: StreamBuilder(
+          stream: resourcesStream,
+          builder: (context, snapshot) {
+            return Column(
+              children: <Widget>[
+                const SizedBox(
+                  height: 10.0,
+                ),
+                DashWidgets.dashboard([
+                  DashWidgets.dashItem('Title', 'The Waterloo'),
+                  DashWidgets.dashItem('Genre', 'comedy'),
+                  DashWidgets.dashItem('Read time', '2 mins'),
+                ], _dashWidth),
+                // MediaPanel(dashWidth: _dashWidth),
+                SoundDevil(),
+                TextPanel(dashWidth: _dashWidth, text: ,),
+              ],
+            );
+          }
         ),
       ),
     );
@@ -144,9 +162,11 @@ class DonateVoiceScreen extends StatelessWidget {
 
 class TextPanel extends StatefulWidget {
   final double dashWidth;
+  final String text;
   const TextPanel({
     Key key,
     @required this.dashWidth,
+    @required this.text,
   }) : super(key: key);
 
   @override
@@ -228,15 +248,17 @@ class _TextPanelState extends State<TextPanel> {
                               ),
                               onPressed:
                                   // null
-                                  () {
+                                  () async {
                                 if (donatedVoicePath == null) {
                                   print('No path yet');
                                   return;
                                 }
+                                
                                 print(donatedVoicePath);
                                 user.uploadVoice(
-                                    voiceToUpload: File(donatedVoicePath),
-                                    title: 'test-test');
+                                  voiceToUpload: File(donatedVoicePath),
+                                  resourceID: 'T-001',
+                                );
 
                                 // print(_user);
                                 // () async {print((await Auth().currentUser()).uid);}();
@@ -267,7 +289,8 @@ class _TextPanelState extends State<TextPanel> {
                       child: SingleChildScrollView(
                         physics: BouncingScrollPhysics(),
                         child: Text(
-                          'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making i t over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
+                          // 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making i t over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
+                          this.widget.text,
                           style: TextStyle(
                             fontSize: 30.0 * _textSizePercent,
                             fontFamily: 'Abel',

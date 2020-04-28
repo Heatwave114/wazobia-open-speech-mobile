@@ -11,4 +11,7 @@ class FireBaseHelper with ChangeNotifier {
 
   // All Users cFireS
   get users => this._databaseRoot.collection('users'); // Read Only
+
+  // All resources cFireS
+  get resources => this._databaseRoot.collection('resources'); // Read Only
 }

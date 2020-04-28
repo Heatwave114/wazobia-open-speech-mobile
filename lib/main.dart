@@ -74,6 +74,7 @@ class MyApp extends StatelessWidget {
               );
             },
           ),
+
         ),
         routes: {
           // AuthenticateScreen.routeName: (ctx) => AuthenticateScreen(),

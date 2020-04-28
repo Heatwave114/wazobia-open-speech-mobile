@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 // Internal
 import './dashboard_screen.dart';
 import './metadata_screen.dart';
+import '../helpers/auth.dart';
 import '../providers/user.dart';
 import '../widgets/centrally_used.dart';
 
@@ -16,9 +17,9 @@ class AccountSelectScreen extends StatelessWidget {
   static const routeName = '/accsel';
 
   User _user = User();
+  Auth _auth = Auth();
 
-  Widget _buildUserOption(
-      BuildContext context, String userID, String nickname) {
+  Widget _buildUserOption(BuildContext context, String nickname) {
     return InkWell(
       child: Container(
         height: 60.0,
@@ -36,21 +37,33 @@ class AccountSelectScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold),
               ),
             ),
-            Expanded(
-              flex: 6,
-              child: FittedBox(
-                child: Text(
-                  userID,
-                  style: TextStyle(fontSize: 17.0, fontFamily: 'ComicNeue'),
-                ),
-              ),
-            )
+            // Expanded(
+            //   flex: 6,
+            //   child: FittedBox(
+            //     child: Text(
+            //       userID,
+            //       style: TextStyle(fontSize: 17.0, fontFamily: 'ComicNeue'),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
       onTap: () async {
-        this._user.setCurrentUserID(userID);
-        Navigator.of(context).pushReplacementNamed(DashboardScreen.routeName);
+        // print(this._user.getCurrentUser());
+        this._auth.signInAnonymously().then((_) {
+          this._user.setCurrentUser(nickname);
+          Navigator.of(context).pushReplacementNamed(DashboardScreen.routeName);
+        }).catchError((e) async {
+          this._user.setCurrentUser(null);
+          var errorMessage = 'An error occured. Try again later.';
+          if (e.message.toString().contains(
+              'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
+            errorMessage = 'An error occured. Check your internet connection.';
+          }
+          this._user.setContext(context);
+          this._user.showSnackBar(errorMessage);
+        });
       },
     );
   }
@@ -91,8 +104,11 @@ class AccountSelectScreen extends StatelessWidget {
                 ),
                 // SizedBox(height: 20.0),
                 RaisedButton(
-                  onPressed: () => this._user.uploadVoice(voiceToUpload: File(r'C:\Users\sanis\Desktop\flaps\wazobia\nnf.mp3'), title: 'nnf')
-                  // onPressed: () => this._user.clear(),
+                  // onPressed: () => this._user.uploadVoice(
+                  //     voiceToUpload: File(
+                  //         r'C:\Users\sanis\Desktop\flaps\wazobia\nnf.mp3'),
+                  //     title: 'nnf')
+                  onPressed: () => this._user.clear(),
                   // onPressed: () {
                   //   Map<String, String> ty = {};
                   //   ty['t'] = '5';
@@ -109,8 +125,9 @@ class AccountSelectScreen extends StatelessWidget {
                         return CentrallyUsed().waitingCircle();
                       } else if (snapshot.connectionState ==
                           ConnectionState.done) {
-                        final users = snapshot.data != 'empty'
-                            ? json.decode(snapshot.data)
+                        final users = snapshot.data !=
+                                {} // getUsers completes with {} if empty because can't call json.decode if null
+                            ? snapshot.data
                             : null;
                         return Container(
                           margin: EdgeInsets.all(10.0),
@@ -125,10 +142,11 @@ class AccountSelectScreen extends StatelessWidget {
                             children: <Widget>[
                               if (users != null)
                                 ...users.entries
-                                    .map((entry) => _buildUserOption(
-                                        context, entry.value, entry.key))
+                                    .map((entry) =>
+                                        _buildUserOption(context, entry.key))
                                     .toList(),
-                              if (users == null) Text('There are no users'),
+                              if (users == null)
+                                Text('There are no users'),
                               // Text(snapshot.data),
                             ],
                           ),

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Internal
+import '../models/user.dart' as userM;
 import '../helpers/auth.dart';
 import '../screens/account_select_screen.dart';
 import '../screens/welcome_screen.dart';
@@ -40,27 +41,43 @@ class User with ChangeNotifier {
     _pref = pref;
   }
 
-  // void setContext(BuildContext context) {
-  //   this.context = context;
-  // }
+  void setContext(BuildContext context) {
+    this.context = context;
+  }
 
   // Get after providing
   FirebaseUser get instance => _instance;
   Future<SharedPreferences> get pref => _pref;
 
-  ////////////
-  // Storage
-  ///////////
-  
+  ////////////////////
+  // Firebase Storage
+  ///////////////////
+
   // Upload voice
   Future<void> uploadVoice({
     @required File voiceToUpload,
-    @required String title,
+    @required String resourceID,
+    // @required userM.User reader,
   }) async {
-    var voiceName = title + DateTime.now().millisecondsSinceEpoch.toString();
-    final StorageReference firebaseStorageRef = storageRoot.ref()
-    .child(voiceName);
-    StorageUploadTask uploadTask = firebaseStorageRef.putFile(voiceToUpload);
+    final uid = (await _auth.currentUser()).uid;
+    final currentUser = await getCurrentUser();
+    var voiceName = resourceID + '__${uid}__' + DateTime.now().toString();
+    // var voiceName = title;
+    final StorageReference firebaseStorageRef =
+        storageRoot.ref().child('/unvalidated/$voiceName');
+    StorageUploadTask uploadTask = firebaseStorageRef.putFile(
+        voiceToUpload,
+        StorageMetadata(customMetadata: {
+          'reader': json.encode({
+            'country': currentUser['country'],
+            'gender': currentUser['gender'],
+            'age': currentUser['age'],
+            'education': currentUser['edubg'],
+          }),
+          'cqi': 'NA',
+          'snr': 'NA',
+          'validcount': '0',
+        }));
     StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
     var downloadUrl = await storageSnapshot.ref.getDownloadURL();
     if (uploadTask.isComplete) {
@@ -74,10 +91,9 @@ class User with ChangeNotifier {
     return null;
   }
 
-  
-  ///////////////////////
-  /// Shared Preferences
-  /// ///////////////////
+  //////////////////////
+  // Shared Preferences
+  /////////////////////
 
   // FirstPref set
   void setFirstTime(bool first) async {
@@ -99,32 +115,41 @@ class User with ChangeNotifier {
   }
 
   // User add
-  Future<void> addUser(String nickname, String id) async {
+  Future<void> addUser(userM.User user) async {
     final pref = await this._pref;
     final oldUsers = pref.getString('users');
     if (oldUsers == null) {
       var users = json.encode({
-        nickname: id,
+        user.nickname: {
+          'country': user.country,
+          'gender': user.gender,
+          'age': user.age,
+          'edubg': user.eduBG,
+        },
       });
       pref.setString('users', users);
-    } else if (json.decode(oldUsers)[nickname] != null) {
-      databaseRoot
-          .collection('users')
-          .document(await getCurrentUserID())
-          .delete();
+    } else if (json.decode(oldUsers)[user.nickname] != null) {
+      // databaseRoot
+      //     .collection('users')
+      //     .document(await getCurrentUserID())
+      //     .delete();
       // _showSnackBar('This nickname is already taken');
       throw PreferredException('This nickname is already taken');
-    } 
-    else {
+    } else {
       final decodedOldUsers = json.decode(oldUsers);
-      decodedOldUsers[nickname] = id;
+      decodedOldUsers[user.nickname] = {
+        'country': user.country,
+        'gender': user.gender,
+        'age': user.age,
+        'edubg': user.eduBG,
+      };
       final newUsers = json.encode(decodedOldUsers);
       pref.setString('users', newUsers);
     }
   }
 
 // Updating snackbar
-void _showSnackBar(String message) {
+  void showSnackBar(String message) {
     Scaffold.of(this.context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
@@ -180,42 +205,56 @@ void _showSnackBar(String message) {
 //   }
 
   // User get by nick
-  Future<String> userIDByNickname(String nickname) async {
-    final pref = await this._pref;
-    final oldPref = pref.getString('users');
-    final userId = json.decode(oldPref)[nickname];
-    return userId;
-  }
+  // Future<String> userIDByNickname(String nickname) async {
+  //   final pref = await this._pref;
+  //   final oldPref = pref.getString('users');
+  //   final userId = json.decode(oldPref)[nickname];
+  //   return userId;
+  // }
 
   // User get by id
-  Future<String> userNickname() async {
-    final pref = await this._pref;
-    final userID = await getCurrentUserID();
-    final users = pref.getString('users');
-    final decodedUsers = json.decode(users);
-    final nick =
-        decodedUsers.entries.firstWhere((entry) => entry.value == userID).key;
-    return nick;
-  }
+  // Future<String> userNickname() async {
+  //   final pref = await this._pref;
+  //   final userID = await getCurrentUserID();
+  //   final users = pref.getString('users');
+  //   final decodedUsers = json.decode(users);
+  //   final nick =
+  //       decodedUsers.entries.firstWhere((entry) => entry.value == userID).key;
+  //   return nick;
+  // }
 
   // Users get
-  Future<String> getUsers() async {
+  Future<Map<String, dynamic>> getUsers() async {
     final pref = await this._pref;
     final users = pref.getString('users');
-    return users == null ? 'empty' : users;
+    final decodedUsers = json.decode(users);
+    return decodedUsers;
   }
 
   // curretUser get
-  Future<String> getCurrentUserID() async {
+  Future<Map<String, dynamic>> getCurrentUser() async {
     final pref = await this._pref;
     final currentUser = pref.getString('currentuser');
-    return currentUser;
+    // print(currentUser);
+    // print(1);
+    if (currentUser == null) return null;
+    // print(2);
+    final decodedCurrentUser = json.decode(currentUser);
+    // print(decodedCurrentUser);
+    return decodedCurrentUser;
   }
 
-  // curretUser set
-  void setCurrentUserID(String id) async {
+  // currentUser set
+  void setCurrentUser(String nickname) async {
     final pref = await this._pref;
-    pref.setString('currentuser', id);
+    final users = await this.getUsers();
+    final encodedUser = json.encode(users[nickname]);
+
+    if (nickname == null) {
+      pref.setString('currentuser', null);
+      return;
+    }
+    pref.setString('currentuser', encodedUser);
   }
 
   // CLear
@@ -253,7 +292,9 @@ void _showSnackBar(String message) {
   // Persistence
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Future<Widget> getLandingPage() async {
-  //   final _instance = (await _auth.currentUser());
+  //   // final _instance = (await _auth.currentUser());
+  //   final firstTime = await getFirstTime();
+  //   final currentUser = await getCurrentUser();
   //   return StreamBuilder<FirebaseUser>(
   //     stream: this._auth.onAuthStateChanged,
   //     builder: (BuildContext context, snapshot) {
@@ -264,11 +305,12 @@ void _showSnackBar(String message) {
   //         return DashboardScreen();
   //       }
   //       return AuthenticateScreen();
+
   //     },
   //   );
   // }
 
-  Future<void> _connectionStatus() async {
+  Future<void> connectionStatus() async {
     try {
       // final result =
       await InternetAddress.lookup('google.com');
@@ -276,25 +318,29 @@ void _showSnackBar(String message) {
       //   print('connected');
       // }
     } on SocketException catch (_) {
-      _showSnackBar('Check your internet connection');
+      showSnackBar('Check your internet connection');
     }
   }
 
   Future<Widget> getLandingPage() async {
     final firstTime = await getFirstTime();
-    final currentUserID = await getCurrentUserID();
+    final currentUser = await getCurrentUser();
     if (firstTime == null || firstTime) {
-      setFirstTime(false);
+      // setFirstTime(false);
       return WelcomeScreen();
-    } else if (currentUserID == null) {
+    } else if (currentUser == null) {
       return AccountSelectScreen();
     } else {
       return DashboardScreen();
     }
   }
 
-  void signOut() {
-    setCurrentUserID(null);
+  void signOut() async {
+    final _instance = (await _auth.currentUser());
+    _instance.delete();
+    // this._auth.signOut();
+    // this._instance.delete();
+    setCurrentUser(null);
   }
 }
 
