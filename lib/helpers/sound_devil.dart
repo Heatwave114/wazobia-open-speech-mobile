@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 // Internal
 // import 'package:wazobia/fluttter_sound.dart';
 import '../providers/sound_tin.dart';
+import '../providers/user.dart';
 import '../widgets/centrally_used.dart';
 
 enum t_MEDIA {
@@ -387,7 +388,9 @@ class _SoundDevilState extends State<SoundDevil> {
       Uint8List dataBuffer;
       String audioFilePath;
       if (this.widget.validate == true) {
-        audioFilePath = exampleAudioFilePath;
+        // audioFilePath = exampleAudioFilePath;
+        audioFilePath =
+            Provider.of<SoundTin>(context, listen: false).getValidatingVoiceURL;
       } else if (_media == t_MEDIA.ASSET) {
         dataBuffer = (await rootBundle.load(assetSample[_codec.index]))
             .buffer
@@ -792,6 +795,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
     // final dropdowns = makeDropdowns(context);
     // final trackSwitch = Padding(
     //   padding: const EdgeInsets.all(8.0),
@@ -869,7 +873,7 @@ class _SoundDevilState extends State<SoundDevil> {
     //     ]);
 
     // To clear isrecording was called on null error
-    if (playerModule==null || recorderModule==null ){
+    if (playerModule == null || recorderModule == null) {
       return CentrallyUsed().waitingCircle();
     }
 
@@ -1058,9 +1062,11 @@ class _SoundDevilState extends State<SoundDevil> {
                       activeColor: Colors.deepOrange,
                       min: 0.0,
                       max: maxDuration,
-                      onChanged: !this.widget.validate ? null : (double value) async {
-                        await playerModule.seekToPlayer(value.toInt());
-                      },
+                      onChanged: !this.widget.validate
+                          ? null
+                          : (double value) async {
+                              await playerModule.seekToPlayer(value.toInt());
+                            },
                       // onChanged: null,
                       divisions: maxDuration == 0.0 ? 1 : maxDuration.toInt()),
                 ),
@@ -1075,7 +1081,14 @@ class _SoundDevilState extends State<SoundDevil> {
                                   // borderSide: BorderSide(
                                   //     color: Colors.green, width: 0.5),
                                   // padding: EdgeInsets.all(0.0),
-                                  onTap:  startPlayer,
+                                  onTap: startPlayer,
+                                  // onTap: () {
+                                  //   user.setContext(context);
+                                  //   user.connectionStatus().then((netBool) {
+                                  //     if (netBool==null || !netBool) return;
+                                  //     startPlayer();
+                                  //   });
+                                  // },
                                   child: SizedBox(
                                     height: 56.0,
                                     width: 56.0,

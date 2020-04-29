@@ -7,7 +7,7 @@ class Resource {
   final String title;
   final String genre;
   final String text;
-  final Duration readTime;
+  final dynamic readTime;
 
   const Resource({
     @required this.uid,

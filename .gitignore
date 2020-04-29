@@ -38,4 +38,4 @@ lib/generated_plugin_registrant.dart
 
 # Firebase
 **/google-services.json
-./lib/resources.dart
+**/resources.dart

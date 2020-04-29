@@ -61,7 +61,8 @@ class User with ChangeNotifier {
   }) async {
     final uid = (await _auth.currentUser()).uid;
     final currentUser = await getCurrentUser();
-    var voiceName = resourceID + '__${uid}__' + DateTime.now().toString();
+    final String now = DateTime.now().toString();
+    var voiceName = resourceID + '__${uid}__' + now;
     // var voiceName = title;
     final StorageReference firebaseStorageRef =
         storageRoot.ref().child('/unvalidated/$voiceName');
@@ -77,11 +78,25 @@ class User with ChangeNotifier {
           'cqi': 'NA',
           'snr': 'NA',
           'validcount': '0',
+          'resource': resourceID,
         }));
     StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
     var downloadUrl = await storageSnapshot.ref.getDownloadURL();
     if (uploadTask.isComplete) {
       var url = downloadUrl.toString();
+      databaseRoot.collection('unvalidated').document(voiceName).setData({
+        'reader': json.encode({
+          'country': currentUser['country'],
+          'gender': currentUser['gender'],
+          'age': currentUser['age'],
+          'education': currentUser['edubg'],
+        }),
+        'cqi': 'NA',
+        'snr': 'NA',
+        'validcount': '0',
+        'resource': resourceID,
+        'url': url,
+      });
       print(url);
       // return CloudStorageResult(
       //   imageUrl: url,

@@ -1,7 +1,9 @@
 // Core
 import 'dart:io';
+import 'dart:math';
 
 // External
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 // import 'package:timer_builder/timer_builder.dart';
@@ -9,31 +11,53 @@ import 'package:provider/provider.dart';
 
 // Internal
 import '../../helpers/sound_devil.dart';
+import '../../models/resource.dart';
 import '../../models/user.dart' as userM;
 import '../../providers/firebase_helper.dart';
 import '../../providers/sound_tin.dart';
 import '../../providers/user.dart';
+import '../../widgets/centrally_used.dart';
 import '../../widgets/dash_widgets.dart';
 
 class DonateVoiceScreen extends StatelessWidget {
   static const routeName = '/voice';
-  // final ScrollController _scrollController = ScrollController();
-  User _user = User();
+
+  Random _random = Random();
+  // bool shouldRefresh;
+  // int _currentResourceIndex;
+
+  // @override
+  // void initState() {
+  //   // _setDonatingResource();
+  //   super.initState();
+  // }
+
+  // void _setDonatingResource(QuerySnapshot resources) {
+  //   // final QuerySnapshot resourcesQuery =
+  //   //     await Provider.of<FireBaseHelper>(context).resources.getDocuments();
+  //   final int randomDocumentIndex = _random.nextInt(resources.documents.length);
+  //   final DocumentSnapshot initialDonatingResourceDocument =
+  //       resources.documents[randomDocumentIndex];
+  //   final Resource initialDonatingResource =
+  //       Resource.fromFireStore(initialDonatingResourceDocument);
+  //   final SoundTin soundTin = Provider.of<SoundTin>(context);
+  //   soundTin.setCurrentDonatingResource = initialDonatingResource;
+  //   final Resource resource = soundTin.getCurrentDonatingResource;
+  //   print(resource);
+  //   return resource;
+  // }
+
+  // void currentResourceIndexGiver(int resourcesLenght) {
+  //   final int index = Random().nextInt(resourcesLenght);
+  //   this._currentResourceIndex = index;
+  // }
 
   @override
   Widget build(BuildContext context) {
     // _scrollController
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
-    final resourcesStream = Provider.of<FireBaseHelper>(context).resources.snapshots();
-
-    ///////////////////// TODO
-    ///
-    ///
-    ///
-    ///
-    /// Pick at random
-    ///
-   
+    // final resourcesStream = Provider.of<FireBaseHelper>(context).resources.snapshots();
+    final SoundTin soundTin = Provider.of<SoundTin>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Donate Your Voice'),
@@ -41,25 +65,41 @@ class DonateVoiceScreen extends StatelessWidget {
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: StreamBuilder(
-          stream: resourcesStream,
-          builder: (context, snapshot) {
-            return Column(
-              children: <Widget>[
-                const SizedBox(
-                  height: 10.0,
-                ),
-                DashWidgets.dashboard([
-                  DashWidgets.dashItem('Title', 'The Waterloo'),
-                  DashWidgets.dashItem('Genre', 'comedy'),
-                  DashWidgets.dashItem('Read time', '2 mins'),
-                ], _dashWidth),
-                // MediaPanel(dashWidth: _dashWidth),
-                SoundDevil(),
-                TextPanel(dashWidth: _dashWidth, text: ,),
-              ],
-            );
-          }
-        ),
+            stream: Provider.of<FireBaseHelper>(context).resources.snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return CentrallyUsed().waitingCircle();
+              final int resourceIndex =
+                  (soundTin.getShouldRefreshDonatingResourceIndex == null || soundTin.getShouldRefreshDonatingResourceIndex) ? () {
+                    soundTin.setCurrentDonatingResourceIndex = this._random.nextInt(snapshot.data.documents.length);
+                    soundTin.setShouldRefreshDonatingResourceIndex = false;
+                    // print(1);
+                    return soundTin.getCurrentDonatingResourceIndex;
+                  }() : () {
+                    // print(2);
+                    return soundTin.getCurrentDonatingResourceIndex;
+                  }() ;
+              final Resource resource =
+                  Resource.fromFireStore(snapshot.data.documents[resourceIndex]);
+              soundTin.setCurrentDonatingResource = resource;
+              return Column(
+                children: <Widget>[
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  DashWidgets.dashboard([
+                    DashWidgets.dashItem('Title', resource.title),
+                    DashWidgets.dashItem('Genre', resource.genre),
+                    DashWidgets.dashItem('Read time', resource.readTime),
+                  ], _dashWidth),
+                  // MediaPanel(dashWidth: _dashWidth),
+                  SoundDevil(),
+                  TextPanel(
+                    dashWidth: _dashWidth,
+                    resource: resource,
+                  ),
+                ],
+              );
+            }),
       ),
     );
   }
@@ -162,11 +202,11 @@ class DonateVoiceScreen extends StatelessWidget {
 
 class TextPanel extends StatefulWidget {
   final double dashWidth;
-  final String text;
+  final Resource resource;
   const TextPanel({
     Key key,
     @required this.dashWidth,
-    @required this.text,
+    @required this.resource,
   }) : super(key: key);
 
   @override
@@ -178,8 +218,8 @@ class _TextPanelState extends State<TextPanel> {
 
   @override
   Widget build(BuildContext context) {
-    String donatedVoicePath =
-        Provider.of<SoundTin>(context).getDonatedVoicePath;
+    final SoundTin soundTin =
+        Provider.of<SoundTin>(context);
     final user = Provider.of<User>(context);
     return Column(children: <Widget>[
       Container(
@@ -249,16 +289,20 @@ class _TextPanelState extends State<TextPanel> {
                               onPressed:
                                   // null
                                   () async {
-                                if (donatedVoicePath == null) {
+                                if (soundTin.getDonatedVoicePath == null) {
                                   print('No path yet');
                                   return;
                                 }
-                                
-                                print(donatedVoicePath);
+
+                                // print(soundTin.getDonatedVoicePath);
+                                user.setContext(context);
                                 user.uploadVoice(
-                                  voiceToUpload: File(donatedVoicePath),
-                                  resourceID: 'T-001',
-                                );
+                                  voiceToUpload: File(soundTin.getDonatedVoicePath),
+                                  resourceID: this.widget.resource.uid,
+                                ).then((_) {
+                                  soundTin.setShouldRefreshDonatingResourceIndex = true;
+                                  soundTin.setDonatedVoicePath = null;
+                                });
 
                                 // print(_user);
                                 // () async {print((await Auth().currentUser()).uid);}();
@@ -290,7 +334,7 @@ class _TextPanelState extends State<TextPanel> {
                         physics: BouncingScrollPhysics(),
                         child: Text(
                           // 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making i t over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
-                          this.widget.text,
+                          this.widget.resource.text,
                           style: TextStyle(
                             fontSize: 30.0 * _textSizePercent,
                             fontFamily: 'Abel',

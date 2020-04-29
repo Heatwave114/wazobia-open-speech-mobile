@@ -43,8 +43,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
-    final FireBaseHelper _firebaseHelper = Provider.of<FireBaseHelper>(context);
-    // final user.User _user = Provider.of<user.User>(context);
+    // final FireBaseHelper _firebaseHelper = Provider.of<FireBaseHelper>(context);
+    final user.User _user = Provider.of<user.User>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -210,8 +210,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   for (var resource in Resources) {
                                     final imin = resource.readTime.inMinutes.toString();
                                     final isec = (resource.readTime.inSeconds%60).toString();
-                                    final omin = imin == '0' ? '' : (imin + 'mins');
-                                    final osec = isec == '0' ? '' : (isec + 'secs');
+                                    final omin = imin == '0' ? '' : (imin + 'min${(int.parse(imin)==1)? '' : 's'}');
+                                    final osec = isec == '0' ? '' : (isec + 'sec${(int.parse(isec)==1)? '' : 's'}');
 
                                     databaseRoot.collection('resources').document(resource.uid).setData({
                                       'title': resource.title,

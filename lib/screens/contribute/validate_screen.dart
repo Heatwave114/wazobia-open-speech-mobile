@@ -1,41 +1,94 @@
+// Core
+import 'dart:math';
+
 // External
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 // import 'package:timer_builder/timer_builder.dart';
+import 'package:provider/provider.dart';
 
 // Internal
 import '../../helpers/sound_devil.dart';
+import '../../models/resource.dart';
+import '../../providers/firebase_helper.dart';
+import '../../providers/sound_tin.dart';
+import '../../widgets/centrally_used.dart';
 import '../../widgets/dash_widgets.dart';
 
 class ValidateScreen extends StatelessWidget {
   static const routeName = '/validate';
+
+  Random _random = Random();
   // final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     // _scrollController
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
+    final SoundTin soundTin = Provider.of<SoundTin>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Validate'),
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
-        child: Column(
-          children: <Widget>[
-            const SizedBox(
-              height: 10.0,
-            ),
-            DashWidgets.dashboard([
-              DashWidgets.dashItem('Title', 'The Waterloo'),
-              DashWidgets.dashItem('Genre', 'comedy'),
-              DashWidgets.dashItem('Read time', '2 mins'),
-            ], _dashWidth),
-            // MediaPanel(dashWidth: _dashWidth),
-            SoundDevil()..validating(),
-            TextPanel(dashWidth: _dashWidth),
-          ],
-        ),
+        child: StreamBuilder(
+            stream: Provider.of<FireBaseHelper>(context)
+                .unvalidatedURLs
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return CentrallyUsed().waitingCircle();
+              final int unvalidatedVoiceIndex = (soundTin
+                              .getShouldRefreshValidatingResourceIndex ==
+                          null ||
+                      soundTin.getShouldRefreshValidatingResourceIndex)
+                  ? () {
+                      soundTin.setCurrentValidatingResourceIndex =
+                          this._random.nextInt(snapshot.data.documents.length);
+                      soundTin.setShouldRefreshValidatingResourceIndex = false;
+                      // print(1);
+                      return soundTin.getCurrentValidatingResourceIndex;
+                    }()
+                  : () {
+                      // print(2);
+                      return soundTin.getCurrentValidatingResourceIndex;
+                    }();
+              final DocumentSnapshot unvalidatedVoiceAsDocument =
+                  snapshot.data.documents[unvalidatedVoiceIndex];
+              final String resourceID = unvalidatedVoiceAsDocument['resource'];
+
+              soundTin.setValidatingVoiceURL = unvalidatedVoiceAsDocument['url'];
+
+              return FutureBuilder(
+                  future: Provider.of<FireBaseHelper>(context)
+                      .resources
+                      .document(resourceID)
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CentrallyUsed().waitingCircle();
+                    }
+                    final Resource resource =
+                        Resource.fromFireStore(snapshot.data);
+                    soundTin.setCurrentValidatingResource = resource;
+                    return Column(
+                      children: <Widget>[
+                        const SizedBox(
+                          height: 10.0,
+                        ),
+                        DashWidgets.dashboard([
+                          DashWidgets.dashItem('Title', resource.title),
+                          DashWidgets.dashItem('Genre', resource.genre),
+                          DashWidgets.dashItem('Read time', resource.readTime),
+                        ], _dashWidth),
+                        // MediaPanel(dashWidth: _dashWidth),
+                        SoundDevil()..validating(),
+                        TextPanel(dashWidth: _dashWidth, resource: resource),
+                      ],
+                    );
+                  });
+            }),
       ),
     );
   }
@@ -138,9 +191,11 @@ class ValidateScreen extends StatelessWidget {
 
 class TextPanel extends StatefulWidget {
   final double dashWidth;
+  final Resource resource;
   const TextPanel({
     Key key,
     @required this.dashWidth,
+    @required this.resource,
   }) : super(key: key);
 
   @override
@@ -249,7 +304,8 @@ class _TextPanelState extends State<TextPanel> {
                       child: SingleChildScrollView(
                         physics: BouncingScrollPhysics(),
                         child: Text(
-                          'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making i t over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
+                          // 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making i t over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
+                          this.widget.resource.text,
                           style: TextStyle(
                             fontSize: 30.0 * _textSizePercent,
                             fontFamily: 'Abel',
