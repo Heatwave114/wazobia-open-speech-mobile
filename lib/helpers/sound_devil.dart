@@ -394,7 +394,7 @@ class _SoundDevilState extends State<SoundDevil> {
   ];
 
   void _addListeners() {
-    // final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
+    final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
     cancelPlayerSubscriptions();
     _playerSubscription = playerModule.onPlayerStateChanged.listen((e) {
       if (e != null) {
@@ -414,29 +414,29 @@ class _SoundDevilState extends State<SoundDevil> {
             isUtc: true);
         String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
         this.setState(() {
-          // this._isPlaying = true;
-          // soundTin.isPlaying = true;
-          // this._playerTxt = txt.substring(0, 8);
-          // final int grossPlayTime = DateTime.now()
-          //     .difference(this.firstNowForValidate)
-          //     .inMilliseconds;
-          // final int netPlayTime = grossPlayTime - this.pausedTimeMilliSecs;
+          this._isPlaying = true;
+          soundTin.isPlaying = true;
+          this._playerTxt = txt.substring(0, 8);
+          final int grossPlayTime = DateTime.now()
+              .difference(this.firstNowForValidate)
+              .inMilliseconds;
+          final int netPlayTime = grossPlayTime - this.pausedTimeMilliSecs;
 
-          // // Allow validation if .6 of the voice has been listen
-          // if (netPlayTime >
-          //     (0.6 * soundTin.getCurrentValidatingDonation.duration * 1000)
-          //         .toInt()) {
-          //   // soundTin.setShouldAllowValidation = true;
-          // }
+          // Allow validation if .6 of the voice has been listen
+          if (netPlayTime >
+              (0.6 * soundTin.getCurrentValidatingDonation.duration * 1000)
+                  .toInt()) {
+            // soundTin.setShouldAllowValidation = true;
+          }
 
-          // print(soundTin.getShouldAllowValidation);
-          // print(netPlayTime.toString() +
-          //     '>>>>>>>' +
-          //     (soundTin.getCurrentValidatingDonation.duration * 1000)
-          //         .toInt()
-          //         .toString());
+          print(soundTin.getShouldAllowValidation);
+          print(netPlayTime.toString() +
+              '>>>>>>>' +
+              (soundTin.getCurrentValidatingDonation.duration * 1000)
+                  .toInt()
+                  .toString());
 
-          // print(this.pausedTimeMilliSecs.toString() + 'gggggggggggggg');
+          print(this.pausedTimeMilliSecs.toString() + 'gggggggggggggg');
         });
       }
     });
@@ -563,12 +563,12 @@ class _SoundDevilState extends State<SoundDevil> {
   }
 
   Future<void> stopPlayer() async {
-    print('ffffffffffffffffffffffffff');
-    // final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
-    final double validationDuration = (DateTime.now().millisecondsSinceEpoch -
-            this.firstNowForValidate.millisecondsSinceEpoch) /
-        100;
-    // soundTin.setIsPlaying = false;
+    // print('ffffffffffffffffffffffffff');
+    final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
+    // final double validationDuration = (DateTime.now().millisecondsSinceEpoch -
+    //         this.firstNowForValidate.millisecondsSinceEpoch) /
+    //     100;
+    soundTin.setIsPlaying = false;
 
     // if (widget.validate &&
     //     validationDuration >=
@@ -891,12 +891,12 @@ class _SoundDevilState extends State<SoundDevil> {
   Widget build(BuildContext context) {
     // final user = Provider.of<User>(context);
     final soundTin = Provider.of<SoundTin>(context, listen: false);
-    // if (soundTin.getShouldInitDevil) {
-    //   // soundTin.setInDanger = false;
-    //   // this.init();
-    //   soundTin.setShouldInitDevil = false;
-    //   this._recorderTxt = '00:00:00';
-    // }
+    if (soundTin.getShouldInitDevil) {
+      // soundTin.setInDanger = false;
+      // this.init();
+      soundTin.setShouldInitDevil = false;
+      this._recorderTxt = '00:00:00';
+    }
     // final dropdowns = makeDropdowns(context);
     // final trackSwitch = Padding(
     //   padding: const EdgeInsets.all(8.0),
@@ -975,7 +975,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
     // To clear isrecording was called on null error
     if (playerModule == null || recorderModule == null) {
-      return CentrallyUsed().waitingCircle();
+      return CircularProgressIndicator(backgroundColor: Colors.white, strokeWidth: 0.0,);
     }
 
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
@@ -1366,6 +1366,7 @@ class _SoundDevilState extends State<SoundDevil> {
     return Column(
       children: <Widget>[
         if (!this.widget.validate) _recorderSection,
+        FlatButton(color: Colors.green, onPressed: () => print(this.pausedTimeMilliSecs), child: SizedBox(height: 10)),
         _playerSection,
         // dropdowns,
         // trackSwitch,

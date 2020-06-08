@@ -19,7 +19,7 @@ class SoundTin with ChangeNotifier {
   int _currentValidatingDonationIndex;
   bool _shouldRefreshDonatingResourceIndex;
   bool _shouldRefreshValidatingDonationIndex;
-  bool shouldInitDevil=false;
+  bool shouldInitDevil = false;
   bool inDanger = false;
   bool isRecording = false;
   bool isPlaying = false;
@@ -83,7 +83,10 @@ class SoundTin with ChangeNotifier {
   // _getIsPlaying
   get getIsPlaying => this.isPlaying;
   // _setIsPlaying
-  set setIsPlaying(bool isPlaying) => this.isPlaying = isPlaying;
+  set setIsPlaying(bool isPlaying) {
+    this.isPlaying = isPlaying;
+    notifyListeners();
+  }
 
   //////////////////////
   // Donated Voice Path
