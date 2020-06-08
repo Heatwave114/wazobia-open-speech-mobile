@@ -630,9 +630,14 @@ class _SoundDevilState extends State<SoundDevil> {
     }
   }
 
-  void seekToPlayer(int milliSecs) async {
+  Future<void> seekToPlayer(int milliSecs) async {
+    try {
+      
     String result = await playerModule.seekToPlayer(milliSecs);
     print('seekToPlayer: $result');
+    } catch (e) {
+      print('seeking error');
+    }
   }
 
   // Widget makeDropdowns(BuildContext context) {
@@ -1214,7 +1219,7 @@ class _SoundDevilState extends State<SoundDevil> {
                         //   return;
                         // }
 
-                        await playerModule.seekToPlayer(value.toInt());
+                        await this.seekToPlayer(value.toInt());
                       },
                       // onChanged: null,
                       divisions: maxDuration == 0.0 ? 1 : maxDuration.toInt()),
