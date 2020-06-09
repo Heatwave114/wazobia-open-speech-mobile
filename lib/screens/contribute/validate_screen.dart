@@ -120,7 +120,7 @@ class ValidateScreen extends StatelessWidget {
                           DashWidgets.dashItem('Title', resource.title),
                           DashWidgets.dashItem('Genre', resource.genre),
                           DashWidgets.dashItem(
-                              'Read time', resource.formatedReadTime),
+                              'Duration', donation.formatedDurationTime),
                         ], _dashWidth),
                         // MediaPanel(dashWidth: _dashWidth),
                         SoundDevil()..validating(),
@@ -355,7 +355,7 @@ class _TextPanelState extends State<TextPanel> {
                                       //     .currentValidatingResource.title);
                                       // soundTin.setShouldAllowValidate = false;
 
-                                      if (!soundTin.shouldAllowValidation) {
+                                      if (!soundTin.getShouldAllowValidation) {
                                         user.showDialogue('Alert',
                                             'Ensure the whole audio corresponds to the this text resource. Listen more.');
                                         return;
@@ -497,15 +497,14 @@ class _TextPanelState extends State<TextPanel> {
                                       //     .currentValidatingResource.title);
                                       // soundTin.setShouldAllowValidate = false;
 
-                                      // if (!soundTin.shouldAllowValidation) {
+                                      // if (!soundTin.getShouldAllowValidation) {
                                       //   user.showDialogue('Alert',
                                       //       'Ensure the whole audio corresponds to the this text resource. Listen more.');
                                       //       return;
                                       // }
 
-                                      setState(() {
-                                        this._validateTapCounter++;
-                                      });
+                                      setState(
+                                          () => this._validateTapCounter++);
 
                                       // Remain in unvalidated with the following validcount
                                       widget.donation.validCount++;

@@ -344,9 +344,9 @@ class _SoundDevilState extends State<SoundDevil> {
 
   void stopRecorder() async {
     try {
-    final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
-    soundTin.setInDanger = false;
-    soundTin.setIsRecording = false;
+      final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
+      soundTin.setInDanger = false;
+      soundTin.setIsRecording = false;
       String result = await recorderModule.stopRecorder();
       print('stopRecorder: $result');
       cancelRecorderSubscriptions();
@@ -398,9 +398,7 @@ class _SoundDevilState extends State<SoundDevil> {
     cancelPlayerSubscriptions();
     _playerSubscription = playerModule.onPlayerStateChanged.listen((e) {
       if (e != null) {
-        setState(() {
-          
-        });
+        setState(() {});
         maxDuration = e.duration;
         if (maxDuration <= 0) maxDuration = 0.0;
 
@@ -417,26 +415,32 @@ class _SoundDevilState extends State<SoundDevil> {
           this._isPlaying = true;
           soundTin.isPlaying = true;
           this._playerTxt = txt.substring(0, 8);
+          // gross is all time from player started including pauses
           final int grossPlayTime = DateTime.now()
               .difference(this.firstNowForValidate)
               .inMilliseconds;
-          final int netPlayTime = grossPlayTime - this.pausedTimeMilliSecs;
+          // net is effective without pauses used for validation test
+          int netPlayTime = 0;
+          if (!playerModule.isPaused) {
+            netPlayTime = grossPlayTime - this.pausedTimeMilliSecs;
+          }
 
           // Allow validation if .6 of the voice has been listen
           if (netPlayTime >
               (0.6 * soundTin.getCurrentValidatingDonation.duration * 1000)
                   .toInt()) {
-            // soundTin.setShouldAllowValidation = true;
+            soundTin.setShouldAllowValidation = true;
           }
 
           print(soundTin.getShouldAllowValidation);
           print(netPlayTime.toString() +
               '>>>>>>>' +
-              (soundTin.getCurrentValidatingDonation.duration * 1000)
+              (.6 * soundTin.getCurrentValidatingDonation.duration * 1000)
                   .toInt()
                   .toString());
 
-          print(this.pausedTimeMilliSecs.toString() + 'gggggggggggggg');
+          print(this.pausedTimeMilliSecs.toString() + 'ppppppppp');
+          print(grossPlayTime.toString() + 'gggggggggggggg');
         });
       }
     });
@@ -632,9 +636,8 @@ class _SoundDevilState extends State<SoundDevil> {
 
   Future<void> seekToPlayer(int milliSecs) async {
     try {
-      
-    String result = await playerModule.seekToPlayer(milliSecs);
-    print('seekToPlayer: $result');
+      String result = await playerModule.seekToPlayer(milliSecs);
+      print('seekToPlayer: $result');
     } catch (e) {
       print('seeking error');
     }
@@ -893,7 +896,7 @@ class _SoundDevilState extends State<SoundDevil> {
     final soundTin = Provider.of<SoundTin>(context, listen: false);
     if (soundTin.getShouldInitDevil) {
       // soundTin.setInDanger = false;
-      // this.init();
+      // this.init();  // To do??
       soundTin.setShouldInitDevil = false;
       this._recorderTxt = '00:00:00';
     }
@@ -975,7 +978,10 @@ class _SoundDevilState extends State<SoundDevil> {
 
     // To clear isrecording was called on null error
     if (playerModule == null || recorderModule == null) {
-      return CircularProgressIndicator(backgroundColor: Colors.white, strokeWidth: 0.0,);
+      return CircularProgressIndicator(
+        backgroundColor: Colors.white,
+        strokeWidth: 0.0,
+      );
     }
 
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
@@ -1246,7 +1252,8 @@ class _SoundDevilState extends State<SoundDevil> {
                                       return;
                                     }
 
-                                    if (widget.validate) {
+                                    if (widget.validate &&
+                                        this.firstNowForValidate == null) {
                                       soundTin.setIsPlaying = true;
                                       firstNowForValidate = DateTime.now();
                                     }
@@ -1366,7 +1373,10 @@ class _SoundDevilState extends State<SoundDevil> {
     return Column(
       children: <Widget>[
         if (!this.widget.validate) _recorderSection,
-        FlatButton(color: Colors.green, onPressed: () => print(this.pausedTimeMilliSecs), child: SizedBox(height: 10)),
+        FlatButton(
+            color: Colors.green,
+            onPressed: () => print(this.pausedTimeMilliSecs),
+            child: SizedBox(height: 10)),
         _playerSection,
         // dropdowns,
         // trackSwitch,

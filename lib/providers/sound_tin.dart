@@ -50,10 +50,11 @@ class SoundTin with ChangeNotifier {
   // _getShouldAllowValidate
   get getShouldAllowValidation => this.shouldAllowValidation;
   // _setShouldAllowValidate
-  set setShouldAllowValidation(bool shouldAllowValidation) {
-    this.shouldAllowValidation = shouldAllowValidation;
-    notifyListeners();
-  }
+  set setShouldAllowValidation(bool shouldAllowValidation) =>
+      this.shouldAllowValidation = shouldAllowValidation;
+  //  {
+  // notifyListeners();
+  // }
 
   // _getInDanger
   get getInDanger => this.inDanger;
@@ -83,10 +84,7 @@ class SoundTin with ChangeNotifier {
   // _getIsPlaying
   get getIsPlaying => this.isPlaying;
   // _setIsPlaying
-  set setIsPlaying(bool isPlaying) {
-    this.isPlaying = isPlaying;
-    notifyListeners();
-  }
+  set setIsPlaying(bool isPlaying) => this.isPlaying = isPlaying;
 
   //////////////////////
   // Donated Voice Path

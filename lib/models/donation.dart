@@ -35,4 +35,15 @@ class Donation {
         this.validCount = donation['validcount'],
         this.resourceId = donation['resourceid'],
         this.url = donation['url'];
+
+  String get formatedDurationTime {
+    final imin = (this.duration ~/ 60 ).toString();
+    final isec = (this.duration % 60).toInt().toString();
+    final omin =
+        imin == '0' ? '' : (imin + 'min${(int.parse(imin) == 1) ? '' : 's'}');
+    final osec =
+        isec == '0' ? '' : (isec + 'sec${(int.parse(isec) == 1) ? '' : 's'}');
+
+      return omin + ' ' + osec;
+  }
 }
