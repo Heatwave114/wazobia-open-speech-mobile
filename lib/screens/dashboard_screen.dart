@@ -238,14 +238,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 onTap: () async {
                                   final RenderBox box =
                                       context.findRenderObject();
-                                  final String sharelink = (await Firestore
+                                  final DocumentSnapshot sharelinks = await Firestore
                                       .instance
                                       .collection('critical')
                                       .document('versions')
-                                      .get())['latestdownloadurl'];
+                                      .get();
+
+
+                                  // SPACES NEEDED TO INDENT BTW NAME & LINK
+                                  //arm64_v8a:     5
+                                  //armeabi_v7a:   3
+                                  //x86_64:        8
+                                  //fat_all_abis:  2
                                   Share.share(
-                                      'Help us at wazobia with your voice and ears:\n\n $sharelink',
-                                      subject: 'L, atest apk download link',
+                                      '''Help us at wazobia with your voice and ears:\n\narm64_v8a:     ${sharelinks["arm64_v8a"]}\narmeabi_v7a:  ${sharelinks["armeabi_v7a"]}\nx86_64:            ${sharelinks["x86_64"]}\nfat_all_abis:   ${sharelinks["fat_all_abis"]}''',
+                                      subject: 'Latest apk download link',
                                       sharePositionOrigin:
                                           box.localToGlobal(Offset.zero) &
                                               box.size
