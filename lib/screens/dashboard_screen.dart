@@ -1,9 +1,11 @@
 // External
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_country_picker/country.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share/share.dart';
 
 // Internal
 import './authenticate_screen.dart';
@@ -233,10 +235,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   color: const Color(0xff2A6041),
                                 ),
                                 title: const Text('Invite to wazobia'),
-                                onTap: () {
+                                onTap: () async {
+                                  final RenderBox box =
+                                      context.findRenderObject();
+                                  final String sharelink = (await Firestore
+                                      .instance
+                                      .collection('critical')
+                                      .document('versions')
+                                      .get())['latestdownloadurl'];
+                                  Share.share(
+                                      'Help us at wazobia with your voice and ears:\n\n $sharelink',
+                                      subject: 'Latest apk download link',
+                                      sharePositionOrigin:
+                                          box.localToGlobal(Offset.zero) &
+                                              box.size
+                                              );
                                   // final databaseRoot = _user.databaseRoot;
                                   // for (var resource in Resources) {
-                                    
 
                                   //   if (resource.paperName != null &&
                                   //       resource.paperDate != null &&
@@ -292,6 +307,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             );
+
             // return StreamBuilder(
             //     stream:
             //         _firebaseHelper.users.document(_snapshot.data).snapshots(),
