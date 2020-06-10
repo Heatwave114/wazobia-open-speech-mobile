@@ -448,7 +448,7 @@ class _TextPanelState extends State<TextPanel> {
 
                                       if (!soundTin.getShouldAllowValidation) {
                                         user.showDialogue('Alert',
-                                            'Ensure the whole audio corresponds to the this text resource. Listen more.');
+                                            'Ensure the whole audio corresponds to the this text resource. Listen more.', isRed: true);
                                         return;
                                       }
 

@@ -313,7 +313,7 @@ class _TextPanelState extends State<TextPanel> {
                 proceedWithDonation = false;
                 // this.stopLoadingForValidation();
                 Navigator.of(context).pop();
-                  // return;
+                // return;
               },
             ),
             RaisedButton(
@@ -469,9 +469,12 @@ class _TextPanelState extends State<TextPanel> {
                                                 (.75 *
                                                     widget.resource.readTime
                                                         .inSeconds)) {
-                                              user.showDialogue(
-                                                  'Alert', 'Recording too short');
+                                              user.showDialogue('Alert',
+                                                  'Recording too short');
                                               // print('2: ${await soundTin.getDonatedVoiceDuration()}');
+                                              setState(() {
+                                                this._submitTapCounter = 0;
+                                              });
                                               return;
                                             }
 

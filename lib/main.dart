@@ -80,10 +80,22 @@ class MyApp extends StatelessWidget {
                           Firestore.instance.collection('critical').snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return Column(children: <Widget>[
-                            CentrallyUsed().waitingCircle(),
-                            Text('Check your internet'),
-                          ]);
+                          return Center(
+                            child: Container(
+                              margin: EdgeInsets.all(20.0),
+                              child: Column(children: <Widget>[
+                                CentrallyUsed().waitingCircle(),
+                                Text(
+                                  'Please wait a moment. If this message persists check your internet connection.',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'Abel',
+                                    // color: Colors.red,
+                                  ),
+                                ),
+                              ]),
+                            ),
+                          );
                         }
 
                         return FutureBuilder(

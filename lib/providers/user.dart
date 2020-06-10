@@ -231,15 +231,19 @@ class User with ChangeNotifier {
   }
 
   // Updating dialog
-  void showDialogue(String title, String content, {Function whenFinished}) {
+  void showDialogue(String title, String content,
+      {Function whenFinished, bool isRed = false}) {
     showDialog(
       // barrierDismissible: false,
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(
           title,
-          style: const TextStyle(
-              fontFamily: 'Abel', fontSize: 20.0, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontFamily: 'Abel',
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              color: isRed ? Colors.red[700] : Colors.green[700]),
         ),
         content: Text(
           content,
@@ -251,7 +255,14 @@ class User with ChangeNotifier {
         ),
         actions: <Widget>[
           FlatButton(
-            child: const Text('Okay'),
+            child: Text(
+              'Okay',
+              style: TextStyle(
+                  fontFamily: 'PTSans',
+                  fontSize: 17.0,
+                  // fontWeight: FontWeight.bold
+                  color: isRed ? Colors.red[400] : Colors.green),
+            ),
             onPressed: () {
               Navigator.of(context).pop();
             },
