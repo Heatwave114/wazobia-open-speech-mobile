@@ -1,5 +1,6 @@
 // External
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,32 +63,45 @@ class MyApp extends StatelessWidget {
           // body: AccountSelectScreen(),
 
           body: Consumer<User>(
-            builder: 
-            (ctx, user, _) {
-              return StreamBuilder(
-                  stream: Firestore.instance.collection('critical').snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Column(children: <Widget>[
-                        CentrallyUsed().waitingCircle(),
-                        Text('Check your internet'),
-                      ]);
-                    }
+            builder: (ctx, user, _) {
+              return StreamBuilder<FirebaseUser>(
+                stream: Auth().onAuthStateChanged,
+                builder: (ctx, snp) {
+                  if (snp.connectionState == ConnectionState.waiting) {
+                    return CentrallyUsed().waitingCircle();
+                  }
+                  if (!snp.hasData) {
+                    return AccountSelectScreen();
+                  }
+                  // print('data: ${snp.data}');
 
-                    return FutureBuilder(
-                      future: user.getLandingPage(),
-                      builder: (ctx, userSnapshot) {
-                        if (userSnapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CentrallyUsed().waitingCircle();
-                        } else if (userSnapshot.connectionState ==
-                            ConnectionState.done) {
-                          return userSnapshot.data;
+                  return StreamBuilder(
+                      stream:
+                          Firestore.instance.collection('critical').snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Column(children: <Widget>[
+                            CentrallyUsed().waitingCircle(),
+                            Text('Check your internet'),
+                          ]);
                         }
-                        return null;
-                      },
-                    );
-                  });
+
+                        return FutureBuilder(
+                          future: user.getLandingPage(),
+                          builder: (ctx, userSnapshot) {
+                            if (userSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CentrallyUsed().waitingCircle();
+                            } else if (userSnapshot.connectionState ==
+                                ConnectionState.done) {
+                              return userSnapshot.data;
+                            }
+                            return null;
+                          },
+                        );
+                      });
+                },
+              );
             },
           ),
         ),
