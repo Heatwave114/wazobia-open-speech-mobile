@@ -464,16 +464,16 @@ class _TextPanelState extends State<TextPanel> {
                                             //   return;
                                             // }
 
-                                            // if ((await soundTin
-                                            //         .getDonatedVoiceDuration()) <
-                                            //     (.5 *
-                                            //         widget.resource.readTime
-                                            //             .inSeconds)) {
-                                            //   user.showDialogue(
-                                            //       'Alert', 'Recording too short');
-                                            //   // print('2: ${await soundTin.getDonatedVoiceDuration()}');
-                                            //   return;
-                                            // }
+                                            if ((await soundTin
+                                                    .getDonatedVoiceDuration()) <
+                                                (.75 *
+                                                    widget.resource.readTime
+                                                        .inSeconds)) {
+                                              user.showDialogue(
+                                                  'Alert', 'Recording too short');
+                                              // print('2: ${await soundTin.getDonatedVoiceDuration()}');
+                                              return;
+                                            }
 
                                             // print(soundTin.getDonatedVoicePath);
                                             // print((await soundTin.getDonatedVoiceDuration())/3600);3
