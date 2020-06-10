@@ -446,6 +446,8 @@ class _SoundDevilState extends State<SoundDevil> {
     });
   }
 
+  // To show circularprogress indicator whwn fetching donation voice;
+  bool fetchingDonatedVoice = false;
   Future<void> startPlayer() async {
     try {
       //final albumArtPath =
@@ -454,7 +456,7 @@ class _SoundDevilState extends State<SoundDevil> {
       String path;
       Uint8List dataBuffer;
       String audioFilePath;
-      if (this.widget.validate == true) {
+      if (this.widget.validate) {
         // audioFilePath = exampleAudioFilePath;
         audioFilePath =
             Provider.of<SoundTin>(context, listen: false).getValidatingVoiceURL;
@@ -531,6 +533,17 @@ class _SoundDevilState extends State<SoundDevil> {
             // this.sliderCurrentPosition = 0.0;
             print('Play finished -');
             setState(() {});
+          }).then((path) {
+            this.fetchingDonatedVoice = false;
+            // TO reduce reaction time so that donation.duration ~= netPlayTime
+            // path = path;
+            final SoundTin soundTin =
+                Provider.of<SoundTin>(context, listen: false);
+            if (widget.validate && this.firstNowForValidate == null) {
+              soundTin.setIsPlaying = true;
+              this.firstNowForValidate = DateTime.now();
+            }
+            return path;
           });
         } else if (dataBuffer != null) {
           path = await playerModule.startPlayerFromBuffer(dataBuffer,
@@ -1242,6 +1255,10 @@ class _SoundDevilState extends State<SoundDevil> {
                                   //     color: Colors.green, width: 0.5),
                                   // padding: EdgeInsets.all(0.0),
                                   onTap: () async {
+                                    setState(() {
+                                      this.fetchingDonatedVoice = true;
+                                    });
+
                                     final User user = Provider.of<User>(context,
                                         listen: false);
                                     user.setContext(context);
@@ -1252,14 +1269,14 @@ class _SoundDevilState extends State<SoundDevil> {
                                       return;
                                     }
 
-                                    if (widget.validate &&
-                                        this.firstNowForValidate == null) {
-                                      soundTin.setIsPlaying = true;
-                                      firstNowForValidate = DateTime.now();
-                                    }
+                                    // if (widget.validate &&
+                                    //     this.firstNowForValidate == null) {
+                                    //   soundTin.setIsPlaying = true;
+                                    //   firstNowForValidate = DateTime.now();
+                                    // }
 
                                     // final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
-                                    startPlayer();
+                                    await startPlayer();
                                   },
                                   // onTap: () {
                                   //   user.setContext(context);
@@ -1271,11 +1288,13 @@ class _SoundDevilState extends State<SoundDevil> {
                                   child: SizedBox(
                                     height: 56.0,
                                     width: 56.0,
-                                    child: Icon(Icons.play_arrow,
-                                        color: !recorderModule.isStopped
-                                            ? Colors.grey
-                                            : Colors.green,
-                                        size: 25.0),
+                                    child: (this.fetchingDonatedVoice)
+                                        ? CentrallyUsed().waitingCircle()
+                                        : Icon(Icons.play_arrow,
+                                            color: !recorderModule.isStopped
+                                                ? Colors.grey
+                                                : Colors.green,
+                                            size: 25.0),
                                   ),
                                   // shape: CircleBorder(),
                                 ),
@@ -1373,10 +1392,10 @@ class _SoundDevilState extends State<SoundDevil> {
     return Column(
       children: <Widget>[
         if (!this.widget.validate) _recorderSection,
-        FlatButton(
-            color: Colors.green,
-            onPressed: () => print(this.pausedTimeMilliSecs),
-            child: SizedBox(height: 10)),
+        // FlatButton(
+        //     color: Colors.green,
+        //     onPressed: () => print(this.pausedTimeMilliSecs),
+        //     child: SizedBox(height: 10)),
         _playerSection,
         // dropdowns,
         // trackSwitch,

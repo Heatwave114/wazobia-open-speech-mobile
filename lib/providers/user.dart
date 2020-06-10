@@ -81,12 +81,12 @@ class User with ChangeNotifier {
             'education': currentUser['edubg'],
           }),
           'donationdateniglocal': now.toIso8601String(),
+          'duration': duration.toString(),
           'cqi': 'NA',
           'snr': 'NA',
           // 'validcount': '0',
           'validationstatus': 'unvalidated',
           'resource': resourceID,
-          'duration': duration.toString(),
         }));
     StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
     var downloadUrl = await storageSnapshot.ref.getDownloadURL();
@@ -209,7 +209,7 @@ class User with ChangeNotifier {
     Scaffold.of(this.context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Theme.of(this.context).appBarTheme.color,
+        // backgroundColor: Theme.of(this.context).appBarTheme.color,
         // behavior: SnackBarBehavior.floating,
         content: Text(
           message,
@@ -229,10 +229,10 @@ class User with ChangeNotifier {
     );
   }
 
-// Updating dialog
+  // Updating dialog
   void showDialogue(String title, String content, {Function whenFinished}) {
     showDialog(
-      barrierDismissible: true,
+      // barrierDismissible: false,
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(
@@ -254,7 +254,7 @@ class User with ChangeNotifier {
             onPressed: () {
               Navigator.of(context).pop();
             },
-          )
+          ),
         ],
       ),
     ).then((_) {
@@ -489,7 +489,8 @@ class User with ChangeNotifier {
         mustDisplayGeneralMessageTest) {
       return go();
     } else if (!killTest) {
-      return controlScaffold('Wazobia has been suspended indefinately. We will notify as soon as the suspension is lifted.');
+      return controlScaffold(
+          'Wazobia has been suspended indefinately. We will notify as soon as the suspension is lifted.');
     } else if (!nonAdminAllowedTest) {
       return controlScaffold(
           'We are sorry, the application is down for maintenance. Check back later.');

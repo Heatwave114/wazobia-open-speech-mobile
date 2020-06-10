@@ -267,6 +267,85 @@ class _TextPanelState extends State<TextPanel> {
   double _textSizePercent = .7;
   int _submitTapCounter = 0;
 
+  // Whether to proceed with voice submission
+  Future<void> confirmProceedWithDonation(String title, String content,
+      {Function submitDonation}) async {
+    bool proceedWithDonation;
+    // print('before:' + proceedWithDonation.toString());
+    // final bool evaluate = await showDialog(
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (ctx) => WillPopScope(
+        onWillPop: () => Future(() => false),
+        child: AlertDialog(
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'Abel',
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
+          ),
+          content: Text(
+            content,
+            style: const TextStyle(
+              fontFamily: 'Abel',
+              fontSize: 17.0,
+              // fontWeight: FontWeight.bold
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text(
+                'Return',
+                style: const TextStyle(
+                  fontFamily: 'PTSans',
+                  fontSize: 17.0,
+                  // fontWeight: FontWeight.bold
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  this._submitTapCounter = 0;
+                  return;
+                });
+                proceedWithDonation = false;
+                // this.stopLoadingForValidation();
+                Navigator.of(context).pop();
+              },
+            ),
+            RaisedButton(
+              color: Colors.lightGreen,
+              child: const Text(
+                'Donate',
+                style: const TextStyle(
+                  fontFamily: 'PTSans',
+                  fontSize: 17.0,
+                  // fontWeight: FontWeight.bold
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                proceedWithDonation = true;
+                // this.stopLoadingForValidation();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    ).then((_) {
+      if (proceedWithDonation) {
+        submitDonation();
+      }
+    });
+    // print('after:' + proceedWithDonation.toString());
+    // Navigator.of(context).pop();
+    // return proceed;
+  }
+
   @override
   Widget build(BuildContext context) {
     final SoundTin soundTin = Provider.of<SoundTin>(context);
@@ -339,7 +418,7 @@ class _TextPanelState extends State<TextPanel> {
                                       width: 1.0, //width of the border
                                     ),
                                     label: const Text(
-                                      'Submit',
+                                      'Donate',
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     icon: const Icon(
@@ -396,29 +475,35 @@ class _TextPanelState extends State<TextPanel> {
                                             // }
 
                                             // print(soundTin.getDonatedVoicePath);
-                                            user.setContext(context);
                                             // print((await soundTin.getDonatedVoiceDuration())/3600);3
-                                            user
-                                                .uploadDonation(
-                                              voiceToUpload: File(
-                                                  soundTin.getDonatedVoicePath),
-                                              resourceID:
-                                                  this.widget.resource.uid,
-                                              duration: await soundTin
-                                                  .getDonatedVoiceDuration(),
-                                            )
-                                                .then((_) {
-                                              // Can now bring a new resource for donation
-                                              soundTin.setShouldRefreshDonatingResourceIndex =
-                                                  true;
-                                              soundTin.setDonatedVoicePath =
-                                                  null;
-                                              this._submitTapCounter = 0;
-                                              user.showDialogue('Thank you',
-                                                  'We sincerely appreciate your donation. You can always make another',
-                                                  whenFinished: () {
-                                                soundTin.setShouldInitDevil =
+
+                                            this.confirmProceedWithDonation(
+                                                'Alert',
+                                                'Are you sure want to submit your evaluation ?',
+                                                submitDonation: () async {
+                                              user.setContext(context);
+                                              user
+                                                  .uploadDonation(
+                                                voiceToUpload: File(soundTin
+                                                    .getDonatedVoicePath),
+                                                resourceID:
+                                                    this.widget.resource.uid,
+                                                duration: await soundTin
+                                                    .getDonatedVoiceDuration(),
+                                              )
+                                                  .then((_) {
+                                                // Can now bring a new resource for donation
+                                                soundTin.setShouldRefreshDonatingResourceIndex =
                                                     true;
+                                                soundTin.setDonatedVoicePath =
+                                                    null;
+                                                this._submitTapCounter = 0;
+                                                user.showDialogue('Thank you',
+                                                    'We sincerely appreciate your donation. You can always make another',
+                                                    whenFinished: () {
+                                                  soundTin.setShouldInitDevil =
+                                                      true;
+                                                });
                                               });
                                             });
 
