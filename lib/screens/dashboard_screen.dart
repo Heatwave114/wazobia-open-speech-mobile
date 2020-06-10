@@ -245,7 +245,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       .get())['latestdownloadurl'];
                                   Share.share(
                                       'Help us at wazobia with your voice and ears:\n\n $sharelink',
-                                      subject: 'Latest apk download link',
+                                      subject: 'L, atest apk download link',
                                       sharePositionOrigin:
                                           box.localToGlobal(Offset.zero) &
                                               box.size
