@@ -309,11 +309,11 @@ class _TextPanelState extends State<TextPanel> {
               onPressed: () {
                 setState(() {
                   this._submitTapCounter = 0;
-                  return;
                 });
                 proceedWithDonation = false;
                 // this.stopLoadingForValidation();
                 Navigator.of(context).pop();
+                  // return;
               },
             ),
             RaisedButton(
@@ -337,7 +337,8 @@ class _TextPanelState extends State<TextPanel> {
         ),
       ),
     ).then((_) {
-      if (proceedWithDonation) {
+      // so that no duplicate
+      if (proceedWithDonation && this._submitTapCounter != 0) {
         submitDonation();
       }
     });
