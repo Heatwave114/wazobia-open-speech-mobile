@@ -427,7 +427,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
           // Allow validation if .6 of the voice has been listen
           if (netPlayTime >
-              (0.6 * soundTin.getCurrentValidatingDonation.duration * 1000)
+              (0.75 * soundTin.getCurrentValidatingDonation.duration * 1000)
                   .toInt()) {
             soundTin.setShouldAllowValidation = true;
           }
@@ -534,7 +534,9 @@ class _SoundDevilState extends State<SoundDevil> {
             print('Play finished -');
             setState(() {});
           }).then((path) {
-            this.fetchingDonatedVoice = false;
+            setState(() {
+              this.fetchingDonatedVoice = false;
+            });
             // TO reduce reaction time so that donation.duration ~= netPlayTime
             // path = path;
             final SoundTin soundTin =
@@ -1255,6 +1257,7 @@ class _SoundDevilState extends State<SoundDevil> {
                                   //     color: Colors.green, width: 0.5),
                                   // padding: EdgeInsets.all(0.0),
                                   onTap: () async {
+                                    if (recorderModule.isRecording) return;
                                     setState(() {
                                       this.fetchingDonatedVoice = true;
                                     });
@@ -1266,6 +1269,9 @@ class _SoundDevilState extends State<SoundDevil> {
                                         await user.connectionStatus();
                                     if (!internet) {
                                       user.showSnackBar('Check you internet');
+                                      setState(() {
+                                        this.fetchingDonatedVoice = false;
+                                      });
                                       return;
                                     }
 
@@ -1362,7 +1368,8 @@ class _SoundDevilState extends State<SoundDevil> {
                             // borderSide: BorderSide(color: Colors.green, width: 0.5),
                             // padding: EdgeInsets.all(0.0),
                             onTap: () {
-                              print(2222222222222222222);
+                              if (recorderModule.isRecording) return;
+                              // print(2222222222222222222);
                               this.pausedTimeMilliSecs = 0;
                               onStopPlayerPressed()();
                             },
