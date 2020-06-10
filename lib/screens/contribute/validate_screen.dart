@@ -340,8 +340,8 @@ class _TextPanelState extends State<TextPanel> {
         ),
       ),
     ).then((_) {
-      if (proceedWithEvaluation && this._validateTapCounter != 0;
-      && this._invalidateTapCounter != 0;) {
+      if (proceedWithEvaluation && this._validateTapCounter != 0
+      && this._invalidateTapCounter != 0) {
         submitEvaluation();
       }
     });
