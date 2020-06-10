@@ -70,9 +70,9 @@ class MyApp extends StatelessWidget {
                   if (snp.connectionState == ConnectionState.waiting) {
                     return CentrallyUsed().waitingCircle();
                   }
-                  if (!snp.hasData) {
-                    return AccountSelectScreen();
-                  }
+                  // if (!snp.hasData) {
+                  //   return AccountSelectScreen();
+                  // }
                   // print('data: ${snp.data}');
 
                   return StreamBuilder(
@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
                         }
 
                         return FutureBuilder(
-                          future: user.getLandingPage(),
+                          future: user.getLandingPage(snp.hasData),
                           builder: (ctx, userSnapshot) {
                             if (userSnapshot.connectionState ==
                                 ConnectionState.waiting) {

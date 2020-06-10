@@ -398,7 +398,7 @@ class User with ChangeNotifier {
     'version': 1.1,
   };
 
-  Future<Widget> getLandingPage() async {
+  Future<Widget> getLandingPage(bool hasAuth) async {
     bool internet = await this.connectionStatus();
     final firstTime = await getFirstTime();
     final currentUser = await getCurrentUser();
@@ -437,7 +437,7 @@ class User with ChangeNotifier {
       if (firstTime == null || firstTime) {
         // setFirstTime(false);
         return WelcomeScreen();
-      } else if (currentUser == null) {
+      } else if (!hasAuth || currentUser == null) {
         return AccountSelectScreen();
       } else {
         return DashboardScreen();
