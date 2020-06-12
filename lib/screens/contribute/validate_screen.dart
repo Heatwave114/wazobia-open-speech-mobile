@@ -413,12 +413,12 @@ class _TextPanelState extends State<TextPanel> {
                                       //     .currentValidatingResource.title);
                                       // soundTin.setShouldAllowValidate = false;
 
-                                      // if (!soundTin.getShouldAllowValidation) {
-                                      //   user.showDialogue('Alert',
-                                      //       'Ensure the whole audio corresponds to the this text resource. Listen more.',
-                                      //       isRed: true);
-                                      //   return;
-                                      // }
+                                      if (!soundTin.getShouldAllowValidation) {
+                                        user.showDialogue('Alert',
+                                            'Ensure the whole audio corresponds to the this text resource. Listen more.',
+                                            isRed: true);
+                                        return;
+                                      }
 
                                       setState(() {
                                         this._invalidateTapCounter++;
@@ -448,7 +448,7 @@ class _TextPanelState extends State<TextPanel> {
                                             print(widget.donation.invalidReasons
                                                 .length);
 
-                                            if (widget.donation.bias > -100) {
+                                            if (widget.donation.bias > -2) {
                                               fbHelper.unvalidatedURLs
                                                   .document(
                                                       widget.donation.name)
