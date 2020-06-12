@@ -427,7 +427,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
           // Allow validation if .6 of the voice has been listen
           if (netPlayTime >
-              (0.75 * soundTin.getCurrentValidatingDonation.duration * 1000)
+              (.75 * soundTin.getCurrentValidatingDonation.duration * 1000)
                   .toInt()) {
             soundTin.setShouldAllowValidation = true;
           }
@@ -435,7 +435,7 @@ class _SoundDevilState extends State<SoundDevil> {
           print(soundTin.getShouldAllowValidation);
           print(netPlayTime.toString() +
               '>>>>>>>' +
-              (.6 * soundTin.getCurrentValidatingDonation.duration * 1000)
+              (.75 * soundTin.getCurrentValidatingDonation.duration * 1000)
                   .toInt()
                   .toString());
 
@@ -448,6 +448,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
   // To show circularprogress indicator whwn fetching donation voice;
   bool fetchingDonatedVoice = false;
+  // String path; // to catch if path is
   Future<void> startPlayer() async {
     try {
       //final albumArtPath =
@@ -574,8 +575,17 @@ class _SoundDevilState extends State<SoundDevil> {
       // }
 
       print('startPlayer: $path');
+      // this.path = path;
+
       // await flutterSoundModule.setVolume(1.0);
     } catch (err) {
+      final User user = Provider.of<User>(context, listen: false);
+      user.setContext(context);
+      if (err.toString().contains('Must not be null')) {
+        user.showSnackBar(
+          'Make a recording first',
+        );
+      }
       print('error: $err');
     }
     setState(() {});
@@ -1258,12 +1268,13 @@ class _SoundDevilState extends State<SoundDevil> {
                                   // padding: EdgeInsets.all(0.0),
                                   onTap: () async {
                                     if (recorderModule.isRecording) return;
-                                    setState(() {
-                                      this.fetchingDonatedVoice = true;
-                                    });
+                                    if (widget.validate) {
+                                      setState(() {
+                                        this.fetchingDonatedVoice = true;
+                                      });
+                                    }
 
-                                    final User user = Provider.of<User>(context,
-                                        listen: false);
+                                    final User user = Provider.of<User>(context, listen: false);
                                     user.setContext(context);
                                     final bool internet =
                                         await user.connectionStatus();

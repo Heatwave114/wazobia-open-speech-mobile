@@ -100,9 +100,12 @@ class User with ChangeNotifier {
           'age': currentUser['age'],
           'education': currentUser['edubg'],
         },
+        
         'donationdateniglocal': now.toIso8601String(),
+        // 'invalidreasons': [],
         'cqi': 'NA',
         'snr': 'NA',
+        'bais': 0,
         'validcount': 0,
         'validationstatus': 'unvalidated',
         'resourceid': resourceID,

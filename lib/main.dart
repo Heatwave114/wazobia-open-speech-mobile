@@ -82,6 +82,9 @@ class MyApp extends StatelessWidget {
                         if (!snapshot.hasData) {
                           return Center(
                             child: Container(
+                              padding: EdgeInsets.only(
+                                  top:
+                                      MediaQuery.of(context).size.height * .40),
                               margin: EdgeInsets.all(20.0),
                               child: Column(children: <Widget>[
                                 CentrallyUsed().waitingCircle(),
@@ -104,11 +107,21 @@ class MyApp extends StatelessWidget {
                             if (userSnapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return CentrallyUsed().waitingCircle();
-                            } else if (userSnapshot.connectionState ==
-                                ConnectionState.done) {
-                              return userSnapshot.data;
+                            } else if (userSnapshot.data == null) {
+                              return Scaffold(
+                                body: Center(
+                                  child: Text(
+                                    'Check your internet connection.',
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      fontFamily: 'Abel',
+                                      // color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                              );
                             }
-                            return null;
+                            return userSnapshot.data;
                           },
                         );
                       });

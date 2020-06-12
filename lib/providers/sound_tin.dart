@@ -12,11 +12,13 @@ import '../models/resource.dart';
 class SoundTin with ChangeNotifier {
   String donatedVoicePath;
   String validatingVoiceURL;
+  String reasonForInvalidation;
   Resource currentDonatingResource;
   Resource currentValidatingResource;
   Donation currentValidatingDonation;
   int _currentDonatingResourceIndex;
   int _currentValidatingDonationIndex;
+  bool _proceedWithDonationEvaluation = false;
   bool _shouldRefreshDonatingResourceIndex;
   bool _shouldRefreshValidatingDonationIndex;
   bool shouldInitDevil = false;
@@ -28,6 +30,20 @@ class SoundTin with ChangeNotifier {
   ///////////
   // Control
   //////////
+
+  // reasonForInvalidation set
+  set setReasonForInvalidation(String reasonForValidation) =>
+      this.reasonForInvalidation = reasonForValidation;
+
+  // reasonForInvalidation get
+  get getReasonForInvalidation => this.reasonForInvalidation;
+
+  // _proceedWithDonationEvaluation set
+  set setProceedWithDonationEvaluation(bool proceedWithDonationEvaluation) =>
+      this._proceedWithDonationEvaluation = proceedWithDonationEvaluation;
+
+  // _proceedWithDonationEvaluation get
+  get getProceedWithDonationEvaluation => this._proceedWithDonationEvaluation;
 
   // _shouldInitDevil set
   set setShouldInitDevil(bool shouldInitDevil) {
@@ -67,6 +83,7 @@ class SoundTin with ChangeNotifier {
   // _shouldRefreshValidatingResourceIndex get
   get getShouldRefreshValidatingDonationIndex =>
       this._shouldRefreshValidatingDonationIndex;
+
   // _shouldRefreshValidatingResourceIndex set
   set setShouldRefreshValidatingDonationIndex(bool shouldResfresh) {
     this._shouldRefreshValidatingDonationIndex = shouldResfresh;
@@ -75,6 +92,7 @@ class SoundTin with ChangeNotifier {
 
   // _getIsRecording
   get getIsRecording => this.isRecording;
+
   // _setIsRecording
   set setIsRecording(bool isRecording) {
     this.isRecording = isRecording;

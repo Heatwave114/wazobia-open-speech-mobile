@@ -19,6 +19,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   TabController _tabController;
   bool _agreedToTerms = false;
   User _user = User();
+  GlobalKey cardKey = GlobalKey();
 
   @override
   void initState() {
@@ -32,41 +33,51 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     super.dispose();
   }
 
+  double backNextHeight = 45.0;
   Widget _buildCartridge(
     String title, {
     @required Widget child,
     List<Widget> others,
   }) {
-    return Column(
-      children: <Widget>[
-        Container(
-          height: 60.0,
-          padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
-          width: double.infinity,
-          decoration: BoxDecoration(
-              // color: Colors.green,
-              border: Border(bottom: BorderSide(color: Colors.green[200]))),
-          child: FittedBox(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 50.0,
-                fontFamily: 'ComicNeue',
-                color: Colors.green[900],
+    final MediaQueryData deviceCritical = MediaQuery.of(context);
+    double titleHeight = 45.0;
+    double heightBtwTitleChild = 5.0;
+    double cardHeight = deviceCritical.size.height -
+        deviceCritical.padding.vertical -
+        (deviceCritical.size.height * .01 * 2) -
+        100.0;
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Container(
+            // height of title
+            height: titleHeight,
+            padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
+            width: double.infinity,
+            decoration: BoxDecoration(
+                // color: Colors.green,
+                border: Border(bottom: BorderSide(color: Colors.green[200]))),
+            child: FittedBox(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 50.0,
+                  fontFamily: 'ComicNeue',
+                  color: Colors.green[900],
+                ),
               ),
             ),
           ),
-        ),
-        Expanded(
-          child: Padding(
+          Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
               children: <Widget>[
                 SizedBox(
-                  height: 25.0,
+                  // space btw child and title
+                  height: heightBtwTitleChild,
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * .45,
+                  height: cardHeight - backNextHeight - titleHeight,
                   padding: const EdgeInsets.all(10.0),
                   // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
                   decoration: BoxDecoration(
@@ -82,13 +93,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ),
                   ),
                 ),
-                if (others != null) Spacer(),
-                if (others != null) ...others,
+                // if (others != null) Spacer(),
+                if (others != null)
+                  ...others,
               ],
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -97,10 +109,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       setState(() {
         _agreedToTerms = false;
       });
-      _tabController.index--;
+      this._tabController.index--;
     } else if (!back && _tabController.index < _tabController.length - 1) {
       setState(() {});
-      _tabController.index++;
+      this._tabController.index++;
     }
   }
 
@@ -117,13 +129,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
     return SafeArea(
       child: Container(
+        height: double.infinity,
         // padding: EdgeInsets.all(10.0)
         //     .copyWith(top: MediaQuery.of(context).padding.top),
         padding: EdgeInsets.only(
-          top: _deviceSize.height * .10,
-          bottom: _deviceSize.height * .10,
-          left: _deviceSize.height * .03,
-          right: _deviceSize.height * .03,
+          top: _deviceSize.height * .01,
+          bottom: _deviceSize.height * .01,
+          left: _deviceSize.height * .01,
+          right: _deviceSize.height * .01,
         ),
         // height: double.infinity,
         // width: double.infinity,
@@ -139,6 +152,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           child: ClipRRect(
             // borderRadius: BorderRadius.circular(30.0),
             child: Card(
+              key: cardKey,
               // margin: const EdgeInsets.all(0.0),
               elevation: 2.0,
               child: Column(
@@ -161,12 +175,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         // Must be the last Cartridge[agreedToTerms??]
                         _buildCartridge(
                           'Terms and Conditions',
-                          child: Text(
-                            'You must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions',
-                            style: TextStyle(
-                              fontSize: 25.0,
-                              fontFamily: 'Abel',
-                            ),
+                          child: Column(
+                            children: <Widget>[
+                              Text(
+                                'You must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions',
+                                style: TextStyle(
+                                  fontSize: 25.0,
+                                  fontFamily: 'Abel',
+                                ),
+                              ),
+                            ],
                           ),
                           others: [
                             Row(
@@ -246,15 +264,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               ],
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 15.0),
+                            horizontal: 10.0, vertical: 0.0)
+                        .copyWith(bottom: 15.0),
                     // padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    height: 45.0,
+                    height: this.backNextHeight,
                     width: double.infinity,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -286,7 +305,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               ? () => _nextPreviousPage(false)
                               : _agreedToTerms
                                   ? () {
-                                    this._user.setFirstTime(false);
+                                      this._user.setFirstTime(false);
                                       Navigator.of(context)
                                           .pushNamed(MetadataScreen.routeName);
                                     }

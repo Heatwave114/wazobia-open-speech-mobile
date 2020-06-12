@@ -25,16 +25,23 @@ class MetadataScreen extends StatefulWidget {
 class _MetadataScreenState extends State<MetadataScreen> {
   @override
   Widget build(BuildContext context) {
-    final Size _deviceSize = MediaQuery.of(context).size;
+    print(MediaQuery.of(context).size.height);
+    print(MediaQuery.of(context).size.width);
+    // final Size _deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // SizedBox(
+            //   height: 0.0,
+            // ),
             Container(
-              height: 60.0,
+              alignment: Alignment.center,
+              height: 50.0,
               margin: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 20.0,
+                  top: MediaQuery.of(context).padding.top + 5.0,
                   left: 30.0,
                   right: 30.0),
               // padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
@@ -47,7 +54,7 @@ class _MetadataScreenState extends State<MetadataScreen> {
                 child: Text(
                   'Metadata',
                   style: TextStyle(
-                    fontSize: 50.0,
+                    fontSize: 45.0,
                     fontFamily: 'ComicNeue',
                     color: Colors.green[900],
                   ),
@@ -56,10 +63,11 @@ class _MetadataScreenState extends State<MetadataScreen> {
             ),
             Container(
               margin: EdgeInsets.only(
-                  // top: MediaQuery.of(context).padding.top + 20.0,
-                  top: _deviceSize.height * .10,
-                  left: 30.0,
-                  right: 30.0),
+                // top: MediaQuery.of(context).padding.top + 20.0,
+                top: 15.0,
+                // left: 0.0,
+                // right: 0.0,
+              ),
               child: MetadataForm(),
             ),
           ],
@@ -303,29 +311,71 @@ class _MetadataFormState extends State<MetadataForm> {
     );
   }
 
-  // Updating snackbar
-  void _showSnackBar(String message) {
-    Scaffold.of(this.context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Theme.of(this.context).appBarTheme.color,
-        // behavior: SnackBarBehavior.floating,
-        content: Text(
-          message,
-          style: const TextStyle(
-            fontSize: 13,
-            fontFamily: 'ComicNeue',
-          ),
-        ),
-        action: SnackBarAction(
-          // textColor: Theme.of(this.context).primaryColor,
-          label: 'ok',
-          onPressed: () {
-            Scaffold.of(this.context).hideCurrentSnackBar();
-          },
-        ),
+  void _onTapGender() async {
+    final position =
+        buttonMenuPosition(this._genderExpansionKey.currentContext);
+    final _result = await showMenu(
+      context: context,
+      position: position,
+      items: <PopupMenuItem<String>>[
+        const PopupMenuItem<String>(
+            child: InkWell(
+              child: Text('male'),
+            ),
+            value: 'male'),
+        const PopupMenuItem<String>(
+            child: const Text('female'), value: 'female'),
+      ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
       ),
     );
+    if (_result == 'male') {
+      _genderController.text = 'male';
+    } else if (_result == 'female') {
+      _genderController.text = 'female';
+    }
+    FocusScope.of(context).requestFocus(_nicknameFocusNode);
+    // Focus.of(context).unfocus();
+  }
+
+  void _onTapEducation() async {
+    final position = buttonMenuPosition(this._eduBGExpansionKey.currentContext);
+    final _result = await showMenu(
+      context: context,
+      position: position,
+      items: <PopupMenuItem<String>>[
+        const PopupMenuItem<String>(
+            child: const Text('nursery'), value: 'nursery'),
+        const PopupMenuItem<String>(
+            child: const Text('primary'), value: 'primary'),
+        const PopupMenuItem<String>(
+            child: const Text('secondary'), value: 'secondary'),
+        const PopupMenuItem<String>(
+            child: const Text('tertiary'), value: 'tertiary'),
+        const PopupMenuItem<String>(child: const Text('msc'), value: 'msc'),
+        const PopupMenuItem<String>(child: const Text('phd'), value: 'phd'),
+        const PopupMenuItem<String>(child: const Text('none'), value: 'none'),
+      ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
+    if (_result == 'nursery') {
+      _eduBGController.text = 'nursery';
+    } else if (_result == 'primary') {
+      _eduBGController.text = 'primary';
+    } else if (_result == 'secondary') {
+      _eduBGController.text = 'secondary';
+    } else if (_result == 'tertiary') {
+      _eduBGController.text = 'tertiary';
+    } else if (_result == 'msc') {
+      _eduBGController.text = 'msc';
+    } else if (_result == 'phd') {
+      _eduBGController.text = 'phd';
+    } else if (_result == 'none') {
+      _eduBGController.text = 'none';
+    }
   }
 
   Map<String, dynamic> _style = {
@@ -348,13 +398,13 @@ class _MetadataFormState extends State<MetadataForm> {
             child: Column(
               children: <Widget>[
                 Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: const Text(
                           // 'Your data is private',
-                          'Please fill the form',
+                          'Please fill the form  OR ',
                           style: const TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: 16.00,
@@ -363,23 +413,29 @@ class _MetadataFormState extends State<MetadataForm> {
                           ),
                         ),
                       ),
-                      FlatButton.icon(
-                        icon: Icon(Icons.keyboard_arrow_down),
-                        label: const Text(
-                          'Choose Existing',
-                          style: const TextStyle(
-                            fontFamily: 'ComicNeue',
-                            fontSize: 16.00,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xff2A6041),
+                      Expanded(
+                        child: RaisedButton.icon(
+                          color: Colors.lightGreen,
+                          icon: Icon(Icons.keyboard_arrow_down),
+                          label: const Text(
+                            'Choose Existing',
+                            style: const TextStyle(
+                              fontFamily: 'ComicNeue',
+                              fontSize: 16.00,
+                              fontWeight: FontWeight.w600,
+                              // color: const Color(0xff2A6041),
+                              color: Colors.white,
+                            ),
                           ),
+                          // child: Text(),
+                          onPressed: () => Navigator.of(context)
+                              .pushReplacementNamed(
+                                  AccountSelectScreen.routeName),
                         ),
-                        // child: Text(),
-                        onPressed: () => Navigator.of(context)
-                            .pushReplacementNamed(
-                                AccountSelectScreen.routeName),
                       ),
                     ]),
+                _spacer,
+                _spacer,
                 _spacer,
                 TextFormField(
                   // Country
@@ -391,7 +447,7 @@ class _MetadataFormState extends State<MetadataForm> {
                     // prefixText: '+234-',
 
                     labelText: 'Country',
-                    suffix: CountryPicker(
+                    suffixIcon: CountryPicker(
                       showDialingCode: false,
                       // showFlag: false,
                       showName: false,
@@ -425,38 +481,9 @@ class _MetadataFormState extends State<MetadataForm> {
                     labelStyle: _style['formlabel'],
                     // prefixText: '+234-',
                     labelText: 'Gender',
-                    suffix: GestureDetector(
+                    suffixIcon: Icon(
+                      Icons.arrow_drop_down,
                       key: this._genderExpansionKey,
-                      child: const Icon(
-                        Icons.arrow_drop_down,
-                      ),
-                      onTap: () async {
-                        final position = buttonMenuPosition(
-                            this._genderExpansionKey.currentContext);
-                        final _result = await showMenu(
-                          context: context,
-                          position: position,
-                          items: <PopupMenuItem<String>>[
-                            const PopupMenuItem<String>(
-                                child: InkWell(
-                                  child: Text('male'),
-                                ),
-                                value: 'male'),
-                            const PopupMenuItem<String>(
-                                child: const Text('female'), value: 'female'),
-                          ],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        );
-                        if (_result == 'male') {
-                          _genderController.text = 'male';
-                        } else if (_result == 'female') {
-                          _genderController.text = 'female';
-                        }
-                        FocusScope.of(context).requestFocus(_nicknameFocusNode);
-                        // Focus.of(context).unfocus();
-                      },
                     ),
                     // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
                   ),
@@ -468,7 +495,7 @@ class _MetadataFormState extends State<MetadataForm> {
                     }
                     return null;
                   },
-
+                  onTap: this._onTapGender,
                   focusNode: _genderFocusNode,
                   onSaved: (value) {
                     _metaData['gender'] = value.trim();
@@ -551,55 +578,9 @@ class _MetadataFormState extends State<MetadataForm> {
                     labelStyle: _style['formlabel'],
                     // prefixText: '+234-',
                     labelText: 'Education',
-                    suffix: GestureDetector(
+                    suffixIcon: Icon(
+                      Icons.arrow_drop_down,
                       key: this._eduBGExpansionKey,
-                      child: const Icon(
-                        Icons.arrow_drop_down,
-                      ),
-                      onTap: () async {
-                        final position = buttonMenuPosition(
-                            this._eduBGExpansionKey.currentContext);
-                        final _result = await showMenu(
-                          context: context,
-                          position: position,
-                          items: <PopupMenuItem<String>>[
-                            const PopupMenuItem<String>(
-                                child: const Text('nursery'), value: 'nursery'),
-                            const PopupMenuItem<String>(
-                                child: const Text('primary'), value: 'primary'),
-                            const PopupMenuItem<String>(
-                                child: const Text('secondary'),
-                                value: 'secondary'),
-                            const PopupMenuItem<String>(
-                                child: const Text('tertiary'),
-                                value: 'tertiary'),
-                            const PopupMenuItem<String>(
-                                child: const Text('msc'), value: 'msc'),
-                            const PopupMenuItem<String>(
-                                child: const Text('phd'), value: 'phd'),
-                            const PopupMenuItem<String>(
-                                child: const Text('none'), value: 'none'),
-                          ],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        );
-                        if (_result == 'nursery') {
-                          _eduBGController.text = 'nursery';
-                        } else if (_result == 'primary') {
-                          _eduBGController.text = 'primary';
-                        } else if (_result == 'secondary') {
-                          _eduBGController.text = 'secondary';
-                        } else if (_result == 'tertiary') {
-                          _eduBGController.text = 'tertiary';
-                        } else if (_result == 'msc') {
-                          _eduBGController.text = 'msc';
-                        } else if (_result == 'phd') {
-                          _eduBGController.text = 'phd';
-                        } else if (_result == 'none') {
-                          _eduBGController.text = 'none';
-                        }
-                      },
                     ),
                     // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
                   ),
@@ -617,13 +598,14 @@ class _MetadataFormState extends State<MetadataForm> {
                     }
                     return null;
                   },
+                  onTap: this._onTapEducation,
                   focusNode: _eduBGFocusNode,
                   onSaved: (value) {
                     _metaData['edubg'] = value.trim();
                   },
                 ),
                 _spacer,
-                _spacer,
+                // _spacer,
                 Row(
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -698,7 +680,7 @@ class _MetadataFormState extends State<MetadataForm> {
                   ],
                 ),
                 Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15.0),
+                    padding: EdgeInsets.only(bottom: 10.0),
                     child: _isLoading
                         ? CentrallyUsed().waitingCircle()
                         : OutlineButton.icon(

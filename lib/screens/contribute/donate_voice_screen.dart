@@ -483,7 +483,7 @@ class _TextPanelState extends State<TextPanel> {
 
                                             this.confirmProceedWithDonation(
                                                 'Alert',
-                                                'Are you sure want to submit your evaluation ?',
+                                                'Are you sure want to submit your evaluation?',
                                                 submitDonation: () async {
                                               user.setContext(context);
                                               user
