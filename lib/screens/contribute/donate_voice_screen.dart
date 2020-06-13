@@ -267,12 +267,21 @@ class _TextPanelState extends State<TextPanel> {
   double _textSizePercent = .7;
   int _submitTapCounter = 0;
 
+  // stopLoadingForDonation
+  void stopLoadingForDonation() {
+    setState(() {
+      this._submitTapCounter = 0;
+    });
+  }
+
   // Whether to proceed with voice submission
   Future<void> confirmProceedWithDonation(String title, String content,
       {Function submitDonation}) async {
     bool proceedWithDonation;
     // print('before:' + proceedWithDonation.toString());
     // final bool evaluate = await showDialog(
+      final user = Provider.of<User>(context, listen: false);
+      user.setContext(context);
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -307,9 +316,7 @@ class _TextPanelState extends State<TextPanel> {
                 ),
               ),
               onPressed: () {
-                setState(() {
-                  this._submitTapCounter = 0;
-                });
+               this.stopLoadingForDonation();
                 proceedWithDonation = false;
                 // this.stopLoadingForValidation();
                 Navigator.of(context).pop();
@@ -327,10 +334,17 @@ class _TextPanelState extends State<TextPanel> {
                   color: Colors.white,
                 ),
               ),
-              onPressed: () {
-                proceedWithDonation = true;
-                // this.stopLoadingForValidation();
+              onPressed: () async {
+                final bool internet = await user.connectionStatus();
+                if(!internet) {
+                  user.showSnackBar('Check your internet');
                 Navigator.of(context).pop();
+                this.stopLoadingForDonation();
+                return;
+                }
+                proceedWithDonation = true;
+                Navigator.of(context).pop();
+                // this.stopLoadingForValidation();
               },
             ),
           ],
@@ -483,7 +497,7 @@ class _TextPanelState extends State<TextPanel> {
 
                                             this.confirmProceedWithDonation(
                                                 'Alert',
-                                                'Are you sure want to submit your evaluation?',
+                                                'Are you sure want to submit your donation?',
                                                 submitDonation: () async {
                                               user.setContext(context);
                                               user
@@ -501,7 +515,7 @@ class _TextPanelState extends State<TextPanel> {
                                                     true;
                                                 soundTin.setDonatedVoicePath =
                                                     null;
-                                                this._submitTapCounter = 0;
+                                                this.stopLoadingForDonation();
                                                 user.showDialogue('Thank you',
                                                     'We sincerely appreciate your donation. You can always make another',
                                                     whenFinished: () {

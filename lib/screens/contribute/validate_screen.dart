@@ -309,8 +309,9 @@ class _TextPanelState extends State<TextPanel> {
         submitEvaluation();
         soundTin.setProceedWithDonationEvaluation = false;
         soundTin.setShouldAllowValidation = false;
+      } else {
+        this.stopLoadingForValidation();
       }
-      this.stopLoadingForValidation();
     });
     // print('after:' + proceedWithEvaluation.toString());
     // Navigator.of(context).pop();
@@ -413,12 +414,12 @@ class _TextPanelState extends State<TextPanel> {
                                       //     .currentValidatingResource.title);
                                       // soundTin.setShouldAllowValidate = false;
 
-                                      if (!soundTin.getShouldAllowValidation) {
-                                        user.showDialogue('Alert',
-                                            'Ensure the whole audio corresponds to the this text resource. Listen more.',
-                                            isRed: true);
-                                        return;
-                                      }
+                                      // if (!soundTin.getShouldAllowValidation) {
+                                      //   user.showDialogue('Alert',
+                                      //       'Ensure the whole audio corresponds to the this text resource. Listen more.',
+                                      //       isRed: true);
+                                      //   return;
+                                      // }
 
                                       setState(() {
                                         this._invalidateTapCounter++;
@@ -794,6 +795,8 @@ class _SubmitValidationAlertDialogState
   @override
   Widget build(BuildContext context) {
     final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
+    final user = Provider.of<User>(context, listen: false);
+    user.setContext(context);
     return AlertDialog(
       title: Text(
         'Submit ${widget.validInvalidUpperPreText}${widget.validInvalidText}ation',
@@ -913,7 +916,15 @@ class _SubmitValidationAlertDialogState
               color: Colors.white,
             ),
           ),
-          onPressed: () {
+          onPressed: () async {
+            final bool internet = await user.connectionStatus();
+            if (!internet) {
+              user.showSnackBar('Check your internet');
+              soundTin.setProceedWithDonationEvaluation = false;  // Redunddant ??
+              Navigator.of(context).pop();
+              return;
+            }
+
             setState(() {
               soundTin.setReasonForInvalidation =
                   this._validationTextController.text;

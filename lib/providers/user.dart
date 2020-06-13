@@ -105,7 +105,7 @@ class User with ChangeNotifier {
         // 'invalidreasons': [],
         'cqi': 'NA',
         'snr': 'NA',
-        'bais': 0,
+        'bias': 0,
         'validcount': 0,
         'validationstatus': 'unvalidated',
         'resourceid': resourceID,
