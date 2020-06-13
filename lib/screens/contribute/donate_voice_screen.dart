@@ -519,6 +519,7 @@ class _TextPanelState extends State<TextPanel> {
                                                 user.showDialogue('Thank you',
                                                     'We sincerely appreciate your donation. You can always make another',
                                                     whenFinished: () {
+                                                      soundTin.setInDanger = false;
                                                   soundTin.setShouldInitDevil =
                                                       true;
                                                 });

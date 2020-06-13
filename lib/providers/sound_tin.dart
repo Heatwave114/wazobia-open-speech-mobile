@@ -48,7 +48,7 @@ class SoundTin with ChangeNotifier {
   // _shouldInitDevil set
   set setShouldInitDevil(bool shouldInitDevil) {
     this.shouldInitDevil = shouldInitDevil;
-    notifyListeners();
+    // notifyListeners();
   }
 
   // _shouldInitDevil get

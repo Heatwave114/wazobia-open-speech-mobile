@@ -531,6 +531,7 @@ class _SoundDevilState extends State<SoundDevil> {
               whenFinished: () {
             // initialize pause cumulative to 0
             this.pausedTimeMilliSecs = 0;
+            // Provider.of<SoundTin>(context, listen: false).setInDanger = false;
             // this.sliderCurrentPosition = 0.0;
             print('Play finished -');
             setState(() {});

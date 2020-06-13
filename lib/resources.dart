@@ -5,7 +5,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-001',
     genre: 'history',
-    readTime: Duration(seconds: 135),
+    readTime: Duration(seconds: 145),
     title: 'Brief History of Lorem Ipsum',
     text:
         'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Latin words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
@@ -51,7 +51,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-002',
     genre:  'political thriller',
-    readTime: Duration(seconds: 208),
+    readTime: Duration(seconds: 218),
     title: 'Hermann The Irascible',
     author: 'H.H Munro (SAKI)',
     text: 'The Story of the Great Weep \nIt was in the second decade of the Twentieth Century, after the Great Plague had devastated England, that Hermann the Irascible, nicknamed also the Wise, sat on the British throne. The Mortal Sickness had swept away the entire Royal Family, unto the third and fourth generations, and thus it came to pass that Hermann the Fourteenth of Saxe-Drachsen-Wachtelstein, who had stood thirtieth in the order of succession, found himself one day ruler of the British dominions within and beyond the seas. He was one of the unexpected things that happen in politics, and he happened with great thoroughness. In many ways he was the most progressive monarch who had sat on an important throne; before people knew where they were, they were somewhere else. Even his Ministers, progressive though they were by tradition, found it difficult to keep pace with his legislative suggestions. \n"As a matter of fact," admitted the Prime Minister, "we are hampered by these votes-for-women creatures; they disturb our meetings throughout the country, and they try to turn Downing Street into a sort of political picnic-ground." \n"They must be dealt with" said Hermann. \n"Dealt with," said the Prime Minister; "exactly, just so; but how?" \n"I will draft you a Bill," said the King, sitting down at his type-writing machine, "enacting that women shall vote at all future elections. Shall vote, you observe; or, to put it plainer, must. Voting will remain optional, as before, for male electors; but every woman between the ages of twenty-one and seventy will be obliged to vote, not only at elections for Parliament, county councils, district boards, parish-councils, and municipalities, but for coroners, school inspectors, churchwardens, curators of museums, sanitary authorities, police-court interpreters, swimming-bath instructors, contractors, choir-masters, market superintendents, art-school teachers, cathedral vergers, and other local functionaries whose names I will add as they occur to me. All these offices will become elective, and failure to vote at any election falling within her area of residence will involve the female elector in a penalty of 10 pounds. Absence, unsupported by an adequate medical certificate, will not be accepted as an excuse. Pass this Bill through the two Houses of Parliament and bring it to me for signature the day after tomorrow."',
@@ -61,7 +61,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-003',
     genre:  'thriller',
-    readTime: Duration(seconds: 196),
+    readTime: Duration(seconds: 206),
     title: 'The Man in the Brown Coat',
     author: 'Sherwood Anderson',
     text: 'I am writing a history of the things men do. I have written three such histories and I am but a young man. Already I have written three hundred, four hundred thousand words. \nMy wife is somewhere in this house where for hours now I have been sitting and writing. She is a tall woman with black hair, turning a little grey. Listen, she is going softly up a flight of stairs. All day she goes softly about, doing the housework in our house. \nI came here to this town from another town in the state of Iowa. My father was a workman, a house painter. He did not rise in the world as I have done. I worked my way through college and became an historian. We own this house in which I sit. This is my room in which I work. Already I have written three histories of peoples. I have told how states were formed and battles fought. You may see my books standing straight up on the shelves of libraries. They stand up like sentries. \nI am tall like my wife and my shoulders are a little stooped. Although I write boldly I am a shy man. I like being at work alone in this room with the door closed. There are many books here. Nations march back and forth in the books. It is quiet here but in the books a great thundering goes on. \nNapoleon rides down a hill and into a battle. \nGeneral Grant walks in a wood. \nAlexander rides down a hill and into a battle. \nMy wife has a serious, almost stern look. Sometimes the thoughts I have concerning her frighten me. In the afternoon she leaves our house and goes for a walk. Sometimes she goes to stores, sometimes to visit a neighbor. There is a yellow house opposite our house. My wife goes out at a side door and passes along the street between our house and the yellow house. \nThe side door of our house bangs. There is a moment of waiting. My wife\'s face floats across the yellow background of a picture. \nGeneral Pershing rode down a hill and into a battle. \nAlexander rode down a hill and into a battle. \nLittle things are growing big in my mind. The window before my desk makes a little framed place like a picture. Every day I sit staring. I wait with an odd sensation of something impending. My hand trembles. The face that floats through the picture does something I don\'t understand. The face floats, then it stops. It goes from the right hand side to the left hand side, then it stops. \nThe face comes into my mind and goes out--the face floats in my mind. The pen has fallen from my fingers. The house is silent. The eyes of the floating face are turned away from me.',
@@ -71,7 +71,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-004',
     genre:  'political hierarchy',
-    readTime: Duration(seconds: 242),
+    readTime: Duration(seconds: 252),
     title: 'The Death Of A Government Clerk',
     author: 'Anton Chkhov',
     text: 'ONE fine evening, a no less fine government clerk called Ivan Dmitritch Tchervyakov was sitting in the second row of the stalls, gazing through an opera glass at the Cloches de Corneville. He gazed and felt at the acme of bliss. But suddenly. . . . In stories one so often meets with this "But suddenly." The authors are right: life is so full of surprises! But suddenly his face puckered up, his eyes disappeared, his breathing was arrested . . . he took the opera glass from his eyes, bent over and . . . "Aptchee!!" he sneezed as you perceive. It is not reprehensible for anyone to sneeze anywhere. Peasants sneeze and so do police superintendents, and sometimes even privy councillors. All men sneeze. Tchervyakov was not in the least confused, he wiped his face with his handkerchief, and like a polite man, looked round to see whether he had disturbed any one by his sneezing. But then he was overcome with confusion. He saw that an old gentleman sitting in front of him in the first row of the stalls was carefully wiping his bald head and his neck with his glove and muttering something to himself. In the old gentleman, Tchervyakov recognised Brizzhalov, a civilian general serving in the Department of Transport. \n"I have spattered him," thought Tchervyakov, "he is not the head of my department, but still it is awkward. I must apologise." \nTchervyakov gave a cough, bent his whole person forward, and whispered in the general\'s ear. \n"Pardon, your Excellency, I spattered you accidentally. . . ." \n"Never mind, never mind." \n"For goodness sake excuse me, I . . . I did not mean to." \n"Oh, please, sit down! let me listen!" \nTchervyakov was embarrassed, he smiled stupidly and fell to gazing at the stage. He gazed at it but was no longer feeling bliss. He began to be troubled by uneasiness. In the interval, he went up to Brizzhalov, walked beside him, and overcoming his shyness, muttered: \n"I spattered you, your Excellency, forgive me . . . you see . . . I didn\'t do it to . . . ." \n"Oh, that\'s enough . . . I\'d forgotten it, and you keep on about it!" said the general, moving his lower lip impatiently.\n"He has forgotten, but there is a fiendish light in his eye," thought Tchervyakov, looking suspiciously at the general. "And he doesn\'t want to talk. I ought to explain to him . . . that I really didn\'t intend . . . that it is the law of nature or else he will think I meant to spit on him. He doesn\'t think so now, but he will think so later!"\nOn getting home, Tchervyakov told his wife of his breach of good manners. It struck him that his wife took too frivolous a view of the incident; she was a little frightened, but when she learned that Brizzhalov was in a different department, she was reassured. \n"Still, you had better go and apologise," she said, "or he will think you don\'t know how to behave in public." \n"That\'s just it! I did apologise, but he took it somehow queerly . . . he didn\'t say a word of sense. There wasn\'t time to talk properly." \nNext day Tchervyakov put on a new uniform, had his hair cut and went to Brizzhalov\'s to explain; going into the general\'s reception room he saw there a number of petitioners and among them the general himself, who was beginning to interview them. After questioning several petitioners the general raised his eyes and looked at Tchervyakov.',
@@ -81,7 +81,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-005',
     genre: 'children',
-    readTime: Duration(seconds: 135),
+    readTime: Duration(seconds: 145),
     title: 'Cousin Tribulation\'s Story',
     author: 'Louisa May Alcott',
     text:
@@ -92,7 +92,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-006',
     genre: 'tragedy',
-    readTime: Duration(seconds: 130),
+    readTime: Duration(seconds: 140),
     title: 'The Story of an hour',
     author: 'Kate Chopin',
     text:
@@ -103,7 +103,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-007',
     genre: 'children\'s',
-    readTime: Duration(seconds: 150),
+    readTime: Duration(seconds: 160),
     title: 'The Tale of Peter the Rabbit',
     author: 'Beatrix Portter',
     text:
@@ -114,7 +114,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-008',
     genre: 'fairytale',
-    readTime: Duration(seconds: 170),
+    readTime: Duration(seconds: 180),
     title: 'How the Camel Got His Hump',
     author: 'Rudyard Kipling',
     text:
@@ -125,7 +125,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-009',
     genre: 'thriller',
-    readTime: Duration(seconds: 160),
+    readTime: Duration(seconds: 170),
     title: 'The Cactus',
     author: 'O. Henry',
     text:
@@ -136,7 +136,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-010',
     genre: 'humor',
-    readTime: Duration(seconds: 170),
+    readTime: Duration(seconds: 180),
     title: 'Regret',
     author: 'Kate Chopin',
     text:
@@ -147,7 +147,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-011',
     genre: 'children\'s',
-    readTime: Duration(seconds: 250),
+    readTime: Duration(seconds: 260),
     title: 'The Brave Tin Soldier',
     author: 'Hans Christian Andersen',
     text:
@@ -158,7 +158,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-012',
     genre: 'fantasy',
-    readTime: Duration(seconds: 120),
+    readTime: Duration(seconds: 130),
     title: 'The Haunted Mind',
     author: 'Nathaniel Hawthorne',
     text:
@@ -169,7 +169,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-013',
     genre: 'thriller',
-    readTime: Duration(seconds: 140),
+    readTime: Duration(seconds: 150),
     title: 'A Pair of Silk Stockings',
     author: 'Kate Chopin',
     text:
@@ -180,7 +180,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-014',
     genre: 'short story',
-    readTime: Duration(seconds: 160),
+    readTime: Duration(seconds: 170),
     title: 'The Gift of the Magi',
     author: 'O. Henry',
     text:
@@ -191,7 +191,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-015',
     genre: 'thriler',
-    readTime: Duration(seconds: 185),
+    readTime: Duration(seconds: 195),
     title: 'Disiree\'s Baby',
     author: 'Kate Chopin',
     text:
@@ -202,7 +202,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-016',
     genre: 'thriller',
-    readTime: Duration(seconds: 135),
+    readTime: Duration(seconds: 145),
     title: 'The Skylight Room',
     author: 'O. Henry ',
     text:
@@ -213,7 +213,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-017',
     genre: 'romance',
-    readTime: Duration(seconds: 215),
+    readTime: Duration(seconds: 225),
     title: 'Araby',
     author: 'James Joyce',
     text:
@@ -224,7 +224,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-018',
     genre: 'children\'s',
-    readTime: Duration(seconds: 130),
+    readTime: Duration(seconds: 140),
     title: 'A Dark Brown Dog',
     author: 'Stephen crane',
     text:
@@ -235,7 +235,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-019',
     genre: 'coming of age',
-    readTime: Duration(seconds: 130),
+    readTime: Duration(seconds: 140),
     title: 'An Angel in Disguise',
     author: 'T.S Arthur',
     text:
@@ -246,7 +246,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-020',
     genre: 'animal',
-    readTime: Duration(seconds: 285),
+    readTime: Duration(seconds: 295),
     title: 'The Cat',
     author: 'Mary E. Wilkins Freeman',
     text:
@@ -257,7 +257,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-021',
     genre: 'alternate history',
-    readTime: Duration(seconds: 225),
+    readTime: Duration(seconds: 235),
     title: 'An Occurence at Owl Creek  Bridge',
     author: 'Ambrose Bierce',
     text:
@@ -268,7 +268,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-022',
     genre: 'thriller',
-    readTime: Duration(seconds: 165),
+    readTime: Duration(seconds: 175),
     title: 'About Love',
     author: 'Anton Chekhov',
     text:
@@ -279,7 +279,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-023',
     genre: 'humor',
-    readTime: Duration(seconds: 123),
+    readTime: Duration(seconds: 133),
     title: 'The Monkey\'s Paw',
     author: 'W. W. Jacobs',
     text:
@@ -290,7 +290,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-024',
     genre: 'mystery',
-    readTime: Duration(seconds: 150),
+    readTime: Duration(seconds: 160),
     title: 'Lost Hearts',
     author: 'M.R. James',
     text:
@@ -301,7 +301,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-025',
     genre: 'chick lit',
-    readTime: Duration(seconds: 150),
+    readTime: Duration(seconds: 160),
     title: 'The Luck of Roaring Camp',
     author: 'Bret Harte',
     text:
@@ -312,7 +312,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-026',
     genre: 'fantasy',
-    readTime: Duration(seconds: 160),
+    readTime: Duration(seconds: 170),
     title: 'A Journey',
     author: 'Edith Wharton',
     text:
@@ -323,7 +323,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-027',
     genre: 'humor',
-    readTime: Duration(seconds: 108),
+    readTime: Duration(seconds: 118),
     title: 'A New England Nun',
     author: 'Mary E. Wilkins Freeman',
     text:
@@ -334,7 +334,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-028',
     genre: 'horror',
-    readTime: Duration(seconds: 112),
+    readTime: Duration(seconds: 122),
     title: 'The Hanging Stranger',
     author: 'Philip K. Dick',
     text:
@@ -345,7 +345,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-029',
     genre: 'fairytale',
-    readTime: Duration(seconds: 175),
+    readTime: Duration(seconds: 185),
     title: 'Rikki-Tikki-Tavi',
     author: 'Rudyard Kipling',
     text:
@@ -356,7 +356,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-030',
     genre: 'Mystery',
-    readTime: Duration(seconds: 200),
+    readTime: Duration(seconds: 210),
     title: 'The Pit and the Pendulum',
     author: 'Edgar Allen Poe',
     text:
@@ -367,7 +367,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-031',
     genre: 'adventure',
-    readTime: Duration(seconds: 150),
+    readTime: Duration(seconds: 160),
     title: 'To Build a Fire',
     author: 'Jack London',
     text:
@@ -378,7 +378,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-032',
     genre: 'historical fiction',
-    readTime: Duration(seconds: 150),
+    readTime: Duration(seconds: 160),
     title: 'My Kinsman, Major Molineux',
     author: 'Nathaniel Hawthorne',
     text:
@@ -389,7 +389,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-033',
     genre: 'thriller',
-    readTime: Duration(seconds: 150),
+    readTime: Duration(seconds: 160),
     title: 'Odour of Chrysanthemums',
     author: 'D.H Lawrence',
     text:
@@ -400,7 +400,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-034',
     genre: 'short story',
-    readTime: Duration(seconds: 177),
+    readTime: Duration(seconds: 187),
     title: 'A Jury of Her Peers',
     author: 'Susan Glaspell',
     text:
@@ -411,7 +411,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-035',
     genre: 'short story',
-    readTime: Duration(seconds: 240),
+    readTime: Duration(seconds: 250),
     title: 'Ali Baba and the Forty Thieves',
     author: 'Arabian Nights',
     text:
@@ -422,7 +422,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-036',
     genre: 'memoir',
-    readTime: Duration(seconds: 134),
+    readTime: Duration(seconds: 144),
     title: 'The Game',
     author: 'Mary Roberts Rinehart',
     text:
@@ -433,7 +433,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-037',
     genre: 'mystery',
-    readTime: Duration(seconds: 230),
+    readTime: Duration(seconds: 240),
     title: 'The Call of Cthulhu',
     author: 'H.P. Lovecraft',
     text:
@@ -444,7 +444,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-038',
     genre: 'memoir',
-    readTime: Duration(seconds: 300),
+    readTime: Duration(seconds: 310),
     title: 'The Repairer of Reputatuions',
     author: 'Robert W. Chambers',
     text:
@@ -455,7 +455,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-039',
     genre: 'satire',
-    readTime: Duration(seconds: 212),
+    readTime: Duration(seconds: 222),
     title: 'Boule de Suif',
     author: 'Guy de Maupassant',
     text:
@@ -466,7 +466,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-040',
     genre: 'short story',
-    readTime: Duration(seconds: 73),
+    readTime: Duration(seconds: 83),
     title: 'The Boy and The Filberts',
     author: 'Aesop',
     text:
@@ -477,7 +477,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-041',
     genre: 'suspense',
-    readTime: Duration(seconds: 162),
+    readTime: Duration(seconds: 172),
     title: 'The Night Came Slowly',
     author: 'Kate Chopin',
     text:
@@ -488,7 +488,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-042',
     genre: 'humor',
-    readTime: Duration(seconds: 150),
+    readTime: Duration(seconds: 160),
     title: 'One Summer Night',
     author: 'Ambrose Bierce',
     text:
@@ -499,7 +499,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-043',
     genre: 'children\'s',
-    readTime: Duration(seconds: 220),
+    readTime: Duration(seconds: 230),
     title: 'The Coming of the King',
     author: 'Laura E. Richards',
     text:
@@ -510,7 +510,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-044',
     genre: 'poetry',
-    readTime: Duration(seconds: 165),
+    readTime: Duration(seconds: 175),
     title: 'A Blunder',
     author: 'Anton Chekhov',
     text:
@@ -521,7 +521,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-045',
     genre: 'fanstasy',
-    readTime: Duration(seconds: 180),
+    readTime: Duration(seconds: 190),
     title: 'Ex Oblivione',
     author: 'H.P. Lovecraft',
     text:
@@ -532,7 +532,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-046',
     genre: 'children\'s',
-    readTime: Duration(seconds: 188),
+    readTime: Duration(seconds: 198),
     title: 'Fat And Thin',
     author: 'Anton Chekhov',
     text:
@@ -543,7 +543,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-047',
     genre: 'humor',
-    readTime: Duration(seconds: 181),
+    readTime: Duration(seconds: 191),
     title: 'Hearts And Hands',
     author: 'O. Henry',
     text:
@@ -554,7 +554,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-048',
     genre: 'spirituality',
-    readTime: Duration(seconds: 193),
+    readTime: Duration(seconds: 203),
     title: 'Amy\'s Questions',
     author: 'T.S. Arthur',
     text:
@@ -565,7 +565,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-049',
     genre: 'thriller',
-    readTime: Duration(seconds: 177),
+    readTime: Duration(seconds: 187),
     title: 'My Financial Career',
     author: 'Stephen Leacock',
     text:
@@ -576,7 +576,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-050',
     genre: 'tragedy',
-    readTime: Duration(seconds: 280),
+    readTime: Duration(seconds: 290),
     title: 'The Aged Mother',
     author: 'Matsuo Basho',
     text:
