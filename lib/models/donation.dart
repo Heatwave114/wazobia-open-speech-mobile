@@ -30,10 +30,10 @@ class Donation {
   });
 
   // setInvalidReasons helps with firebase in validation_screen
-  set setInvalidReasons(List<Map<String, String>> invalidReasons) => this.invalidReasons = invalidReasons;
+  set setInvalidReasons(List<Map<String, dynamic>> invalidReasons) => this.invalidReasons = invalidReasons;
 
   // addInvalidReason helps with firebase in validation_screen
-  void addInvalidReason(Map<String, String> reason){
+  void addInvalidReason(Map<String, dynamic> reason){
     this.invalidReasons.add(reason);
   }
 

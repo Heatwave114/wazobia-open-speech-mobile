@@ -12,7 +12,7 @@ import '../models/resource.dart';
 class SoundTin with ChangeNotifier {
   String donatedVoicePath;
   String validatingVoiceURL;
-  String reasonForInvalidation;
+  String reasonForEvaluation;
   Resource currentDonatingResource;
   Resource currentValidatingResource;
   Donation currentValidatingDonation;
@@ -32,11 +32,11 @@ class SoundTin with ChangeNotifier {
   //////////
 
   // reasonForInvalidation set
-  set setReasonForInvalidation(String reasonForValidation) =>
-      this.reasonForInvalidation = reasonForValidation;
+  set setReasonForEvaluation(String reasonForEvaluation) =>
+      this.reasonForEvaluation = reasonForEvaluation;
 
   // reasonForInvalidation get
-  get getReasonForInvalidation => this.reasonForInvalidation;
+  get getReasonForEvaluation => this.reasonForEvaluation;
 
   // _proceedWithDonationEvaluation set
   set setProceedWithDonationEvaluation(bool proceedWithDonationEvaluation) =>

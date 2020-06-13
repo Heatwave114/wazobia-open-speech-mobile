@@ -414,12 +414,12 @@ class _TextPanelState extends State<TextPanel> {
                                       //     .currentValidatingResource.title);
                                       // soundTin.setShouldAllowValidate = false;
 
-                                      // if (!soundTin.getShouldAllowValidation) {
-                                      //   user.showDialogue('Alert',
-                                      //       'Ensure the whole audio corresponds to the this text resource. Listen more.',
-                                      //       isRed: true);
-                                      //   return;
-                                      // }
+                                      if (!soundTin.getShouldAllowValidation) {
+                                        user.showDialogue('Alert',
+                                            'Ensure the whole audio corresponds to the this text resource. Listen more.',
+                                            isRed: true);
+                                        return;
+                                      }
 
                                       setState(() {
                                         this._invalidateTapCounter++;
@@ -441,7 +441,8 @@ class _TextPanelState extends State<TextPanel> {
                                                   .setInvalidReasons = [];
                                               widget.donation.addInvalidReason({
                                                 '${DateTime.now().millisecondsSinceEpoch}':
-                                                    '${soundTin.getReasonForInvalidation}'
+                                                    '${soundTin.getReasonForEvaluation}',
+                                                'valid': false,
                                               });
                                             }
                                             // print(
@@ -455,8 +456,10 @@ class _TextPanelState extends State<TextPanel> {
                                                       widget.donation.name)
                                                   .updateData({
                                                 'bias': widget.donation.bias,
+                                                'validcount':
+                                                    widget.donation.validCount,
                                                 if (soundTin
-                                                        .getReasonForInvalidation
+                                                        .getReasonForEvaluation
                                                         .trim() !=
                                                     '')
                                                   'invalidreasons': (widget
@@ -467,14 +470,13 @@ class _TextPanelState extends State<TextPanel> {
                                                       ? FieldValue.arrayUnion([
                                                           {
                                                             '${DateTime.now().millisecondsSinceEpoch}':
-                                                                '${soundTin.getReasonForInvalidation}'
+                                                                '${soundTin.getReasonForEvaluation}',
+                                                            'valid': false,
                                                           }
                                                         ])
                                                       : FieldValue.arrayUnion(
                                                           widget.donation
                                                               .invalidReasons),
-                                                'validcount':
-                                                    widget.donation.validCount,
                                               }).then((_) {
                                                 // Can now bring a new donation for validation
                                                 soundTin.setShouldRefreshValidatingDonationIndex =
@@ -623,6 +625,18 @@ class _TextPanelState extends State<TextPanel> {
                                       this.confirmProceedWithDonation(
                                           isValid: true,
                                           submitEvaluation: () {
+                                            if (widget
+                                                    .donation.invalidReasons ==
+                                                null) {
+                                              widget.donation
+                                                  .setInvalidReasons = [];
+                                              widget.donation.addInvalidReason({
+                                                '${DateTime.now().millisecondsSinceEpoch}':
+                                                    '${soundTin.getReasonForEvaluation}',
+                                                'valid': true,
+                                              });
+                                            }
+
                                             if (widget.donation.bias < 2) {
                                               fbHelper.unvalidatedURLs
                                                   .document(
@@ -631,6 +645,25 @@ class _TextPanelState extends State<TextPanel> {
                                                 'bias': widget.donation.bias,
                                                 'validcount':
                                                     widget.donation.validCount,
+                                                if (soundTin
+                                                        .getReasonForEvaluation
+                                                        .trim() !=
+                                                    '')
+                                                  'invalidreasons': (widget
+                                                              .donation
+                                                              .invalidReasons
+                                                              .length >
+                                                          0)
+                                                      ? FieldValue.arrayUnion([
+                                                          {
+                                                            '${DateTime.now().millisecondsSinceEpoch}':
+                                                                '${soundTin.getReasonForEvaluation}',
+                                                            'valid': true,
+                                                          }
+                                                        ])
+                                                      : FieldValue.arrayUnion(
+                                                          widget.donation
+                                                              .invalidReasons),
                                               }).then((_) {
                                                 // Can now bring a new donation for validation
                                                 soundTin.setShouldRefreshValidatingDonationIndex =
@@ -810,78 +843,83 @@ class _SubmitValidationAlertDialogState
         ),
       ),
       content: Container(
-        height: (this.widget._validateTapCounter > 0) ? null : 90.0,
-        child: (this.widget._validateTapCounter > 0)
-            ? Text(
-                'Are you sure you want to submit your evaluation?',
-                style: const TextStyle(
-                  fontFamily: 'Abel',
-                  fontSize: 17.0,
-                  // fontWeight: FontWeight.bold
-                ),
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    '(Optional) Tell us why this recording is ${widget.validInvalidLowerPreText}${widget.validInvalidText}',
-                    style: const TextStyle(
-                      fontFamily: 'Abel',
-                      fontSize: 17.0,
-                      // fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  TextFormField(
-                    controller: this._validationTextController,
-                    cursorColor: (this.widget._validateTapCounter > 0)
-                        ? Colors.lightGreen[900]
-                        : Colors.redAccent,
-                    maxLength: 30,
-                    decoration: InputDecoration(
-                      counterText: '',
-
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          // color: (this._validateTapCounter > 0)
-                          //     ? Colors.lightGreen
-                          //     : Colors.red[900],
-                          color: Colors.grey,
-                        ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: (this.widget._validateTapCounter > 0)
-                              ? Colors.lightGreen
-                              : Colors.red[900],
-                        ),
-                      ),
-                      // counter: Text(
-                      //   '$_validationTextReasonLength',
-                      //   style: TextStyle(
-                      //     fontFamily: 'ComicNeue',
-                      //     color: Colors.red[700],
-                      //   ),
-                      // ),
-
-                      labelStyle: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 14.0,
-                      ),
-                      // prefixText: '+234-',
-                      // labelText:
-                      //     '(Optional) Tell us why this recording is $validInvalidLowerPreText$validInvalidText',
-                      // hintText:
-                      //     'Tell us why this recording is $validInvalidText',
-
-                      // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
-                    ),
-                    // onChanged: (value) {
-                    //   if(this.mounted)
-                    //   setState(() {});
-                    // },
-                  ),
-                ],
+        // height: (this.widget._validateTapCounter > 0) ? null : 90.0,
+        height: 90.0,
+        child:
+            // (this.widget._validateTapCounter > 0)
+            // ? Text(
+            //     'Are you sure you want to submit your evaluation?',
+            //     style: const TextStyle(
+            //       fontFamily: 'Abel',
+            //       fontSize: 17.0,
+            //       // fontWeight: FontWeight.bold
+            //     ),
+            //   )
+            // :
+            Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              (this.widget._validateTapCounter > 0)
+                  ? '(Optional) Tell us any deficiency in this recording if any'
+                  : '(Optional) Tell us why this recording is Invalid',
+              style: const TextStyle(
+                fontFamily: 'Abel',
+                fontSize: 17.0,
+                // fontWeight: FontWeight.bold
               ),
+            ),
+            TextFormField(
+              controller: this._validationTextController,
+              cursorColor: (this.widget._validateTapCounter > 0)
+                  ? Colors.lightGreen[900]
+                  : Colors.redAccent,
+              maxLength: 30,
+              decoration: InputDecoration(
+                counterText: '',
+
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    // color: (this._validateTapCounter > 0)
+                    //     ? Colors.lightGreen
+                    //     : Colors.red[900],
+                    color: Colors.grey,
+                  ),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: (this.widget._validateTapCounter > 0)
+                        ? Colors.lightGreen
+                        : Colors.red[900],
+                  ),
+                ),
+                // counter: Text(
+                //   '$_validationTextReasonLength',
+                //   style: TextStyle(
+                //     fontFamily: 'ComicNeue',
+                //     color: Colors.red[700],
+                //   ),
+                // ),
+
+                labelStyle: const TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 14.0,
+                ),
+                // prefixText: '+234-',
+                // labelText:
+                //     '(Optional) Tell us why this recording is $validInvalidLowerPreText$validInvalidText',
+                // hintText:
+                //     'Tell us why this recording is $validInvalidText',
+
+                // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
+              ),
+              // onChanged: (value) {
+              //   if(this.mounted)
+              //   setState(() {});
+              // },
+            ),
+          ],
+        ),
       ),
       actions: <Widget>[
         FlatButton(
@@ -920,14 +958,15 @@ class _SubmitValidationAlertDialogState
             final bool internet = await user.connectionStatus();
             if (!internet) {
               user.showSnackBar('Check your internet');
-              soundTin.setProceedWithDonationEvaluation = false;  // Redunddant ??
+              soundTin.setProceedWithDonationEvaluation =
+                  false; // Redunddant ??
               Navigator.of(context).pop();
               return;
             }
 
             setState(() {
-              soundTin.setReasonForInvalidation =
-                  this._validationTextController.text;
+              soundTin
+                ..setReasonForEvaluation = this._validationTextController.text;
               soundTin.setProceedWithDonationEvaluation = true;
               Navigator.of(context).pop();
             });
