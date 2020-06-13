@@ -108,11 +108,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     if (back && _tabController.index >= 1) {
       setState(() {
         _agreedToTerms = false;
-      });
       this._tabController.index--;
+      });
+      if(_tabController.index < 0) return;
     } else if (!back && _tabController.index < _tabController.length - 1) {
-      setState(() {});
-      this._tabController.index++;
+      setState(() {
+        this._tabController.index++;
+      });
+      if(_tabController.index >= _tabController.length) return;
     }
   }
 
@@ -126,6 +129,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         fontSize: 18.0,
       ),
     };
+
+    if (_tabController.index != _tabController.length - 1) setState(() {});
 
     return SafeArea(
       child: Container(
@@ -293,23 +298,22 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           color: Colors.white,
                           selectedColor: Colors.black,
                           controller: _tabController,
-                          indicatorSize: 5.0,
+                          indicatorSize: 7.0,
                         ),
                         FlatButton(
                           child: Text(
                             'Next',
                             style: _welcomeStyle['button'],
                           ),
-                          onPressed: !(_tabController.index ==
-                                  _tabController.length - 1)
-                              ? () => _nextPreviousPage(false)
-                              : _agreedToTerms
+                          onPressed: _agreedToTerms
                                   ? () {
                                       this._user.setFirstTime(false);
                                       Navigator.of(context)
                                           .pushNamed(MetadataScreen.routeName);
                                     }
-                                  : null,
+                                  : () {
+                                    this._nextPreviousPage(false);
+                                  },
                         )
                       ],
                     ),
