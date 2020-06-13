@@ -165,7 +165,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         _buildCartridge(
                           'Welcome',
                           child: Text(
-                            'This application is developed by Federal University of Technology, Minna, in collaboration with ITU. It is used to collect voice data specific to African dialects.',
+                            'This application is developed by students of Computer Engineering Department, Federal University of Technology, Minna, in collaboration with ITU, under their Machine Learning and 5G focus group. It is used to collect voice data.',
                             style: TextStyle(
                               fontSize: 25.0,
                               fontFamily: 'Abel',

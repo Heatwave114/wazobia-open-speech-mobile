@@ -431,8 +431,8 @@ class _TextPanelState extends State<TextPanel> {
                                       this.confirmProceedWithDonation(
                                           isValid: false,
                                           submitEvaluation: () async {
-                                            print(
-                                                widget.donation.invalidReasons);
+                                            // print(
+                                            //     widget.donation.invalidReasons);
                                             if (widget
                                                     .donation.invalidReasons ==
                                                 null) {
@@ -443,10 +443,10 @@ class _TextPanelState extends State<TextPanel> {
                                                     '${soundTin.getReasonForInvalidation}'
                                               });
                                             }
-                                            print(
-                                                widget.donation.invalidReasons);
-                                            print(widget.donation.invalidReasons
-                                                .length);
+                                            // print(
+                                            //     widget.donation.invalidReasons);
+                                            // print(widget.donation.invalidReasons
+                                            //     .length);
 
                                             if (widget.donation.bias > -2) {
                                               fbHelper.unvalidatedURLs
@@ -454,21 +454,24 @@ class _TextPanelState extends State<TextPanel> {
                                                       widget.donation.name)
                                                   .updateData({
                                                 'bias': widget.donation.bias,
-                                                if(soundTin.getReasonForInvalidation.trim() != '')
-                                                'invalidreasons': (widget
-                                                            .donation
-                                                            .invalidReasons
-                                                            .length >
-                                                        0)
-                                                    ? FieldValue.arrayUnion([
-                                                        {
-                                                          '${DateTime.now().millisecondsSinceEpoch}':
-                                                              '${soundTin.getReasonForInvalidation}'
-                                                        }
-                                                      ])
-                                                    : FieldValue.arrayUnion(
-                                                        widget.donation
-                                                            .invalidReasons),
+                                                if (soundTin
+                                                        .getReasonForInvalidation
+                                                        .trim() !=
+                                                    '')
+                                                  'invalidreasons': (widget
+                                                              .donation
+                                                              .invalidReasons
+                                                              .length >
+                                                          0)
+                                                      ? FieldValue.arrayUnion([
+                                                          {
+                                                            '${DateTime.now().millisecondsSinceEpoch}':
+                                                                '${soundTin.getReasonForInvalidation}'
+                                                          }
+                                                        ])
+                                                      : FieldValue.arrayUnion(
+                                                          widget.donation
+                                                              .invalidReasons),
                                                 'validcount':
                                                     widget.donation.validCount,
                                               }).then((_) {

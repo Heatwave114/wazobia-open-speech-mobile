@@ -25,8 +25,8 @@ class MetadataScreen extends StatefulWidget {
 class _MetadataScreenState extends State<MetadataScreen> {
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.height);
-    print(MediaQuery.of(context).size.width);
+    // print(MediaQuery.of(context).size.height);
+    // print(MediaQuery.of(context).size.width);
     // final Size _deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
@@ -447,22 +447,34 @@ class _MetadataFormState extends State<MetadataForm> {
                     // prefixText: '+234-',
 
                     labelText: 'Country',
-                    suffixIcon: CountryPicker(
-                      showDialingCode: false,
-                      // showFlag: false,
-                      showName: false,
-                      dense: false,
+                    suffixIcon: IgnorePointer(
+                      ignoring: true,
+                      child: CountryPicker(
+                        showDialingCode: false,
+                        // showFlag: false,
+                        showName: false,
+                        dense: false,
 
-                      onChanged: (Country country) {
-                        setState(() {
+                        onChanged: (Country country) {
                           _selectedCountry = country;
-                        });
-                      },
-                      selectedCountry: _selectedCountry,
+                          // setState(() {
+                          // });
+                        },
+                        selectedCountry: _selectedCountry,
+                      ),
                     ),
 
                     // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
                   ),
+                  onTap: () {
+                    showCountryPicker(
+                      context: context,
+                      defaultCountry: _selectedCountry,
+                    ).then((country) {
+                      if (country == null) return;
+                      _selectedCountry = country;
+                    });
+                  },
                   // focusNode: _countryFocusNode,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_genderFocusNode);
