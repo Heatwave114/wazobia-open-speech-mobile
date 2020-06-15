@@ -100,7 +100,7 @@ class User with ChangeNotifier {
           'agerange': currentUser['agerange'],
           'education': currentUser['edubg'],
         },
-        
+
         'donationdateniglocal': now.toIso8601String(),
         // 'invalidreasons': [],
         'cqi': 'NA',
@@ -193,7 +193,8 @@ class User with ChangeNotifier {
       //     .document(await getCurrentUserID())
       //     .delete();
       // _showSnackBar('This nickname is already taken');
-      throw PreferredException('This nickname is already taken');
+      throw PreferredException(
+          'This nickname is already taken by another local user');
     } else {
       final decodedOldUsers = json.decode(oldUsers);
       decodedOldUsers[user.nickname] = {
@@ -331,7 +332,7 @@ class User with ChangeNotifier {
   }
 
   // cuurentUser Delete
-  void deleteCurrentUser() async {
+  Future<void> deleteCurrentUser() async {
     final pref = await this._pref;
     final users = await this.getUsers();
     final currentUserNickname = (await this.getCurrentUser())['nickname'];

@@ -111,6 +111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
+          // automaticallyImplyLeading: false,
           // title: Text('Dashboard'),
           title: FutureBuilder(
             future: _user.getCurrentUser(),
@@ -125,6 +126,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
           actions: <Widget>[
+            // FlatButton(
+            //   child: Text('ff'),
+            //   onPressed: () async {
+            //     print(await _user.getCurrentUser());
+            //   },
+            // ),
             IconButton(
               padding: EdgeInsets.only(right: 15.0),
               key: this._moreKey,
@@ -188,12 +195,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 if (_result == 'delete') {
                   // if (internet) {}
                   _user.signOut().then((_) async {
-                    _user.deleteCurrentUser();
+                    await _user.deleteCurrentUser();
                     _user.setCurrentUser(null);
                     Navigator.of(context)
                         .pushReplacementNamed(AccountSelectScreen.routeName);
-                  }).catchError((e) {
+                  }).catchError((e) async {
                     // print(e.toString());
+                    await _user.deleteCurrentUser();
                     _user.setCurrentUser(null);
                     Navigator.of(context)
                         .pushReplacementNamed(AccountSelectScreen.routeName);

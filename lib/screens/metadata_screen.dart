@@ -208,9 +208,9 @@ class _MetadataFormState extends State<MetadataForm> {
     } catch (e) {
       // print(e);
       var errorMessage = 'Something went wrong. Try again later';
-      if (e.toString().contains('This nickname is already taken')) {
+      if (e.toString().contains('This nickname is already taken by another local user')) {
         // databaseRoot.collection('users').document(_userData.documentID).delete();
-        errorMessage = 'This nickname is already taken';
+        errorMessage = 'This nickname is already taken by another local user';
         this._user.setContext(context);
         this._user.showSnackBar(errorMessage);
       }
@@ -257,9 +257,9 @@ class _MetadataFormState extends State<MetadataForm> {
           this._user.setCurrentUser(null);
           authenticatedUser.delete();
           var errorMessage = 'Something went wrong. Try again later';
-          if (e.toString().contains('This nickname is already taken')) {
+          if (e.toString().contains('This nickname is already taken by another local user')) {
             // databaseRoot.collection('users').document(_userData.documentID).delete();
-            errorMessage = 'This nickname is already taken';
+            errorMessage = 'This nickname is already taken by another local user';
             this._user.setContext(context);
             this._user.showSnackBar(errorMessage);
             return;
@@ -270,8 +270,8 @@ class _MetadataFormState extends State<MetadataForm> {
         this._user.setCurrentUser(null);
         var errorMessage = 'An error occured. Try again later.';
         if (e.message.toString().contains(
-            'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
-          errorMessage = 'An error occured. Check your internet connection.';
+            'network error')) {
+          errorMessage = 'Check your internet connection';
         }
         this._user.setContext(context);
         this._user.showSnackBar(errorMessage);
@@ -286,9 +286,9 @@ class _MetadataFormState extends State<MetadataForm> {
       // });
       this._user.setCurrentUser(null);
       var errorMessage = 'Something went wrong. Try again later';
-      if (e.toString().contains('This nickname is already taken')) {
+      if (e.toString().contains('This nickname is already taken by another local user')) {
         // databaseRoot.collection('users').document(_userData.documentID).delete();
-        errorMessage = 'This nickname is already taken';
+        errorMessage = 'This nickname is already taken by another local user';
         this._user.setContext(context);
         this._user.showSnackBar(errorMessage);
         return;
@@ -902,16 +902,16 @@ class _MetadataFormState extends State<MetadataForm> {
                                       user.setContext(context);
                                       final bool internet =
                                           await user.connectionStatus();
-                                      if (internet) {
                                         _submit().then((value) => setState(
                                             () => this._isLoading = false));
-                                      } else {
-                                        setState(() {
-                                          _isLoading = false;
-                                        });
-                                        user.showSnackBar(
-                                            'Check your internet');
-                                      }
+                                      // if (internet) {
+                                      // } else {
+                                      //   setState(() {
+                                      //     _isLoading = false;
+                                      //   });
+                                      //   user.showSnackBar(
+                                      //       'Check your internet');
+                                      // }
                                       // setState(() {
                                       //   _isLoading = false;
                                       // });
