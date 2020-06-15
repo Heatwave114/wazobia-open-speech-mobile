@@ -17,6 +17,8 @@ import './screens/metadata_screen.dart';
 import './screens/welcome_screen.dart';
 import './screens/contribute/donate_voice_screen.dart';
 import './screens/contribute/validate_screen.dart';
+import './screens/legal/about_us_screen.dart';
+import './screens/legal/terms_and_conditions_screen.dart';
 import './widgets/centrally_used.dart';
 
 // Sound _
@@ -111,7 +113,7 @@ class MyApp extends StatelessWidget {
                               return Scaffold(
                                 body: Center(
                                   child: Text(
-                                    'Check your internet connection.',
+                                    'Check your internet connection',
                                     style: TextStyle(
                                       fontSize: 20.0,
                                       fontFamily: 'Abel',
@@ -132,10 +134,12 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           // AuthenticateScreen.routeName: (ctx) => AuthenticateScreen(),
+          AboutUsScreen.routeName: (ctx) => AboutUsScreen(),
           AccountSelectScreen.routeName: (ctx) => AccountSelectScreen(),
           DashboardScreen.routeName: (ctx) => DashboardScreen(),
           DonateVoiceScreen.routeName: (ctx) => DonateVoiceScreen(),
           MetadataScreen.routeName: (ctx) => MetadataScreen(),
+          TermsAndConditionsScreen.routeName: (ctx) => TermsAndConditionsScreen(),
           ValidateScreen.routeName: (ctx) => ValidateScreen(),
           WelcomeScreen.routeName: (ctx) => WelcomeScreen(),
         },

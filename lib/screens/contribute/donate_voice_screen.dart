@@ -21,7 +21,7 @@ import '../../widgets/centrally_used.dart';
 import '../../widgets/dash_widgets.dart';
 
 class DonateVoiceScreen extends StatelessWidget {
-  static const routeName = '/voice';
+  static const routeName = '/donate';
 
   Random _random = Random();
   // bool shouldRefresh;
@@ -53,6 +53,96 @@ class DonateVoiceScreen extends StatelessWidget {
   //   this._currentResourceIndex = index;
   // }
 
+  final _donationHelpExpansionKey = GlobalKey();
+
+  // To show help text around where button pressed
+  RelativeRect buttonMenuPosition(BuildContext c) {
+    final RenderBox bar = c.findRenderObject();
+    final RenderBox overlay = Overlay.of(c).context.findRenderObject();
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+    return position;
+  }
+
+  Widget _helpText(
+      String whatToDoText, String afterwardsText, String privacyText) {
+    Map<String, TextStyle> _style = {
+      'header': const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 11.0,
+        fontFamily: 'PTSans',
+      ),
+      'body': const TextStyle(
+        fontSize: 14.0,
+        fontFamily: 'Abel',
+      ),
+    };
+    return RichText(
+      // overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        style: TextStyle(color: Colors.black, fontSize: 14),
+        children: <TextSpan>[
+          // What to do
+          TextSpan(
+            text: 'WHAT TO DO\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: whatToDoText + '\n\n',
+            style: _style['body'],
+          ),
+
+          // Afterwards
+          TextSpan(
+            text: 'WHAT HAPPENS AFTER YOUR VALIDATION\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: afterwardsText + '\n\n',
+            style: _style['body'],
+          ),
+
+          // Privacy
+          TextSpan(
+            text: 'PRIVACY\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: privacyText,
+            style: _style['body'],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // final ScrollController _scrollController = ScrollController();
+
+  void _onTapHelp(BuildContext context, Widget content) async {
+    final position = buttonMenuPosition(context);
+    showMenu(
+      color: Colors.amber,
+      context: context,
+      position: position,
+      items: <PopupMenuItem<String>>[
+        PopupMenuItem<String>(
+          child: InkWell(
+            // Inkwell redundant
+            child: content,
+          ),
+        ),
+      ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // _scrollController
@@ -63,6 +153,21 @@ class DonateVoiceScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Donate Your Voice'),
+        actions: <Widget>[
+          IconButton(
+            key: this._donationHelpExpansionKey,
+            padding: EdgeInsets.only(right: 15),
+            icon: Icon(Icons.help),
+            onPressed: () => this._onTapHelp(
+              this._donationHelpExpansionKey.currentContext,
+              this._helpText(
+                'We need your help with a voice donation. We have provided a text that you should read while you record it. You can discard the recording to make a new one. You can also listen to it before you submit.',
+                'After you have submitted your donation, we store it in our server as unvalidated pending its validation from our friends like you 😉. After absolute validation, we promote it to validated.',
+                'We do not collect any traceable information from you. Hence, it is impossible to associate you(specifically) with the data you gave at the metadata screen. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.',
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
@@ -280,8 +385,8 @@ class _TextPanelState extends State<TextPanel> {
     bool proceedWithDonation;
     // print('before:' + proceedWithDonation.toString());
     // final bool evaluate = await showDialog(
-      final user = Provider.of<User>(context, listen: false);
-      user.setContext(context);
+    final user = Provider.of<User>(context, listen: false);
+    user.setContext(context);
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -316,7 +421,7 @@ class _TextPanelState extends State<TextPanel> {
                 ),
               ),
               onPressed: () {
-               this.stopLoadingForDonation();
+                this.stopLoadingForDonation();
                 proceedWithDonation = false;
                 // this.stopLoadingForValidation();
                 Navigator.of(context).pop();
@@ -336,11 +441,11 @@ class _TextPanelState extends State<TextPanel> {
               ),
               onPressed: () async {
                 final bool internet = await user.connectionStatus();
-                if(!internet) {
+                if (!internet) {
                   user.showSnackBar('Check your internet');
-                Navigator.of(context).pop();
-                this.stopLoadingForDonation();
-                return;
+                  Navigator.of(context).pop();
+                  this.stopLoadingForDonation();
+                  return;
                 }
                 proceedWithDonation = true;
                 Navigator.of(context).pop();
@@ -519,7 +624,7 @@ class _TextPanelState extends State<TextPanel> {
                                                 user.showDialogue('Thank you',
                                                     'We sincerely appreciate your donation. You can always make another',
                                                     whenFinished: () {
-                                                      soundTin.setInDanger = false;
+                                                  soundTin.setInDanger = false;
                                                   soundTin.setShouldInitDevil =
                                                       true;
                                                 });

@@ -35,6 +35,7 @@ dependencies:
   firebase_storage: ^3.1.5
   share: ^0.6.4+3
   package_info: ^0.4.1
+  flutter_email_sender: ^3.0.1
 
 dev_dependencies:
   flutter_test:

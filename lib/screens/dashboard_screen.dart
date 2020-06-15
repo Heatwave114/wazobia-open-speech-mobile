@@ -14,6 +14,8 @@ import 'package:share/share.dart';
 import './authenticate_screen.dart';
 import './contribute/donate_voice_screen.dart';
 import './contribute/validate_screen.dart';
+import './legal/about_us_screen.dart';
+import './legal/terms_and_conditions_screen.dart';
 import '../resources.dart';
 import '../helpers/auth.dart';
 import '../models/user.dart';
@@ -66,7 +68,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
             actions: <Widget>[
-              
               FlatButton(
                 onPressed: () => exit(0),
                 /*Navigator.of(context).pop(true)*/
@@ -138,52 +139,77 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   items: <PopupMenuItem<String>>[
                     const PopupMenuItem<String>(
                         child: const InkWell(
-                          child: const Text('logout'),
+                          child: const Text('switch user'),
                         ),
-                        value: 'logout'),
+                        value: 'switch user'),
                     const PopupMenuItem<String>(
                         child: const InkWell(
                           child: const Text('delete this user'),
                         ),
                         value: 'delete'),
+                    const PopupMenuItem<String>(
+                        child: const InkWell(
+                          child: const Text('terms and conditions'),
+                        ),
+                        value: 'tandc'),
+                    const PopupMenuItem<String>(
+                        child: const InkWell(
+                          child: const Text('about us'),
+                        ),
+                        value: 'about'),
                   ],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 );
-                if (_result == 'logout') {
-                  // Navigator.of(context)
-                  //     .pushReplacementNamed(AuthenticateScreen.routeName);
-                  // Auth().signOut();
-                  // _user.setCurrentUser(null);
-                  // _user.setInstance(FirebaseAuth.instance.currentUser());
-                  final bool internet = await _user.connectionStatus();
-                  if (internet) {
-                    _user.signOut().then((_) async {
-                      _user.setCurrentUser(null);
-                      Navigator.of(context)
-                          .pushReplacementNamed(AccountSelectScreen.routeName);
-                    }).catchError((e) {
-                      print(e.toString());
-                    });
-                  }
+
+                final bool internet = await _user.connectionStatus();
+                if (!internet) {
+                  _user.showSnackBar('Check your internet');
+                  return;
+                }
+
+                if (_result == 'switch user') {
+                  // if (internet) {}
+
+                  _user.signOut().then((_) async {
+                    _user.setCurrentUser(null);
+                    Navigator.of(context)
+                        .pushReplacementNamed(AccountSelectScreen.routeName);
+                  }).catchError((e) {
+                    // print(e.toString());
+                    _user.setCurrentUser(null);
+                    Navigator.of(context)
+                        .pushReplacementNamed(AccountSelectScreen.routeName);
+                  });
                   // print(_user.getCurrentUser());
                 }
 
                 if (_result == 'delete') {
-                  // print((await _user.getCurrentUser())['nickname']);
-                  final bool internet = await _user.connectionStatus();
-                  if (internet) {
-                    _user.signOut().then((_) async {
-                      _user.deleteCurrentUser();
-                      _user.setCurrentUser(null);
-                      Navigator.of(context)
-                          .pushReplacementNamed(AccountSelectScreen.routeName);
-                    }).catchError((e) {
-                      print(e.toString());
-                    });
-                  }
+                  // if (internet) {}
+                  _user.signOut().then((_) async {
+                    _user.deleteCurrentUser();
+                    _user.setCurrentUser(null);
+                    Navigator.of(context)
+                        .pushReplacementNamed(AccountSelectScreen.routeName);
+                  }).catchError((e) {
+                    // print(e.toString());
+                    _user.setCurrentUser(null);
+                    Navigator.of(context)
+                        .pushReplacementNamed(AccountSelectScreen.routeName);
+                  });
                 }
+
+                if (_result == 'tandc') {
+                  Navigator.of(context)
+                      .pushNamed(TermsAndConditionsScreen.routeName);
+                }
+
+                if (_result == 'about') {
+                  Navigator.of(context).pushNamed(AboutUsScreen.routeName);
+                }
+
+                // if(_result == )
               },
             ),
           ],
@@ -228,7 +254,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       // DashWidgets.dashItem('Telephone',
                       //     '+${userCountry.dialingCode}-${user.telephone.substring(1)}'),
                       DashWidgets.dashItem('Gender', user.gender),
-                      DashWidgets.dashItem('Age', user.age),
+                      DashWidgets.dashItem('Age range', user.ageRange),
                       DashWidgets.dashItem('Education', user.eduBG),
                     ], _dashWidth),
                     // DashWidgets.dashboard([
@@ -316,8 +342,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         subject: 'Latest apk download link',
                                         sharePositionOrigin:
                                             box.localToGlobal(Offset.zero) &
-                                                box.size
-                                                );
+                                                box.size);
 
                                     // final databaseRoot = _user.databaseRoot;
                                     // for (var resource in Resources) {
@@ -367,8 +392,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     //     });
                                     //   }
                                     // }
-
-
                                   },
                                 ),
                               ],

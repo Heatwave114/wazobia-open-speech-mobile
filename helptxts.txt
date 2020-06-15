@@ -1,0 +1,32 @@
+// Validation (?)
+
+* What to do
+The recording should be a voice donation from one of our donors like you 😉. We need your help to probe into its validity by checking if the recording is truly a human voice that reads the text displayed correspondingly and entirely. After your evaluation, if you deem the recording valid then you press the "Validate" button else you press the "Invalidate" button. Optionally, you can give us the reason for your evaluation after you pressed any of this buttons.
+
+* What happens after your validation
+After you have submitted your evaluation, we promote or demote the ranking of the donation accordingly.
+
+* Privacy
+We do not collect any traceable information from you. Hence, it is impossible to associate you(specifically) with the data you gave at the metadata screen. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers. 
+
+
+
+// Donation (?)
+
+* What to do
+We need your help with a voice donation. We have provided a text that you should read while you record it. You can discard the recording to make a new one. You can also listen to it before you submit.
+
+* What happens after your donation
+After you have submitted your donation, we store it in our server as unvalidated pending its validation from our friends like you 😉. After absolute validation, we promote it to validated.
+
+* Privacy
+We do not collect any traceable information from you. Hence, it is impossible to associate you(specifically) with the data you gave at the metadata screen. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers. 
+
+
+
+// Nickname (?)
+Any name you can recall. e.g "winterknight". We do not store your nickname on our servers. It is sored locally to aid wazobia\'s multi-user feature.
+
+
+// Proceded (?)
+When you press the "Proceed" button, you will be signed in anonymously to our server, which means that you will get a temporary authentication token that allows your donations and validations gain access into our database. It is a measure to protect our server from hackers. Your authentication is valid until you delete this user or switch to another user. All the metadata collected in this page are non-traceable. Hence, it is impossible to associate you(specifically) with them. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.

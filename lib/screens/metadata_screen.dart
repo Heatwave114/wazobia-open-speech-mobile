@@ -86,11 +86,12 @@ class _MetadataFormState extends State<MetadataForm> {
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
   final TextEditingController _eduBGController = TextEditingController();
+  final TextEditingController _ageRangeController = TextEditingController();
 
   // final FocusNode _countryFocusNode = FocusNode();
   final FocusNode _genderFocusNode = FocusNode();
   final FocusNode _nicknameFocusNode = FocusNode();
-  final FocusNode _ageFocusNode = FocusNode();
+  final FocusNode _ageRangeFocusNode = FocusNode();
   final FocusNode _eduBGFocusNode = FocusNode();
 
   GlobalKey<FormState> _metaFormKey = GlobalKey();
@@ -101,21 +102,22 @@ class _MetadataFormState extends State<MetadataForm> {
     _countryController.dispose();
     _genderController.dispose();
     _eduBGController.dispose();
+    _ageRangeController.dispose();
     // _countryFocusNode.dispose();
     _genderFocusNode.dispose();
     _nicknameFocusNode.dispose();
-    _ageFocusNode.dispose();
+    _ageRangeFocusNode.dispose();
     _eduBGFocusNode.dispose();
   }
 
-  var _isLoading = false;
+  bool _isLoading = false;
   bool _agreedToTerms = false;
 
   Map<String, String> _metaData = {
     'nickname': '',
     'country': '',
     'gender': '',
-    'age': '',
+    'agerange': '',
     'edubg': '',
   };
 
@@ -125,6 +127,11 @@ class _MetadataFormState extends State<MetadataForm> {
 
   final _eduBGExpansionKey = GlobalKey();
   final _genderExpansionKey = GlobalKey();
+  final _ageRangeExpansionKey = GlobalKey();
+  final _nicknameHelpExpansionKey = GlobalKey();
+  final _proceedHelpExpansionKey = GlobalKey();
+
+  // T show help text around where button pressed
   RelativeRect buttonMenuPosition(BuildContext c) {
     final RenderBox bar = c.findRenderObject();
     final RenderBox overlay = Overlay.of(c).context.findRenderObject();
@@ -144,7 +151,7 @@ class _MetadataFormState extends State<MetadataForm> {
     String country,
     String gender,
     // String nickname,
-    String age,
+    String ageRange,
     String edubg,
   }) {
     // final user = Provider.of<User>(context);
@@ -191,7 +198,7 @@ class _MetadataFormState extends State<MetadataForm> {
         nickname: nickname,
         country: country,
         gender: gender,
-        age: age,
+        ageRange: ageRange,
         eduBG: edubg,
       );
 
@@ -201,9 +208,11 @@ class _MetadataFormState extends State<MetadataForm> {
     } catch (e) {
       // print(e);
       var errorMessage = 'Something went wrong. Try again later';
-      if (e.toString().contains('This user already exists')) {
+      if (e.toString().contains('This nickname is already taken')) {
         // databaseRoot.collection('users').document(_userData.documentID).delete();
-        errorMessage = 'This user already exists';
+        errorMessage = 'This nickname is already taken';
+        this._user.setContext(context);
+        this._user.showSnackBar(errorMessage);
       }
       // _showSnackBar(e);
       // _showSnackBar('An error occured. Check your internet');
@@ -213,15 +222,16 @@ class _MetadataFormState extends State<MetadataForm> {
   }
 
   Future<void> _submit() async {
+    // this._isLoading = true;
     try {
       setState(() {
         _isLoading = true;
       });
       if (!_metaFormKey.currentState.validate()) {
         // Invalid
-        setState(() {
-          _isLoading = false;
-        });
+        // setState(() {
+        //   _isLoading = false;
+        // });
         return;
       }
       _metaFormKey.currentState.save();
@@ -230,7 +240,7 @@ class _MetadataFormState extends State<MetadataForm> {
         country: _metaData['country'],
         gender: _metaData['gender'],
         // nickname: _metaData['nickname'],
-        age: _metaData['age'],
+        ageRange: _metaData['agerange'],
         edubg: _metaData['edubg'],
       );
 
@@ -239,18 +249,23 @@ class _MetadataFormState extends State<MetadataForm> {
 
       // this._user..setContext(context);
 
-      this._auth.signInAnonymously().then((_) {
-        this._user.addUser(userModel).catchError((e) {
+      this._auth.signInAnonymously().then((authenticatedUser) {
+        this._user.addUser(userModel).then((_) {
+          this._user.setCurrentUser(_metaData['nickname']);
+          Navigator.of(context).pushReplacementNamed(DashboardScreen.routeName);
+        }).catchError((e) {
           this._user.setCurrentUser(null);
+          authenticatedUser.delete();
           var errorMessage = 'Something went wrong. Try again later';
-          if (e.toString().contains('This user already exists')) {
+          if (e.toString().contains('This nickname is already taken')) {
             // databaseRoot.collection('users').document(_userData.documentID).delete();
-            errorMessage = 'This user already exists';
+            errorMessage = 'This nickname is already taken';
+            this._user.setContext(context);
+            this._user.showSnackBar(errorMessage);
+            return;
           }
           _showDialog('Error', errorMessage);
         });
-        this._user.setCurrentUser(_metaData['nickname']);
-        Navigator.of(context).pushReplacementNamed(DashboardScreen.routeName);
       }).catchError((e) async {
         this._user.setCurrentUser(null);
         var errorMessage = 'An error occured. Try again later.';
@@ -262,15 +277,21 @@ class _MetadataFormState extends State<MetadataForm> {
         this._user.showSnackBar(errorMessage);
       });
 
-      setState(() {
-        _isLoading = false;
-      });
+      // setState(() {
+      //   _isLoading = false;
+      // });
     } catch (e) {
+      // setState(() {
+      //   _isLoading = false;
+      // });
       this._user.setCurrentUser(null);
       var errorMessage = 'Something went wrong. Try again later';
-      if (e.toString().contains('This user already exists')) {
+      if (e.toString().contains('This nickname is already taken')) {
         // databaseRoot.collection('users').document(_userData.documentID).delete();
-        errorMessage = 'This user already exists';
+        errorMessage = 'This nickname is already taken';
+        this._user.setContext(context);
+        this._user.showSnackBar(errorMessage);
+        return;
       } else if (e.message.toString().contains(
           'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
         errorMessage = 'An error occured. Check your internet connection.';
@@ -311,6 +332,63 @@ class _MetadataFormState extends State<MetadataForm> {
     );
   }
 
+  void _onTapAgeRange() async {
+    final position =
+        buttonMenuPosition(this._ageRangeExpansionKey.currentContext);
+    final _result = await showMenu(
+      context: context,
+      position: position,
+      items: <PopupMenuItem<String>>[
+        const PopupMenuItem<String>(child: const Text('3-5'), value: '3-5'),
+        const PopupMenuItem<String>(child: const Text('6-12'), value: '6-12'),
+        const PopupMenuItem<String>(child: const Text('13-18'), value: '13-18'),
+        const PopupMenuItem<String>(child: const Text('19-24'), value: '19-24'),
+        const PopupMenuItem<String>(child: const Text('25-34'), value: '25-34'),
+        const PopupMenuItem<String>(child: const Text('35-49'), value: '35-49'),
+        const PopupMenuItem<String>(child: const Text('50-64'), value: '50-64'),
+        const PopupMenuItem<String>(child: const Text('65-69'), value: '65-69'),
+        const PopupMenuItem<String>(child: const Text('70-79'), value: '70-79'),
+        const PopupMenuItem<String>(child: const Text('80-90'), value: '80-90'),
+        const PopupMenuItem<String>(
+            child: const Text('more than 90'), value: 'more than 90'),
+      ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
+
+    // if (_result == '3-5') {
+    //   this._ageRangeController.text = '3-5';
+    // } else if (_result == '6-12') {
+    //   this._ageRangeController.text = '6-12';
+    // } else if (_result == '13-18') {
+    //   this._ageRangeController.text = '13-18';
+    // } else if (_result == '19-24') {
+    //   this._ageRangeController.text = '19-24';
+    // } else if (_result == '25-34') {
+    //   this._ageRangeController.text = '25-34';
+    // } else if (_result == '35-49') {
+    //   this._ageRangeController.text = '35-49';
+    // } else if (_result == '50-64') {
+    //   this._ageRangeController.text = '50-64';
+    // } else if (_result == '65-69') {
+    //   this._ageRangeController.text = '65-69';
+    // } else if (_result == '70-79') {
+    //   this._ageRangeController.text = '70-79';
+    // } else if (_result == '80-89') {
+    //   this._ageRangeController.text = '80-89';
+    // } else if (_result == 'more than 90') {
+    //   this._ageRangeController.text = 'more than 90';
+    // }
+
+    this._ageRangeController.text = _result;
+
+    if (_result != null) {
+      FocusScope.of(context).requestFocus(_eduBGFocusNode); // Redundant
+      this._onTapEducation();
+    }
+  }
+
   void _onTapGender() async {
     final position =
         buttonMenuPosition(this._genderExpansionKey.currentContext);
@@ -335,7 +413,8 @@ class _MetadataFormState extends State<MetadataForm> {
     } else if (_result == 'female') {
       _genderController.text = 'female';
     }
-    FocusScope.of(context).requestFocus(_nicknameFocusNode);
+    if (_result != null)
+      FocusScope.of(context).requestFocus(_nicknameFocusNode); // Redundant
     // Focus.of(context).unfocus();
   }
 
@@ -361,22 +440,77 @@ class _MetadataFormState extends State<MetadataForm> {
         borderRadius: BorderRadius.circular(5.0),
       ),
     );
-    if (_result == 'nursery') {
-      _eduBGController.text = 'nursery';
-    } else if (_result == 'primary') {
-      _eduBGController.text = 'primary';
-    } else if (_result == 'secondary') {
-      _eduBGController.text = 'secondary';
-    } else if (_result == 'tertiary') {
-      _eduBGController.text = 'tertiary';
-    } else if (_result == 'msc') {
-      _eduBGController.text = 'msc';
-    } else if (_result == 'phd') {
-      _eduBGController.text = 'phd';
-    } else if (_result == 'none') {
-      _eduBGController.text = 'none';
-    }
+
+    // if (_result == 'nursery') {
+    //   _eduBGController.text = 'nursery';
+    // } else if (_result == 'primary') {
+    //   _eduBGController.text = 'primary';
+    // } else if (_result == 'secondary') {
+    //   _eduBGController.text = 'secondary';
+    // } else if (_result == 'tertiary') {
+    //   _eduBGController.text = 'tertiary';
+    // } else if (_result == 'msc') {
+    //   _eduBGController.text = 'msc';
+    // } else if (_result == 'phd') {
+    //   _eduBGController.text = 'phd';
+    // } else if (_result == 'none') {
+    //   _eduBGController.text = 'none';
+    // }
+
+    this._eduBGController.text = _result;
   }
+
+  void _onTapHelp(String helpText, BuildContext context) async {
+    final position = buttonMenuPosition(context);
+    showMenu(
+      color: Colors.amber,
+      context: context,
+      position: position,
+      items: <PopupMenuItem<String>>[
+        PopupMenuItem<String>(
+          child: InkWell(
+            // Inkwell redundant
+            child: Text(
+              helpText,
+              style: TextStyle(
+                fontSize: 15.0,
+                fontFamily: 'PTSans',
+              ),
+            ),
+          ),
+        ),
+      ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
+  }
+
+  // void _onTapNicknameHelp() async {
+  //   final position =
+  //       buttonMenuPosition(this._genderExpansionKey.currentContext);
+  //   showMenu(
+  //     color: Colors.amber,
+  //     context: context,
+  //     position: position,
+  //     items: <PopupMenuItem<String>>[
+  //       const PopupMenuItem<String>(
+  //           child: InkWell( // Inkwell redundant
+  //             child: Text(
+  //               'Any name you can recall. Preferably one that doesn\'t include your real name e.g "winterknight".',
+  //               style: TextStyle(
+  //                 fontSize: 15.0,
+  //                 fontFamily: 'PTSans',
+  //               ),
+  //             ),
+  //           ),
+  //           value: 'male'),
+  //     ],
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(5.0),
+  //     ),
+  //   );
+  // }
 
   Map<String, dynamic> _style = {
     'formlabel': const TextStyle(fontFamily: 'Montserrat', fontSize: 14.0),
@@ -473,11 +607,15 @@ class _MetadataFormState extends State<MetadataForm> {
                     ).then((country) {
                       if (country == null) return;
                       _selectedCountry = country;
+                      FocusScope.of(context)
+                          .requestFocus(this._genderFocusNode); //Redundant
+                      this._onTapGender();
                     });
                   },
                   // focusNode: _countryFocusNode,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_genderFocusNode);
+                    this._onTapGender(); // Redundant
                   },
                   onSaved: (value) {
                     _metaData['country'] = _selectedCountry.isoCode;
@@ -520,17 +658,31 @@ class _MetadataFormState extends State<MetadataForm> {
                   decoration: InputDecoration(
                     labelStyle: _style['formlabel'],
                     labelText: 'Nickname',
-                    // hintText: 'e.g Abba',
+                    hintText: 'e.g winterknight',
+                    suffixIcon: IconButton(
+                      key: this._nicknameHelpExpansionKey,
+                      // color: Colors.deepOrange[400],
+                      icon: Icon(Icons.help),
+                      onPressed: () => this._onTapHelp(
+                        'Any name you can recall. e.g "winterknight". We do not store your nickname on our servers. It is sored only locally in your device to aid wazobia\'s multi-user feature.',
+                        this._nicknameHelpExpansionKey.currentContext,
+                      ),
+                    ),
                   ),
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_ageFocusNode);
+                  onFieldSubmitted: (nickname) {
+                    if (nickname == null || (nickname.trim() == '')) return;
+                    FocusScope.of(context)
+                        .requestFocus(_ageRangeFocusNode); // Redundant
+                    this._onTapAgeRange();
                   },
+
                   validator: (value) {
                     final RegExp regExp = RegExp(
                       r'^[a-zA-Z0-9\s]{1,20}$',
                       caseSensitive: false,
                       multiLine: false,
                     );
+
                     if (value.isEmpty) {
                       // user['nickname'] = user['firstname'];
                       return null;
@@ -549,35 +701,60 @@ class _MetadataFormState extends State<MetadataForm> {
                 ),
                 _spacer,
                 TextFormField(
-                  // Age
+                  // Age Range
+                  readOnly: true,
                   keyboardType: TextInputType.number,
+                  controller: this._ageRangeController,
                   decoration: InputDecoration(
                     labelStyle: _style['formlabel'],
-                    labelText: 'Age',
+                    labelText: 'Age Range',
+                    suffixIcon: Icon(
+                      Icons.arrow_drop_down,
+                      key: this._ageRangeExpansionKey,
+                    ),
                   ),
-                  focusNode: _ageFocusNode,
-                  validator: (value) {
-                    final RegExp regExp = RegExp(
-                      r'^[0-9]*$',
-                      caseSensitive: false,
-                      multiLine: false,
-                    );
+                  focusNode: _ageRangeFocusNode,
+                  // validator: (value) {
+                  //   final RegExp regExp = RegExp(
+                  //     r'^[0-9]*$',
+                  //     caseSensitive: false,
+                  //     multiLine: false,
+                  //   );
 
+                  //   if (value.isEmpty) {
+                  //     return 'Enter your age range';
+                  //   } else if (!regExp.hasMatch(value)) {
+                  //     return 'Age is a positive integer';
+                  //   } else if (!(int.parse(value) < 100 &&
+                  //       int.parse(value) > 2)) {
+                  //     return 'Age out of range';
+                  //   }
+                  //   return null;
+                  // },
+                  validator: (value) {
                     if (value.isEmpty) {
-                      return 'Enter your age';
-                    } else if (!regExp.hasMatch(value)) {
-                      return 'Age is a positive integer';
-                    } else if (!(int.parse(value) < 100 &&
-                        int.parse(value) > 2)) {
-                      return 'Age out of range';
+                      return 'Choose an age range';
+                    } else if (!(value == '3-5' ||
+                        value == '6-12' ||
+                        value == '13-18' ||
+                        value == '19-24' ||
+                        value == '25-34' ||
+                        value == '35-49' ||
+                        value == '50-64' ||
+                        value == '65-69' ||
+                        value == '70-79' ||
+                        value == '80-90' ||
+                        value == 'more than 90')) {
+                      return 'Must select from options';
                     }
                     return null;
                   },
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_eduBGFocusNode);
-                  },
+                  onTap: this._onTapAgeRange,
+                  // onFieldSubmitted: (_) {
+                  //   FocusScope.of(context).requestFocus(_eduBGFocusNode);
+                  // },
                   onSaved: (value) {
-                    _metaData['age'] = value.trim();
+                    _metaData['agerange'] = value.trim();
                   },
                 ),
                 _spacer,
@@ -606,7 +783,7 @@ class _MetadataFormState extends State<MetadataForm> {
                         value == 'msc' ||
                         value == 'phd' ||
                         value == 'none')) {
-                      return 'Must be one of [primary, secondary, tertiary, msc, phd, none]';
+                      return 'Must select from options';
                     }
                     return null;
                   },
@@ -691,30 +868,67 @@ class _MetadataFormState extends State<MetadataForm> {
                     ),
                   ],
                 ),
-                Padding(
-                    padding: EdgeInsets.only(bottom: 10.0),
-                    child: _isLoading
-                        ? CentrallyUsed().waitingCircle()
-                        : OutlineButton.icon(
-                            label: const Text('Submit'),
-                            icon: const Icon(
-                              Icons.check,
-                              color: const Color(0xff2A6041),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 10.0),
+                      child: this._isLoading
+                          ? CentrallyUsed().waitingCircle()
+                          : OutlineButton.icon(
+                              label: const Text('Proceed'),
+                              icon: const Icon(
+                                Icons.check,
+                                color: const Color(0xff2A6041),
+                              ),
+                              borderSide: BorderSide(
+                                color: Theme.of(context)
+                                    .primaryColor, //Color of the border
+                                style: BorderStyle.solid, //Style of the border
+                                width: 1.5, //width of the border
+                              ),
+                              //child: _isLoading ? CircularProgressIndicator() : Text('Submit'),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              onPressed: !this._agreedToTerms
+                                  ? null
+                                  : () async {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      final user = Provider.of<User>(context,
+                                          listen: false);
+                                      user.setContext(context);
+                                      final bool internet =
+                                          await user.connectionStatus();
+                                      if (internet) {
+                                        _submit().then((value) => setState(
+                                            () => this._isLoading = false));
+                                      } else {
+                                        setState(() {
+                                          _isLoading = false;
+                                        });
+                                        user.showSnackBar(
+                                            'Check your internet');
+                                      }
+                                      // setState(() {
+                                      //   _isLoading = false;
+                                      // });
+                                    },
+                              // (){_showDialog('tt', 'content');}
                             ),
-                            borderSide: BorderSide(
-                              color: Theme.of(context)
-                                  .primaryColor, //Color of the border
-                              style: BorderStyle.solid, //Style of the border
-                              width: 1.5, //width of the border
-                            ),
-                            //child: _isLoading ? CircularProgressIndicator() : Text('Submit'),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            onPressed:
-                                !this._agreedToTerms ? null : () => _submit(),
-                            // (){_showDialog('tt', 'content');}
-                          ))
+                    ),
+                    IconButton(
+                      key: this._proceedHelpExpansionKey,
+                      color: Colors.green,
+                      icon: Icon(Icons.help),
+                      onPressed: () => this._onTapHelp(
+                          'When you press the "Proceed" button, you will be signed in anonymously to our server, which means that you will get a temporary authentication token that allows your donations and validations gain access into our database. It is a measure to protect our server from hackers. Your authentication is valid until you delete this user or switch to another user. All the metadata collected in this page are non-traceable. Hence, it is impossible to associate you(specifically) with them. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.',
+                          this._proceedHelpExpansionKey.currentContext),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

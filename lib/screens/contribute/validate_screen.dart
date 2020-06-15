@@ -23,7 +23,99 @@ class ValidateScreen extends StatelessWidget {
   static const routeName = '/validate';
 
   Random _random = Random();
+  final _validationHelpExpansionKey = GlobalKey();
+
+  // To show help text around where button pressed
+  RelativeRect buttonMenuPosition(BuildContext c) {
+    final RenderBox bar = c.findRenderObject();
+    final RenderBox overlay = Overlay.of(c).context.findRenderObject();
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+    return position;
+  }
+
+  Widget _helpText(
+      String whatToDoText, String afterwardsText, String privacyText) {
+    Map<String, TextStyle> _style = {
+      'header': const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 11.0,
+        fontFamily: 'PTSans',
+      ),
+      'body': const TextStyle(
+        fontSize: 14.0,
+        fontFamily: 'Abel',
+      ),
+    };
+
+    return RichText(
+      // overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        style: TextStyle(color: Colors.black, fontSize: 14),
+        children: <TextSpan>[
+          // What to do
+          TextSpan(
+            text: 'WHAT TO DO\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: whatToDoText + '\n\n',
+            style: _style['body'],
+          ),
+
+          // Afterwards
+          TextSpan(
+            text: 'WHAT HAPPENS AFTER YOUR VALIDATION\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: afterwardsText + '\n\n',
+            style: _style['body'],
+          ),
+
+          // Privacy
+          TextSpan(
+            text: 'PRIVACY\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: privacyText,
+            style: _style['body'],
+          ),
+        ],
+      ),
+    );
+  }
+
   // final ScrollController _scrollController = ScrollController();
+
+  void _onTapHelp(
+    BuildContext context,
+    Widget content,
+  ) async {
+    final position = buttonMenuPosition(context);
+    showMenu(
+      color: Colors.amber,
+      context: context,
+      position: position,
+      items: <PopupMenuItem<String>>[
+        PopupMenuItem<String>(
+          child: InkWell(
+            // Inkwell redundant
+            child: content,
+          ),
+        ),
+      ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +127,20 @@ class ValidateScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Validate'),
+        actions: <Widget>[
+          IconButton(
+            key: this._validationHelpExpansionKey,
+            padding: EdgeInsets.only(right: 15),
+            icon: Icon(Icons.help),
+            onPressed: () => this._onTapHelp(
+              this._validationHelpExpansionKey.currentContext,
+              this._helpText(
+                  'The recording should be a voice donation from one of our donors like you 😉. We need your help to probe into its validity by checking if the recording is truly a human voice that reads the text displayed correspondingly and entirely. After your evaluation, if you deem the recording valid then you press the "Validate" button else you press the "Invalidate" button. Optionally, you can give us the reason for your evaluation after you pressed any of this buttons.',
+                  'After you have submitted your evaluation, we promote or demote the ranking of the donation accordingly.',
+                  'We do not collect any traceable information from you. Hence, it is impossible to associate you(specifically) with the data you gave at the metadata screen. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.'),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
@@ -303,9 +409,9 @@ class _TextPanelState extends State<TextPanel> {
         ),
       ),
     ).then((_) {
-      print('ggg');
+      // print('ggg');
       if (soundTin.getProceedWithDonationEvaluation) {
-        print('fff');
+        // print('fff');
         submitEvaluation();
         soundTin.setProceedWithDonationEvaluation = false;
         soundTin.setShouldAllowValidation = false;

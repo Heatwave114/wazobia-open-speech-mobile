@@ -97,7 +97,7 @@ class User with ChangeNotifier {
         'reader': {
           'country': currentUser['country'],
           'gender': currentUser['gender'],
-          'age': currentUser['age'],
+          'agerange': currentUser['agerange'],
           'education': currentUser['edubg'],
         },
         
@@ -182,7 +182,7 @@ class User with ChangeNotifier {
           'nickname': user.nickname,
           'country': user.country,
           'gender': user.gender,
-          'age': user.age,
+          'age': user.ageRange,
           'edubg': user.eduBG,
         },
       });
@@ -200,7 +200,7 @@ class User with ChangeNotifier {
         'nickname': user.nickname,
         'country': user.country,
         'gender': user.gender,
-        'age': user.age,
+        'age': user.ageRange,
         'edubg': user.eduBG,
       };
       final newUsers = json.encode(decodedOldUsers);
@@ -424,9 +424,9 @@ class User with ChangeNotifier {
 
     Widget controlScaffold(String controlMessage) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Welcome to Wazobia'),
-        ),
+        // appBar: AppBar(
+        //   title: Text('Welcome to Wazobia'),
+        // ),
         body: Center(
           child: Container(
             margin: EdgeInsets.all(20.0),

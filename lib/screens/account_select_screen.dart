@@ -18,8 +18,9 @@ class AccountSelectScreen extends StatelessWidget {
 
   User _user = User();
   Auth _auth = Auth();
+  GlobalKey _scaffoldKey = GlobalKey();
 
-  Widget _buildUserOption(BuildContext context, String nickname) {
+  Widget _buildUserOption(BuildContext ctx, String nickname) {
     return InkWell(
       child: Container(
         height: 60.0,
@@ -51,19 +52,27 @@ class AccountSelectScreen extends StatelessWidget {
       ),
       onTap: () async {
         // print(this._user.getCurrentUser());
-        this._auth.signInAnonymously().then((_) {
-          this._user.setCurrentUser(nickname);
-          Navigator.of(context).pushReplacementNamed(DashboardScreen.routeName);
-        }).catchError((e) async {
-          this._user.setCurrentUser(null);
-          var errorMessage = 'An error occured. Try again later.';
-          if (e.message.toString().contains(
-              'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
-            errorMessage = 'An error occured. Check your internet connection.';
-          }
-          this._user.setContext(context);
-          this._user.showSnackBar(errorMessage);
-        });
+
+        final bool internet = await this._user.connectionStatus();
+
+        this._user.setContext(ctx);
+        if (internet) {
+          this._auth.signInAnonymously().then((_) {
+            this._user.setCurrentUser(nickname);
+            Navigator.of(ctx).pushReplacementNamed(DashboardScreen.routeName);
+          }).catchError((e) async {
+            this._user.setCurrentUser(null);
+            var errorMessage = 'An error occured. Try again later.';
+            if (e.message.toString().contains(
+                'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
+              errorMessage =
+                  'An error occured. Check your internet connection.';
+            }
+            this._user.showSnackBar(errorMessage);
+          });
+        } else {
+          this._user.showSnackBar('Check your internet');
+        }
       },
     );
   }
@@ -75,6 +84,7 @@ class AccountSelectScreen extends StatelessWidget {
 
     final _deviceSize = MediaQuery.of(context).size;
     return Scaffold(
+      key: this._scaffoldKey,
       body: Center(
         child: Card(
           child: Container(
@@ -102,25 +112,25 @@ class AccountSelectScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                // SizedBox(height: 20.0),
-                // RaisedButton(
-                //   //   // onPressed: () => this._user.uploadVoice(
-                //   //   //     voiceToUpload: File(
-                //   //   //         r'C:\Users\sanis\Desktop\flaps\wazobia\nnf.mp3'),
-                //   //   //     title: 'nnf')
-                //   onPressed: () => this._user.clear(),
-                //   //   onPressed: () async {
-                //   //     Map<String, String> ty = {};
-                //   //     ty['t'] = '5';
-                //   //     ty['y'] = '7';
-                //   //     ty['y'] = '4';
-                //   //     print(ty);
-                //   //     final t = ty.remove('t');
-                //   //     print(t);
-                //   //     print(ty);
-                //   //     print(await _user.getUsers());
-                //   //   },
-                // ),
+                SizedBox(height: 20.0),
+                RaisedButton(
+                  //   // onPressed: () => this._user.uploadVoice(
+                  //   //     voiceToUpload: File(
+                  //   //         r'C:\Users\sanis\Desktop\flaps\wazobia\nnf.mp3'),
+                  //   //     title: 'nnf')
+                  // onPressed: () => this._user.clear(),
+                  onPressed: () async {
+                    Map<String, String> ty = {};
+                    ty['t'] = '5';
+                    ty['y'] = '7';
+                    ty['y'] = '4';
+                    print(ty);
+                    final t = ty.remove('t');
+                    print(t);
+                    print(ty);
+                    print(await _user.getUsers());
+                  },
+                ),
                 Expanded(
                   child: FutureBuilder(
                     future: this._user.getUsers(),
@@ -147,7 +157,7 @@ class AccountSelectScreen extends StatelessWidget {
                               if (users != null)
                                 ...users.entries
                                     .map((entry) =>
-                                        _buildUserOption(context, entry.key))
+                                        _buildUserOption(ctx, entry.key))
                                     .toList(),
                               if (users == null)
                                 Text('There are no users'),

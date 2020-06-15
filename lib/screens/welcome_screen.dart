@@ -45,7 +45,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     double cardHeight = deviceCritical.size.height -
         deviceCritical.padding.vertical -
         (deviceCritical.size.height * .01 * 2) -
-        100.0;
+        50.0;
     return Container(
       child: Column(
         children: <Widget>[
@@ -108,14 +108,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     if (back && _tabController.index >= 1) {
       setState(() {
         _agreedToTerms = false;
-      this._tabController.index--;
+        this._tabController.index--;
       });
-      if(_tabController.index < 0) return;
+      if (_tabController.index < 0) return;
     } else if (!back && _tabController.index < _tabController.length - 1) {
       setState(() {
         this._tabController.index++;
       });
-      if(_tabController.index >= _tabController.length) return;
+      if (_tabController.index >= _tabController.length) return;
     }
   }
 
@@ -163,114 +163,123 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               child: Column(
                 children: <Widget>[
                   Expanded(
-                    child: TabBarView(
-                      // physics: BouncingScrollPhysics(),
-                      controller: _tabController,
-                      children: <Widget>[
-                        _buildCartridge(
-                          'Welcome',
-                          child: Text(
-                            'This application is developed by students of Computer Engineering Department, Federal University of Technology, Minna, in collaboration with ITU, under their Machine Learning and 5G focus group. It is used to collect voice data.',
-                            style: TextStyle(
-                              fontSize: 25.0,
-                              fontFamily: 'Abel',
+                    child: NotificationListener<ScrollEndNotification>(
+                      onNotification: (notification) {
+                        // print((NotificationListener == ScrollEndNotification));
+                        // print((notification == NotificationListener));
+                        // print(notification);
+                        setState(() {});
+                        return true;
+                      },
+                      child: TabBarView(
+                        // physics: BouncingScrollPhysics(),
+                        controller: _tabController,
+                        children: <Widget>[
+                          _buildCartridge(
+                            'Welcome',
+                            child: Text(
+                              'This application is developed by students of Computer Engineering Department, Federal University of Technology, Minna, in collaboration with ITU, under their Machine Learning and 5G focus group. It is used to collect voice data for the African Automatic Speech Recognition project.',
+                              style: TextStyle(
+                                fontSize: 25.0,
+                                fontFamily: 'Abel',
+                              ),
                             ),
                           ),
-                        ),
-                        // Must be the last Cartridge[agreedToTerms??]
-                        _buildCartridge(
-                          'Terms and Conditions',
-                          child: Column(
-                            children: <Widget>[
-                              Text(
-                                'You must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions',
-                                style: TextStyle(
-                                  fontSize: 25.0,
-                                  fontFamily: 'Abel',
-                                ),
-                              ),
-                            ],
-                          ),
-                          others: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                          // Must be the last Cartridge[agreedToTerms??]
+                          _buildCartridge(
+                            'Terms and Conditions',
+                            child: Column(
                               children: <Widget>[
-                                Checkbox(
-                                  value: _agreedToTerms,
-                                  // useTapTarget: false,
-                                  activeColor: Colors.deepOrange[600],
-                                  onChanged: (toggle) {
-                                    // User user =
-                                    //     Provider.of<User>(context, listen: false)
-                                    //       ..setRememberMe(toggle);
-                                    // print(user.rememberMe);
-                                    setState(() {
-                                      _agreedToTerms = toggle;
-                                    });
-                                  },
-                                ),
-                                RichText(
-                                  // overflow: TextOverflow.ellipsis,
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 14),
-                                    children: <TextSpan>[
-                                      const TextSpan(text: 'I agree to '),
-                                      TextSpan(
-                                        text: 'terms and conditions',
-                                        // recognizer: TapGestureRecognizer()
-                                        //   ..onTap = () {
-
-                                        //     // Navigate to Terms and Conditions Page
-                                        //     // Navigator.of(context)
-                                        //     //     .pushNamed(
-                                        //     //         TermsConditionsScreen.routeName);
-
-                                        //     showModalBottomSheet(
-                                        //       context: context,
-                                        //       builder: (_) {
-                                        //         return GestureDetector(
-                                        //           onTap: () {},
-                                        //           child: Container(
-                                        //             height:
-                                        //                 MediaQuery.of(context)
-                                        //                         .size
-                                        //                         .height *
-                                        //                     .70,
-                                        //             child: Center(
-                                        //                 child: Padding(
-                                        //               padding:
-                                        //                   const EdgeInsets.all(
-                                        //                       15.0),
-                                        //               child: const Text(
-                                        //                 'You must consent to this terms and conditions before you gain acces to wazobia.',
-                                        //                 style: const TextStyle(
-                                        //                     fontSize: 20.0,
-                                        //                     fontFamily:
-                                        //                         'PTSans'),
-                                        //               ),
-                                        //             )),
-                                        //           ),
-                                        //           behavior:
-                                        //               HitTestBehavior.opaque,
-                                        //     );
-                                        //   },
-                                        // );
-                                        // },
-                                        style: TextStyle(
-                                          // color: Theme.of(context).accentColor,
-                                          color: Colors.deepOrange[400],
-                                          decoration: TextDecoration.underline,
-                                        ),
-                                      )
-                                    ],
+                                Text(
+                                  'You must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions',
+                                  style: TextStyle(
+                                    fontSize: 25.0,
+                                    fontFamily: 'Abel',
                                   ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ],
+                            // others: [
+                            //   Row(
+                            //     mainAxisAlignment: MainAxisAlignment.center,
+                            //     children: <Widget>[
+                            //       Checkbox(
+                            //         value: _agreedToTerms,
+                            //         // useTapTarget: false,
+                            //         activeColor: Colors.deepOrange[600],
+                            //         onChanged: (toggle) {
+                            //           // User user =
+                            //           //     Provider.of<User>(context, listen: false)
+                            //           //       ..setRememberMe(toggle);
+                            //           // print(user.rememberMe);
+                            //           setState(() {
+                            //             _agreedToTerms = toggle;
+                            //           });
+                            //         },
+                            //       ),
+                            //       RichText(
+                            //         // overflow: TextOverflow.ellipsis,
+                            //         text: TextSpan(
+                            //           style: TextStyle(
+                            //               color: Colors.black, fontSize: 14),
+                            //           children: <TextSpan>[
+                            //             const TextSpan(text: 'I agree to '),
+                            //             TextSpan(
+                            //               text: 'terms and conditions',
+                            //               // recognizer: TapGestureRecognizer()
+                            //               //   ..onTap = () {
+
+                            //               //     // Navigate to Terms and Conditions Page
+                            //               //     // Navigator.of(context)
+                            //               //     //     .pushNamed(
+                            //               //     //         TermsConditionsScreen.routeName);
+
+                            //               //     showModalBottomSheet(
+                            //               //       context: context,
+                            //               //       builder: (_) {
+                            //               //         return GestureDetector(
+                            //               //           onTap: () {},
+                            //               //           child: Container(
+                            //               //             height:
+                            //               //                 MediaQuery.of(context)
+                            //               //                         .size
+                            //               //                         .height *
+                            //               //                     .70,
+                            //               //             child: Center(
+                            //               //                 child: Padding(
+                            //               //               padding:
+                            //               //                   const EdgeInsets.all(
+                            //               //                       15.0),
+                            //               //               child: const Text(
+                            //               //                 'You must consent to this terms and conditions before you gain acces to wazobia.',
+                            //               //                 style: const TextStyle(
+                            //               //                     fontSize: 20.0,
+                            //               //                     fontFamily:
+                            //               //                         'PTSans'),
+                            //               //               ),
+                            //               //             )),
+                            //               //           ),
+                            //               //           behavior:
+                            //               //               HitTestBehavior.opaque,
+                            //               //     );
+                            //               //   },
+                            //               // );
+                            //               // },
+                            //               style: TextStyle(
+                            //                 // color: Theme.of(context).accentColor,
+                            //                 color: Colors.deepOrange[400],
+                            //                 decoration: TextDecoration.underline,
+                            //               ),
+                            //             )
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Container(
@@ -305,16 +314,26 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             'Next',
                             style: _welcomeStyle['button'],
                           ),
-                          onPressed: _agreedToTerms
-                                  ? () {
-                                      this._user.setFirstTime(false);
-                                      Navigator.of(context)
-                                          .pushNamed(MetadataScreen.routeName);
-                                    }
-                                  : () {
-                                    this._nextPreviousPage(false);
-                                  },
-                        )
+                          // onPressed: _agreedToTerms
+                          //         ? () {
+                          //             this._user.setFirstTime(false);
+                          //             Navigator.of(context)
+                          //                 .pushNamed(MetadataScreen.routeName);
+                          //           }
+                          //         : () {
+                          //           this._nextPreviousPage(false);
+                          //         },
+                          onPressed: (this._tabController.index ==
+                                  (this._tabController.length - 1))
+                              ? () {
+                                  print('metadata now');
+
+                                  this._user.setFirstTime(false);
+                                  Navigator.of(context)
+                                      .pushNamed(MetadataScreen.routeName);
+                                }
+                              : () => this._nextPreviousPage(false),
+                        ),
                       ],
                     ),
                   ),

@@ -8,7 +8,7 @@ class User {
   final String country;
   // final String telephone;
   final String gender;
-  final String age;
+  final String ageRange;
   final String eduBG;
   // final int textsRead;
   // final int validations;
@@ -20,7 +20,7 @@ class User {
     @required this.country,
     // @required this.telephone,
     @required this.gender,
-    @required this.age,
+    @required this.ageRange,
     @required this.eduBG,
     // @required this.textsRead,
     // @required this.validations,
@@ -53,12 +53,12 @@ class User {
   // }
 
   User.fromSharedPreference(Map<String, dynamic> user)
-      : nickname = user['nickname'],
-        country = user['country'],
+      : this.nickname = user['nickname'],
+        this.country = user['country'],
         // telephone = user['telephone'],
-        gender = user['gender'],
-        age = user['age'],
-        eduBG = user['edubg'];
+        this.gender = user['gender'],
+        this.ageRange = user['age'],
+        this.eduBG = user['edubg'];
   // textsRead = user['textsread'],
   // validations = user['validations'],
   // invitations = user['invitations'];
