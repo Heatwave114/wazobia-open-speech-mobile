@@ -302,6 +302,9 @@ class User with ChangeNotifier {
     final pref = await this._pref;
     final users = pref.getString('users');
     final decodedUsers = json.decode(users);
+    if (decodedUsers == {} || decodedUsers == '') return null;
+    // print((decodedUsers == {}).toString() + 'kk');
+    // print(decodedUsers == '');
     return decodedUsers;
   }
 

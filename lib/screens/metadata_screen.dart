@@ -208,7 +208,9 @@ class _MetadataFormState extends State<MetadataForm> {
     } catch (e) {
       // print(e);
       var errorMessage = 'Something went wrong. Try again later';
-      if (e.toString().contains('This nickname is already taken by another local user')) {
+      if (e
+          .toString()
+          .contains('This nickname is already taken by another local user')) {
         // databaseRoot.collection('users').document(_userData.documentID).delete();
         errorMessage = 'This nickname is already taken by another local user';
         this._user.setContext(context);
@@ -257,9 +259,11 @@ class _MetadataFormState extends State<MetadataForm> {
           this._user.setCurrentUser(null);
           authenticatedUser.delete();
           var errorMessage = 'Something went wrong. Try again later';
-          if (e.toString().contains('This nickname is already taken by another local user')) {
+          if (e.toString().contains(
+              'This nickname is already taken by another local user')) {
             // databaseRoot.collection('users').document(_userData.documentID).delete();
-            errorMessage = 'This nickname is already taken by another local user';
+            errorMessage =
+                'This nickname is already taken by another local user';
             this._user.setContext(context);
             this._user.showSnackBar(errorMessage);
             return;
@@ -269,8 +273,7 @@ class _MetadataFormState extends State<MetadataForm> {
       }).catchError((e) async {
         this._user.setCurrentUser(null);
         var errorMessage = 'An error occured. Try again later.';
-        if (e.message.toString().contains(
-            'network error')) {
+        if (e.message.toString().contains('network error')) {
           errorMessage = 'Check your internet connection';
         }
         this._user.setContext(context);
@@ -286,7 +289,9 @@ class _MetadataFormState extends State<MetadataForm> {
       // });
       this._user.setCurrentUser(null);
       var errorMessage = 'Something went wrong. Try again later';
-      if (e.toString().contains('This nickname is already taken by another local user')) {
+      if (e
+          .toString()
+          .contains('This nickname is already taken by another local user')) {
         // databaseRoot.collection('users').document(_userData.documentID).delete();
         errorMessage = 'This nickname is already taken by another local user';
         this._user.setContext(context);
@@ -562,9 +567,11 @@ class _MetadataFormState extends State<MetadataForm> {
                             ),
                           ),
                           // child: Text(),
-                          onPressed: () => Navigator.of(context)
-                              .pushReplacementNamed(
-                                  AccountSelectScreen.routeName),
+                          onPressed: () =>
+                              Navigator.of(context).pushNamed(
+                            AccountSelectScreen.routeName,
+                            arguments: true,
+                          ),
                         ),
                       ),
                     ]),
@@ -902,8 +909,8 @@ class _MetadataFormState extends State<MetadataForm> {
                                       user.setContext(context);
                                       final bool internet =
                                           await user.connectionStatus();
-                                        _submit().then((value) => setState(
-                                            () => this._isLoading = false));
+                                      _submit().then((value) => setState(
+                                          () => this._isLoading = false));
                                       // if (internet) {
                                       // } else {
                                       //   setState(() {

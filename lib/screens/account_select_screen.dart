@@ -77,107 +77,170 @@ class AccountSelectScreen extends StatelessWidget {
     );
   }
 
+  Future<bool> _onWillPop(BuildContext ctx) {
+    return showDialog(
+          context: ctx,
+          builder: (context) => AlertDialog(
+            title: Text(
+              'Are you sure',
+              style: TextStyle(
+                fontFamily: 'Abel',
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            content: Text(
+              'Do you want to exit wazobia?',
+              style: const TextStyle(
+                fontFamily: 'Abel',
+                fontSize: 17.0,
+                // fontWeight: FontWeight.bold
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => exit(0),
+                /*Navigator.of(context).pop(true)*/
+                child: Text(
+                  'Yes',
+                  style: const TextStyle(
+                    fontFamily: 'PTSans',
+                    fontSize: 17.0,
+                    // fontWeight: FontWeight.bold
+                    // color: Colors.white,
+                  ),
+                ),
+              ),
+              RaisedButton(
+                color: Colors.lightGreen,
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  'No',
+                  style: const TextStyle(
+                    fontFamily: 'PTSans',
+                    fontSize: 17.0,
+                    // fontWeight: FontWeight.bold
+                    // color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Map<String, String> _users;
     // Provider.of<User>(context).getUsers().then((users) => _users = users);
 
+    final bool _isFromMetadataScreen =
+        ModalRoute.of(context).settings.arguments;
     final _deviceSize = MediaQuery.of(context).size;
-    return Scaffold(
-      key: this._scaffoldKey,
-      body: Center(
-        child: Card(
-          child: Container(
-            height: _deviceSize.height * .6,
-            width: _deviceSize.width * .75,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 60.0,
-                  padding:
-                      const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      // color: Colors.green,
-                      border:
-                          Border(bottom: BorderSide(color: Colors.green[200]))),
-                  child: FittedBox(
-                    child: Text(
-                      'Choose your account',
-                      style: TextStyle(
-                        fontSize: 45.0,
-                        fontFamily: 'ComicNeue',
-                        color: Colors.green[900],
+    return WillPopScope(
+      onWillPop: _isFromMetadataScreen == null
+          ? () => this._onWillPop(context)
+          : () => Future(() => true),
+      child: Scaffold(
+        key: this._scaffoldKey,
+        body: Center(
+          child: Card(
+            child: Container(
+              height: _deviceSize.height * .6,
+              width: _deviceSize.width * .75,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    height: 60.0,
+                    padding: const EdgeInsets.only(
+                        left: 10.0, right: 10.0, top: 6.0),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        // color: Colors.green,
+                        border: Border(
+                            bottom: BorderSide(color: Colors.green[200]))),
+                    child: FittedBox(
+                      child: Text(
+                        'Choose your account',
+                        style: TextStyle(
+                          fontSize: 45.0,
+                          fontFamily: 'ComicNeue',
+                          color: Colors.green[900],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                // SizedBox(height: 20.0),
-                // RaisedButton(
-                //   //   // onPressed: () => this._user.uploadVoice(
-                //   //   //     voiceToUpload: File(
-                //   //   //         r'C:\Users\sanis\Desktop\flaps\wazobia\nnf.mp3'),
-                //   //   //     title: 'nnf')
-                //   // onPressed: () => this._user.clear(),
-                //     onPressed: () async {
-                //       Map<String, String> ty = {};
-                //       ty['t'] = '5';
-                //       ty['y'] = '7';
-                //       ty['y'] = '4';
-                //       print(ty);
-                //       final t = ty.remove('t');
-                //       print(t);
-                //       print(ty);
-                //       print(await _user.getUsers());
-                //     },
-                // ),
-                Expanded(
-                  child: FutureBuilder(
-                    future: this._user.getUsers(),
-                    builder: (ctx, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CentrallyUsed().waitingCircle();
-                      } else if (snapshot.connectionState ==
-                          ConnectionState.done) {
-                        final users = snapshot.data !=
-                                {} // getUsers completes with {} if empty because can't call json.decode if null
-                            ? snapshot.data
-                            : null;
-                        return Container(
-                          margin: EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.green),
-                            borderRadius: BorderRadius.circular(5.0),
-                            // color: Colors.grey,
-                          ),
-                          child: ListView(
-                            padding: EdgeInsets.symmetric(vertical: 15.0),
-                            physics: BouncingScrollPhysics(),
-                            children: <Widget>[
-                              if (users != null)
-                                ...users.entries
-                                    .map((entry) =>
-                                        _buildUserOption(ctx, entry.key))
-                                    .toList(),
-                              if (users == null)
-                                Text('There are no users'),
-                              // Text(snapshot.data),
-                            ],
-                          ),
-                        );
-                      }
-                      return null;
-                    },
+                  // SizedBox(height: 20.0),
+                  // RaisedButton(
+                  //   //   // onPressed: () => this._user.uploadVoice(
+                  //   //   //     voiceToUpload: File(
+                  //   //   //         r'C:\Users\sanis\Desktop\flaps\wazobia\nnf.mp3'),
+                  //   //   //     title: 'nnf')
+                  //   // onPressed: () => this._user.clear(),
+                  //   onPressed: () async {
+                  //     Map<String, String> ty = {};
+                  //     ty['t'] = '5';
+                  //     ty['y'] = '7';
+                  //     ty['y'] = '4';
+                  //     print(ty);
+                  //     final t = ty.remove('t');
+                  //     print(t);
+                  //     print(ty);
+                  //     print(await _user.getUsers());
+                  //     print(_isFromMetadataScreen);
+                  //   },
+                  // ),
+                  Expanded(
+                    child: FutureBuilder(
+                      future: this._user.getUsers(),
+                      builder: (ctx, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CentrallyUsed().waitingCircle();
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.done) {
+                          final users = snapshot.data !=
+                                  {} // getUsers completes with {} if empty because can't call json.decode if null
+                              ? snapshot.data
+                              : null;
+                          return Container(
+                            margin: EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.green),
+                              borderRadius: BorderRadius.circular(5.0),
+                              // color: Colors.grey,
+                            ),
+                            child: ListView(
+                              padding: EdgeInsets.symmetric(vertical: 15.0),
+                              physics: BouncingScrollPhysics(),
+                              children: <Widget>[
+                                if (users != null)
+                                  ...users.entries
+                                      .map((entry) =>
+                                          _buildUserOption(ctx, entry.key))
+                                      .toList(),
+                                if (users == null || users.length == 0)
+                                  Text('There are no users'),
+                                // Text(snapshot.data),
+                              ],
+                            ),
+                          );
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                ),
-                FlatButton.icon(
-                  icon: Icon(Icons.add),
-                  label: Text('Add User'),
-                  // child: Text(),
-                  onPressed: () => Navigator.of(context)
-                      .pushReplacementNamed(MetadataScreen.routeName),
-                ),
-              ],
+                  FlatButton.icon(
+                    icon: Icon(Icons.add),
+                    label: Text('Add User'),
+                    // child: Text(),
+                    onPressed: () => Navigator.of(context)
+                        .pushReplacementNamed(MetadataScreen.routeName),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
