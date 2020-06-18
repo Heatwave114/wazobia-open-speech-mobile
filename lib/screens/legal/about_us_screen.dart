@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 
+// Internal
+import '../../terms_about_help.dart';
+
 class AboutUsScreen extends StatelessWidget {
   static const routeName = '/about';
   static const aEmail = 'acontact@email.com';
@@ -146,7 +149,7 @@ class AboutUsScreen extends StatelessWidget {
                         child: Column(
                           children: <Widget>[
                             Text(
-                              'This application is developed by students of Computer Engineering Department, Federal University of Technology, Minna, in collaboration with ITU, under their Machine Learning and 5G focus group. It is used to collect voice data for the African Automatic Speech Recognition project.',
+                              aboutUsText,
                               style: TextStyle(
                                 fontSize: 25.0,
                                 fontFamily: 'Abel',
@@ -174,7 +177,8 @@ class AboutUsScreen extends StatelessWidget {
                                                 () async => this._sendEmail(),
                                           style: TextStyle(
                                             color: Colors.deepOrange[400],
-                                            decoration: TextDecoration.underline,
+                                            decoration:
+                                                TextDecoration.underline,
                                           ),
                                         ),
                                         // TextSpan(text: '\t\t\t\t\t'),

@@ -16,6 +16,7 @@ import '../../models/resource.dart';
 import '../../providers/firebase_helper.dart';
 import '../../providers/sound_tin.dart';
 import '../../providers/user.dart';
+import '../../terms_about_help.dart';
 import '../../widgets/centrally_used.dart';
 import '../../widgets/dash_widgets.dart';
 
@@ -135,9 +136,10 @@ class ValidateScreen extends StatelessWidget {
             onPressed: () => this._onTapHelp(
               this._validationHelpExpansionKey.currentContext,
               this._helpText(
-                  'The recording should be a voice donation from one of our donors like you 😉. We need your help to probe into its validity by checking if the recording is truly a human voice that reads the text displayed correspondingly and entirely. After your evaluation, if you deem the recording valid then you press the "Validate" button else you press the "Invalidate" button. Optionally, you can give us the reason for your evaluation after you pressed any of this buttons.',
-                  'After you have submitted your evaluation, we promote or demote the ranking of the donation accordingly.',
-                  'We do not collect any traceable information from you. Hence, it is impossible to associate you(specifically) with the data you gave at the metadata screen. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.'),
+                validationHelpTexts['whattodo'],
+                validationHelpTexts['afterwards'],
+                validationHelpTexts['privacy'],
+              ),
             ),
           ),
         ],

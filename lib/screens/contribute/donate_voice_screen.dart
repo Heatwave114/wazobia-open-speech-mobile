@@ -16,6 +16,7 @@ import '../../models/user.dart' as userM;
 import '../../providers/firebase_helper.dart';
 import '../../providers/sound_tin.dart';
 import '../../providers/user.dart';
+import '../../terms_about_help.dart';
 import '../../widgets/blinking_widget.dart';
 import '../../widgets/centrally_used.dart';
 import '../../widgets/dash_widgets.dart';
@@ -161,9 +162,9 @@ class DonateVoiceScreen extends StatelessWidget {
             onPressed: () => this._onTapHelp(
               this._donationHelpExpansionKey.currentContext,
               this._helpText(
-                'We need your help with a voice donation. We have provided a text that you should read while you record it. You can discard the recording to make a new one. You can also listen to it before you submit.',
-                'After you have submitted your donation, we store it in our server as unvalidated pending its validation from our friends like you 😉. After absolute validation, we promote it to validated.',
-                'We do not collect any traceable information from you. Hence, it is impossible to associate you(specifically) with the data you gave at the metadata screen. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.',
+                donationHelpTexts['whattodo'],
+                donationHelpTexts['afterwards'],
+                donationHelpTexts['privacy'],
               ),
             ),
           ),

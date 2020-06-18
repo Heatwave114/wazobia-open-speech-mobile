@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import '../customs/custom_checkbox.dart' as custm;
 import '../providers/user.dart';
 import '../screens/metadata_screen.dart';
+import '../terms_about_help.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const routeName = '/welcome';
@@ -178,7 +179,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           _buildCartridge(
                             'Welcome',
                             child: Text(
-                              'This application is developed by students of Computer Engineering Department, Federal University of Technology, Minna, in collaboration with ITU, under their Machine Learning and 5G focus group. It is used to collect voice data for the African Automatic Speech Recognition project.',
+                              aboutUsText,
                               style: TextStyle(
                                 fontSize: 25.0,
                                 fontFamily: 'Abel',
@@ -191,7 +192,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             child: Column(
                               children: <Widget>[
                                 Text(
-                                  'You must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions',
+                                  termsAndConditionsText,
                                   style: TextStyle(
                                     fontSize: 25.0,
                                     fontFamily: 'Abel',

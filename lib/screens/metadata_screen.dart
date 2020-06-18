@@ -12,6 +12,7 @@ import './dashboard_screen.dart';
 import '../helpers/auth.dart';
 import '../models/user.dart' as userM;
 import '../providers/user.dart';
+import '../terms_about_help.dart';
 import '../widgets/centrally_used.dart';
 // import '../customs/custom_checkbox.dart' as custm;
 
@@ -344,9 +345,12 @@ class _MetadataFormState extends State<MetadataForm> {
       context: context,
       position: position,
       items: <PopupMenuItem<String>>[
-        const PopupMenuItem<String>(child: const Text('3-5'), value: '3-5'),
-        const PopupMenuItem<String>(child: const Text('6-12'), value: '6-12'),
-        const PopupMenuItem<String>(child: const Text('13-18'), value: '13-18'),
+        const PopupMenuItem<String>(
+            child: const Text('3-5(Parental control)'), value: '3-5'),
+        const PopupMenuItem<String>(
+            child: const Text('6-12(Parental control)'), value: '6-12'),
+        const PopupMenuItem<String>(
+            child: const Text('13-18(Parental control)'), value: '13-18'),
         const PopupMenuItem<String>(child: const Text('19-24'), value: '19-24'),
         const PopupMenuItem<String>(child: const Text('25-34'), value: '25-34'),
         const PopupMenuItem<String>(child: const Text('35-49'), value: '35-49'),
@@ -567,8 +571,7 @@ class _MetadataFormState extends State<MetadataForm> {
                             ),
                           ),
                           // child: Text(),
-                          onPressed: () =>
-                              Navigator.of(context).pushNamed(
+                          onPressed: () => Navigator.of(context).pushNamed(
                             AccountSelectScreen.routeName,
                             arguments: true,
                           ),
@@ -671,7 +674,7 @@ class _MetadataFormState extends State<MetadataForm> {
                       // color: Colors.deepOrange[400],
                       icon: Icon(Icons.help),
                       onPressed: () => this._onTapHelp(
-                        'Any name you can recall. e.g "winterknight". We do not store your nickname on our servers. It is sored only locally in your device to aid wazobia\'s multi-user feature.',
+                        nicknameHelpText['help'],
                         this._nicknameHelpExpansionKey.currentContext,
                       ),
                     ),
@@ -840,24 +843,100 @@ class _MetadataFormState extends State<MetadataForm> {
                                 showModalBottomSheet(
                                   context: context,
                                   builder: (_) {
+                                    final MediaQueryData deviceCritical =
+                                        MediaQuery.of(context);
+                                    double titleHeight = 30.0;
+                                    double heightBtwTitleChild = 5.0;
+                                    double sheetHeight =
+                                        deviceCritical.size.height * .7 -
+                                            16.0 -
+                                            132.0;
                                     return GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
                                       onTap: () {},
                                       child: Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                .70,
+                                        alignment: Alignment.center,
+                                        height: deviceCritical.size.height * .7,
                                         child: Center(
-                                            child: Padding(
-                                          padding: const EdgeInsets.all(15.0),
-                                          child: const Text(
-                                            'You must consent to this terms and conditions before you gain acces to wazobia.',
-                                            style: const TextStyle(
-                                                fontSize: 20.0,
-                                                fontFamily: 'PTSans'),
-                                          ),
-                                        )),
+                                          child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(15.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Container(
+                                                    // height of title
+                                                    height: titleHeight,
+                                                    width: double.infinity,
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 1.0,
+                                                            right: 1.0,
+                                                            top: 1.0),
+                                                    decoration: BoxDecoration(
+                                                        // color: Colors.green,
+                                                        border: Border(
+                                                            bottom: BorderSide(
+                                                                color: Colors
+                                                                        .green[
+                                                                    200]))),
+                                                    child: FittedBox(
+                                                      child: Text(
+                                                        'Terms and Conditions',
+                                                        style: TextStyle(
+                                                          fontSize: 70.0,
+                                                          fontFamily:
+                                                              'ComicNeue',
+                                                          color:
+                                                              Colors.green[900],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    // space btw child and title
+                                                    height: heightBtwTitleChild,
+                                                  ),
+                                                  Container(
+                                                    height: sheetHeight -
+                                                        titleHeight,
+                                                    // height: double.infinity,
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10.0),
+                                                    // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors.green),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5.0),
+                                                      // color: Colors.grey,
+                                                    ),
+                                                    child: Scrollbar(
+                                                      // controller: _scrollController,
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        physics:
+                                                            BouncingScrollPhysics(),
+                                                        child: const Text(
+                                                          termsAndConditionsText,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize:
+                                                                      20.0,
+                                                                  fontFamily:
+                                                                      'PTSans'),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )),
+                                        ),
                                       ),
-                                      behavior: HitTestBehavior.opaque,
                                     );
                                   },
                                 );
@@ -930,8 +1009,7 @@ class _MetadataFormState extends State<MetadataForm> {
                       key: this._proceedHelpExpansionKey,
                       color: Colors.green,
                       icon: Icon(Icons.help),
-                      onPressed: () => this._onTapHelp(
-                          'When you press the "Proceed" button, you will be signed in anonymously to our server, which means that you will get a temporary authentication token that allows your donations and validations gain access into our database. It is a measure to protect our server from hackers. Your authentication is valid until you delete this user or switch to another user. All the metadata collected in this page are non-traceable. Hence, it is impossible to associate you(specifically) with them. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.',
+                      onPressed: () => this._onTapHelp(proceedHelpText['help'],
                           this._proceedHelpExpansionKey.currentContext),
                     ),
                   ],

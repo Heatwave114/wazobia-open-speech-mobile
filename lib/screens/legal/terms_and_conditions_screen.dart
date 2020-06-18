@@ -1,6 +1,9 @@
 // External
 import 'package:flutter/material.dart';
 
+// Internal
+import '../../terms_about_help.dart';
+
 class TermsAndConditionsScreen extends StatelessWidget {
   static const routeName = '/tandc';
   // double backNextHeight = 45.0;
@@ -122,7 +125,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                         context,
                         'Terms and Conditions',
                         child: Text(
-                          'You must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions',
+                          termsAndConditionsText,
                           style: TextStyle(
                             fontSize: 25.0,
                             fontFamily: 'Abel',
