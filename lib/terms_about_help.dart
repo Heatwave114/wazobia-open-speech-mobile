@@ -25,7 +25,7 @@ const Map<String, String> donationHelpTexts = {
 // Nickname (?)
 const Map<String, String> nicknameHelpText = {
   'help':
-      'Any name you can recall. e.g "winterknight". We do not store your nickname on our servers. It is sored only locally in your device to aid wazobia\'s multi-user feature.',
+      'Any name you can recall. e.g "winterknight". We do not store your nickname in our servers. It is sored only locally in your device to aid wazobia\'s multi-user feature.',
 };
 
 // Proceded (?)

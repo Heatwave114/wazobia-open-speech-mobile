@@ -1,3 +1,7 @@
+// Core
+import 'dart:io';
+
+
 // External
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
@@ -24,54 +28,112 @@ class MetadataScreen extends StatefulWidget {
 }
 
 class _MetadataScreenState extends State<MetadataScreen> {
+  Future<bool> _onWillPop() {
+    return showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+              'Are you sure',
+              style: TextStyle(
+                fontFamily: 'Abel',
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            content: Text(
+              'Do you want to exit wazobia?',
+              style: const TextStyle(
+                fontFamily: 'Abel',
+                fontSize: 17.0,
+                // fontWeight: FontWeight.bold
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => exit(0),
+                /*Navigator.of(context).pop(true)*/
+                child: Text(
+                  'Yes',
+                  style: const TextStyle(
+                    fontFamily: 'PTSans',
+                    fontSize: 17.0,
+                    // fontWeight: FontWeight.bold
+                    // color: Colors.white,
+                  ),
+                ),
+              ),
+              RaisedButton(
+                color: Colors.lightGreen,
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  'No',
+                  style: const TextStyle(
+                    fontFamily: 'PTSans',
+                    fontSize: 17.0,
+                    // fontWeight: FontWeight.bold
+                    // color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     // print(MediaQuery.of(context).size.height);
     // print(MediaQuery.of(context).size.width);
     // final Size _deviceSize = MediaQuery.of(context).size;
-    return Scaffold(
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // SizedBox(
-            //   height: 0.0,
-            // ),
-            Container(
-              alignment: Alignment.center,
-              height: 50.0,
-              margin: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 5.0,
-                  left: 30.0,
-                  right: 30.0),
-              // padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
-              width: double.infinity,
-              // alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  // color: Colors.green,
-                  border: Border(bottom: BorderSide(color: Colors.green[200]))),
-              child: FittedBox(
-                child: Text(
-                  'Metadata',
-                  style: TextStyle(
-                    fontSize: 45.0,
-                    fontFamily: 'ComicNeue',
-                    color: Colors.green[900],
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // SizedBox(
+              //   height: 0.0,
+              // ),
+              Container(
+                alignment: Alignment.center,
+                height: 50.0,
+                margin: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top + 5.0,
+                    left: 30.0,
+                    right: 30.0),
+                // padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
+                width: double.infinity,
+                // alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    // color: Colors.green,
+                    border:
+                        Border(bottom: BorderSide(color: Colors.green[200]))),
+                child: FittedBox(
+                  child: Text(
+                    'Metadata',
+                    style: TextStyle(
+                      fontSize: 45.0,
+                      fontFamily: 'ComicNeue',
+                      color: Colors.green[900],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.only(
-                // top: MediaQuery.of(context).padding.top + 20.0,
-                top: 15.0,
-                // left: 0.0,
-                // right: 0.0,
+              Container(
+                margin: EdgeInsets.only(
+                  // top: MediaQuery.of(context).padding.top + 20.0,
+                  top: 15.0,
+                  // left: 0.0,
+                  // right: 0.0,
+                ),
+                child: MetadataForm(),
               ),
-              child: MetadataForm(),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -327,11 +327,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           onPressed: (this._tabController.index ==
                                   (this._tabController.length - 1))
                               ? () {
-                                  print('metadata now');
+                                  // print('metadata now');
 
                                   this._user.setFirstTime(false);
-                                  Navigator.of(context)
-                                      .pushNamed(MetadataScreen.routeName);
+                                  Navigator.of(context).pushReplacementNamed(
+                                      MetadataScreen.routeName);
                                 }
                               : () => this._nextPreviousPage(false),
                         ),
