@@ -49,4 +49,34 @@ class DashWidgets {
       ),
     );
   }
+
+ static Widget customDashItem(String label, String value, {TextStyle style}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 18,
+              fontFamily: 'Abel',
+              fontWeight: FontWeight.bold,
+              // color: Color(0xFF4FA978),
+            ),
+          ),
+          Text(
+            value,
+            style: style ??
+                TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'Abel',
+                  // color: Color(0xFF4FA978),
+                  // color: Colors.red[900],
+                ),
+          ),
+        ],
+      ),
+    );
+  }
 }

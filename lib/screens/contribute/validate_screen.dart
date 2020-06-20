@@ -230,6 +230,19 @@ class ValidateScreen extends StatelessWidget {
                           DashWidgets.dashItem('Genre', resource.genre),
                           DashWidgets.dashItem(
                               'Duration', donation.formatedDurationTime),
+                          if (resource.credit != '')
+                            DashWidgets.customDashItem(
+                              'Credit',
+                              resource.credit,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Abel',
+                                // color: Color(0xFF4FA978),
+                                // color: Colors.red[900],
+                                color: Colors.grey[600],
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
                         ], _dashWidth),
                         // MediaPanel(dashWidth: _dashWidth),
                         SoundDevil()..validating(),
@@ -251,6 +264,8 @@ class ValidateScreen extends StatelessWidget {
       ),
     );
   }
+
+  
 }
 
 // class MediaPanel extends StatefulWidget {

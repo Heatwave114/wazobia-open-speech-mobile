@@ -34,7 +34,7 @@ class Resource {
         readTime = Duration(seconds: resource['readtime'] as int),
         paperName = resource['papername'],
         paperDate = resource['paperdate'],
-        credit = resource['credit'];
+        credit = resource['credit']??'';
 
   Map<String, dynamic> get resourceAsMap {
     return {

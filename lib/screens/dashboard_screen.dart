@@ -111,7 +111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
-          // automaticallyImplyLeading: false,
+          automaticallyImplyLeading: false,
           // title: Text('Dashboard'),
           title: FutureBuilder(
             future: _user.getCurrentUser(),

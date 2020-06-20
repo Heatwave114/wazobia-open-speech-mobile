@@ -210,7 +210,29 @@ class DonateVoiceScreen extends StatelessWidget {
                       DashWidgets.dashItem(
                           'Read time', resource.formatedReadTime),
                     if (soundTin.inDanger)
-                      dangerDashItem('Read time', resource.formatedReadTime)
+                      DashWidgets.customDashItem(
+                        'Read time',
+                        resource.formatedReadTime,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: 'Abel',
+                          // color: Color(0xFF4FA978),
+                          color: Colors.red[900],
+                        ),
+                      ),
+                    if (resource.credit != '')
+                      DashWidgets.customDashItem(
+                        'Credit',
+                        resource.credit,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Abel',
+                          // color: Color(0xFF4FA978),
+                          // color: Colors.red[900],
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
                   ], _dashWidth),
                   // MediaPanel(dashWidth: _dashWidth),
                   SoundDevil(),
@@ -228,34 +250,6 @@ class DonateVoiceScreen extends StatelessWidget {
                 ],
               );
             }),
-      ),
-    );
-  }
-
-  Widget dangerDashItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-              fontFamily: 'Abel',
-              fontWeight: FontWeight.bold,
-              // color: Color(0xFF4FA978),
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-                fontSize: 18,
-                fontFamily: 'Abel',
-                // color: Color(0xFF4FA978),
-                color: Colors.red[900]),
-          ),
-        ],
       ),
     );
   }
