@@ -80,7 +80,8 @@ class _SoundDevilState extends State<SoundDevil> {
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
   t_MEDIA _media = t_MEDIA.FILE;
-  t_CODEC _codec = t_CODEC.CODEC_AAC;
+  // t_CODEC _codec = t_CODEC.CODEC_AAC;
+  t_CODEC _codec = t_CODEC.CODEC_MP3;
 
   bool _encoderSupported = true; // Optimist
   bool _decoderSupported = true; // Optimist
@@ -1275,7 +1276,8 @@ class _SoundDevilState extends State<SoundDevil> {
                                       });
                                     }
 
-                                    final User user = Provider.of<User>(context, listen: false);
+                                    final User user = Provider.of<User>(context,
+                                        listen: false);
                                     user.setContext(context);
                                     final bool internet =
                                         await user.connectionStatus();

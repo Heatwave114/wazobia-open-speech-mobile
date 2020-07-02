@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../../helpers/sound_devil.dart';
 import '../../models/donation.dart';
 import '../../models/resource.dart';
+import '../../lifters/sieve_lift.dart';
 import '../../providers/firebase_helper.dart';
 import '../../providers/sound_tin.dart';
 import '../../providers/user.dart';
@@ -125,147 +126,148 @@ class ValidateScreen extends StatelessWidget {
     final SoundTin soundTin = Provider.of<SoundTin>(context);
     final FireBaseHelper fbHelper = Provider.of<FireBaseHelper>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Validate'),
-        actions: <Widget>[
-          IconButton(
-            key: this._validationHelpExpansionKey,
-            padding: EdgeInsets.only(right: 15),
-            icon: Icon(Icons.help),
-            onPressed: () => this._onTapHelp(
-              this._validationHelpExpansionKey.currentContext,
-              this._helpText(
-                validationHelpTexts['whattodo'],
-                validationHelpTexts['afterwards'],
-                validationHelpTexts['privacy'],
+    return SieveLift(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Validate'),
+          actions: <Widget>[
+            IconButton(
+              key: this._validationHelpExpansionKey,
+              padding: EdgeInsets.only(right: 15),
+              icon: Icon(Icons.help),
+              onPressed: () => this._onTapHelp(
+                this._validationHelpExpansionKey.currentContext,
+                this._helpText(
+                  validationHelpTexts['whattodo'],
+                  validationHelpTexts['afterwards'],
+                  validationHelpTexts['privacy'],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: StreamBuilder(
-            stream: fbHelper.unvalidatedURLs.snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return Container(
+          ],
+        ),
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: StreamBuilder(
+              stream: fbHelper.unvalidatedURLs.snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData)
+                  return Container(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * .35),
+                      child: CentrallyUsed().waitingCircle());
+                if (snapshot.data.documents.length == 0 ||
+                    snapshot.data.documents.length == null)
+                  return Container(
+                    margin: EdgeInsets.all(20.0),
                     padding: EdgeInsets.only(
                         top: MediaQuery.of(context).size.height * .35),
-                    child: CentrallyUsed().waitingCircle());
-              if (snapshot.data.documents.length == 0 ||
-                  snapshot.data.documents.length == null)
-                return Container(
-                  margin: EdgeInsets.all(20.0),
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * .35),
-                  child: Center(
-                    child: Text(
-                      'No donations to validate. Please make a donation and invite to wazobia.',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontFamily: 'Abel',
-                        // color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        'No donations to validate. Please make a donation and invite to wazobia.',
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontFamily: 'Abel',
+                          // color: Colors.red,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              final int unvalidatedVoiceIndex = (soundTin
-                              .getShouldRefreshValidatingDonationIndex ==
-                          null ||
-                      soundTin.getShouldRefreshValidatingDonationIndex)
-                  ? () {
-                      soundTin.setCurrentValidatingDonationIndex =
-                          this._random.nextInt(snapshot.data.documents.length);
-                      soundTin.setShouldRefreshValidatingDonationIndex = false;
-                      // print(1);
-                      return soundTin.getCurrentValidatingDonationIndex;
-                    }()
-                  : () {
-                      // print(2);
-                      return soundTin.getCurrentValidatingDonationIndex;
-                    }();
-              final DocumentSnapshot unvalidatedDonationAsDocument =
-                  snapshot.data.documents[unvalidatedVoiceIndex];
-              final String resourceID =
-                  unvalidatedDonationAsDocument['resourceid'];
-              // print(unvalidatedVoiceIndex);
-              // print(unvalidatedDonationAsDocument);
-              // print(resourceID);
+                  );
+                final int unvalidatedVoiceIndex =
+                    (soundTin.getShouldRefreshValidatingDonationIndex == null ||
+                            soundTin.getShouldRefreshValidatingDonationIndex)
+                        ? () {
+                            soundTin.setCurrentValidatingDonationIndex = this
+                                ._random
+                                .nextInt(snapshot.data.documents.length);
+                            soundTin.setShouldRefreshValidatingDonationIndex =
+                                false;
+                            // print(1);
+                            return soundTin.getCurrentValidatingDonationIndex;
+                          }()
+                        : () {
+                            // print(2);
+                            return soundTin.getCurrentValidatingDonationIndex;
+                          }();
+                final DocumentSnapshot unvalidatedDonationAsDocument =
+                    snapshot.data.documents[unvalidatedVoiceIndex];
+                final String resourceID =
+                    unvalidatedDonationAsDocument['resourceid'];
+                // print(unvalidatedVoiceIndex);
+                // print(unvalidatedDonationAsDocument);
+                // print(resourceID);
 
-              // print(unvalidatedVoiceIndex);
+                // print(unvalidatedVoiceIndex);
 
-              // Tell sound devil to play this
-              soundTin.setValidatingVoiceURL =
-                  unvalidatedDonationAsDocument['url'];
+                // Tell sound devil to play this
+                soundTin.setValidatingVoiceURL =
+                    unvalidatedDonationAsDocument['url'];
 
-              final Donation donation =
-                  Donation.fromFireStore(unvalidatedDonationAsDocument);
-              soundTin.setCurrentValidatingDonation = donation;
-              // print(donation.reader);
+                final Donation donation =
+                    Donation.fromFireStore(unvalidatedDonationAsDocument);
+                soundTin.setCurrentValidatingDonation = donation;
+                // print(donation.reader);
 
-              return StreamBuilder(
-                  stream: fbHelper.resources.document(resourceID).snapshots(),
-                  builder: (context, snapshot) {
-                    // print(resourceID);
-                    // print('zzzzzzzzzzzzzzzzzzzzzz');
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container(
-                          padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).size.height * .35),
-                          child: CentrallyUsed().waitingCircle());
-                    }
-                    final Resource resource =
-                        Resource.fromFireStore(snapshot.data);
-                    // print('cccccccccccccccccc');
-                    soundTin.setCurrentValidatingResource = resource;
-                    return Column(
-                      children: <Widget>[
-                        const SizedBox(
-                          height: 5.0,
-                        ),
-                        DashWidgets.dashboard([
-                          DashWidgets.dashItem('Title', resource.title),
-                          DashWidgets.dashItem('Genre', resource.genre),
-                          DashWidgets.dashItem(
-                              'Duration', donation.formatedDurationTime),
-                          if (resource.credit != '')
-                            DashWidgets.customDashItem(
-                              'Credit',
-                              resource.credit,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Abel',
-                                // color: Color(0xFF4FA978),
-                                // color: Colors.red[900],
-                                color: Colors.grey[600],
-                                fontStyle: FontStyle.italic,
+                return StreamBuilder(
+                    stream: fbHelper.resources.document(resourceID).snapshots(),
+                    builder: (context, snapshot) {
+                      // print(resourceID);
+                      // print('zzzzzzzzzzzzzzzzzzzzzz');
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                            padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.height * .35),
+                            child: CentrallyUsed().waitingCircle());
+                      }
+                      final Resource resource =
+                          Resource.fromFireStore(snapshot.data);
+                      // print('cccccccccccccccccc');
+                      soundTin.setCurrentValidatingResource = resource;
+                      return Column(
+                        children: <Widget>[
+                          const SizedBox(
+                            height: 5.0,
+                          ),
+                          DashWidgets.dashboard([
+                            DashWidgets.dashItem('Title', resource.title),
+                            DashWidgets.dashItem('Genre', resource.genre),
+                            DashWidgets.dashItem(
+                                'Duration', donation.formatedDurationTime),
+                            if (resource.credit != '')
+                              DashWidgets.customDashItem(
+                                'Credit',
+                                resource.credit,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Abel',
+                                  // color: Color(0xFF4FA978),
+                                  // color: Colors.red[900],
+                                  color: Colors.grey[600],
+                                  fontStyle: FontStyle.italic,
+                                ),
                               ),
-                            ),
-                        ], _dashWidth),
-                        // MediaPanel(dashWidth: _dashWidth),
-                        SoundDevil()..validating(),
-                        // FlatButton(
-                        //   onPressed: () {
-                        //     print(snapshot.data.documents.length);
-                        //   },
-                        //   child: null,
-                        //   color: Colors.grey,
-                        // ),
-                        TextPanel(
-                            dashWidth: _dashWidth,
-                            resource: resource,
-                            donation: donation),
-                      ],
-                    );
-                  });
-            }),
+                          ], _dashWidth),
+                          // MediaPanel(dashWidth: _dashWidth),
+                          SoundDevil()..validating(),
+                          // FlatButton(
+                          //   onPressed: () {
+                          //     print(snapshot.data.documents.length);
+                          //   },
+                          //   child: null,
+                          //   color: Colors.grey,
+                          // ),
+                          TextPanel(
+                              dashWidth: _dashWidth,
+                              resource: resource,
+                              donation: donation),
+                        ],
+                      );
+                    });
+              }),
+        ),
       ),
     );
   }
-
-  
 }
 
 // class MediaPanel extends StatefulWidget {

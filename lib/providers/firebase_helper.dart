@@ -27,4 +27,11 @@ class FireBaseHelper with ChangeNotifier {
   // All invalid URLs
   get invalidURLs => this._databaseRoot.collection('invalid'); // Read Only
 
+  /////////////
+  /// Critical
+  ////////////
+  
+  // Critical
+  get critical => this._databaseRoot.collection('critical');
+
 }

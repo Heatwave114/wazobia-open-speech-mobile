@@ -10,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store_redirect/store_redirect.dart';
 
 // Internal
 import '../models/donation.dart';
@@ -416,8 +417,135 @@ class User with ChangeNotifier {
     'version': 1.1,
   };
 
+  Widget updateButton() {
+    return Padding(
+        padding: const EdgeInsets.only(top: 0.0),
+        child: RaisedButton(
+            color: Colors.lightGreen,
+            child: Text(
+              'Update',
+              style: TextStyle(
+                  fontSize: 16.0, color: Colors.white, fontFamily: 'PTSans'),
+            ),
+            onPressed: () async {
+              // Store params
+              final DocumentSnapshot storeParams = await this
+                  .databaseRoot
+                  .collection('critical')
+                  .document('store')
+                  .get();
+              final ids = storeParams['id'];
+
+              StoreRedirect.redirect(
+                  androidAppId: ids['android'], iOSAppId: ids['ios']);
+            }));
+  }
+
+  Widget controlScaffold(String controlMessage, {Widget child}) {
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: Text('Welcome to Wazobia'),
+      // ),
+      body: Center(
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.all(20.0),
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * .45),
+              child: Text(
+                controlMessage,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontFamily: 'Abel',
+                  // color: Colors.red,
+                ),
+              ),
+            ),
+            if (child != null) child,
+          ],
+        ),
+      ),
+    );
+  }
+
+  // So that can sieve when not landing
+  Future<Widget> notLandingSieve() async {
+    final DocumentSnapshot controlParams = await this
+        .databaseRoot
+        .collection('critical')
+        .document('control')
+        .get();
+
+    // Control params
+    final bool kill = controlParams['kill'];
+    final bool nonAdminAllowed = controlParams['nonadminallowed'];
+    final bool allowCounterfeit = controlParams['allowcounterfeit'];
+    final bool mustUpdate = controlParams['updaterequired'];
+    final bool mustUpdateLazy = controlParams['updaterequiredlazy'];
+    final lazyVersion = controlParams['lazyversion'];
+    final mustVersion = controlParams['mustversion'];
+    final bool mustDisplayGeneralMessage =
+        controlParams['mustdisplaygeneralmessage'];
+    final String generalMessage = controlParams['generalcontrolmessage'];
+
+    // Tests (Used to traverse sieve, must pass all)
+    final bool killTest = kill ? false : true;
+    final bool nonAdminAllowedTest = nonAdminAllowed
+        ? (true)
+        : (this.appInstanceInfo['admin'] ? (true) : (false));
+    final bool mustUpdateTest = mustUpdate
+        ? (this.appInstanceInfo['version'] == mustVersion
+            ? (true)
+            : (this.appInstanceInfo['admin'] ? (true) : (false)))
+        : (true);
+    final bool mustLazyUpdateTest = mustUpdateLazy
+        ? (this.appInstanceInfo['version'] >= lazyVersion
+            ? (true)
+            : (this.appInstanceInfo['admin'] ? (true) : (false)))
+        : (true);
+    final bool allowCounterfeitTest = allowCounterfeit
+        ? (true)
+        : (this.appInstanceInfo['admin']
+            ? (true)
+            : (this.appInstanceInfo['counterfeit'] ? (false) : (true)));
+    final bool mustDisplayGeneralMessageTest = mustDisplayGeneralMessage
+        ? (this.appInstanceInfo['admin'] ? (true) : (false))
+        : (true);
+
+    // The Sieve
+    if (killTest &&
+        nonAdminAllowedTest &&
+        allowCounterfeitTest &&
+        mustUpdateTest &&
+        mustLazyUpdateTest &&
+        allowCounterfeitTest &&
+        mustDisplayGeneralMessageTest) {
+      return null;
+    } else if (!killTest) {
+      return controlScaffold(
+          'Wazobia has been suspended indefinately. We will notify you as soon as the suspension is lifted.');
+    } else if (!nonAdminAllowedTest) {
+      return controlScaffold(
+          'We are sorry, the application is down for maintenance. Check back later.');
+    } else if (!mustUpdateTest) {
+      return controlScaffold(
+          'New update available. Update wazobia to continue.',
+          child: this.updateButton());
+    } else if (!mustLazyUpdateTest) {
+      return controlScaffold(
+          'New update available. Update wazobia to continue.',
+          child: this.updateButton());
+    } else if (!allowCounterfeitTest) {
+      return controlScaffold('You cannot continue. Check back later');
+    } else if (!mustDisplayGeneralMessageTest) {
+      return controlScaffold(generalMessage);
+    } else {
+      return controlScaffold('Something went wrong. Check back later.');
+    }
+  }
+
   Future<Widget> getLandingPage(bool hasAuth) async {
-    bool internet = await this.connectionStatus();
     final firstTime = await getFirstTime();
     final currentUser = await getCurrentUser();
     final DocumentSnapshot controlParams = await this
@@ -425,30 +553,6 @@ class User with ChangeNotifier {
         .collection('critical')
         .document('control')
         .get();
-
-    Widget controlScaffold(String controlMessage) {
-      return Scaffold(
-        // appBar: AppBar(
-        //   title: Text('Welcome to Wazobia'),
-        // ),
-        body: Center(
-          child: Container(
-            margin: EdgeInsets.all(20.0),
-            child: Text(
-              !internet
-                  ? controlMessage +
-                      ' Make sure to connect to the internet when you return.'
-                  : controlMessage,
-              style: TextStyle(
-                fontSize: 20.0,
-                fontFamily: 'Abel',
-                // color: Colors.red,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
 
     Widget go() {
       // Allow access
@@ -468,8 +572,10 @@ class User with ChangeNotifier {
     final bool allowCounterfeit = controlParams['allowcounterfeit'];
     final bool mustUpdate = controlParams['updaterequired'];
     final bool mustUpdateLazy = controlParams['updaterequiredlazy'];
-    final double lazyVersion = controlParams['lazyversion'];
-    final double mustVersion = controlParams['mustversion'];
+    final lazyVersion =
+        controlParams['lazyversion']; // Don't add type to FB number
+    final mustVersion =
+        controlParams['mustversion']; // Don't add type to FB number
     final bool mustDisplayGeneralMessage =
         controlParams['mustdisplaygeneralmessage'];
     final String generalMessage = controlParams['generalcontrolmessage'];
@@ -480,7 +586,7 @@ class User with ChangeNotifier {
         ? (true)
         : (this.appInstanceInfo['admin'] ? (true) : (false));
     final bool mustUpdateTest = mustUpdate
-        ? (this.appInstanceInfo['version'] >= mustVersion
+        ? (this.appInstanceInfo['version'] == mustVersion
             ? (true)
             : (this.appInstanceInfo['admin'] ? (true) : (false)))
         : (true);
@@ -509,16 +615,18 @@ class User with ChangeNotifier {
       return go();
     } else if (!killTest) {
       return controlScaffold(
-          'Wazobia has been suspended indefinately. We will notify as soon as the suspension is lifted.');
+          'Wazobia has been suspended indefinately. We will notify you as soon as the suspension is lifted.');
     } else if (!nonAdminAllowedTest) {
       return controlScaffold(
           'We are sorry, the application is down for maintenance. Check back later.');
     } else if (!mustUpdateTest) {
       return controlScaffold(
-          'There are new features included. Update wazobia to continue.');
+          'New update available. Update wazobia to continue.',
+          child: this.updateButton());
     } else if (!mustLazyUpdateTest) {
       return controlScaffold(
-          'There a new features included. Update wazobia to continue.');
+          'New update available. Update wazobia to continue.',
+          child: this.updateButton());
     } else if (!allowCounterfeitTest) {
       return controlScaffold('You cannot continue. Check back later');
     } else if (!mustDisplayGeneralMessageTest) {

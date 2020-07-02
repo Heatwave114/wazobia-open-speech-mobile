@@ -36,18 +36,17 @@ dependencies:
   share: ^0.6.4+3
   package_info: ^0.4.1
   flutter_email_sender: ^3.0.1
+  store_redirect: ^1.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -105,7 +104,6 @@ flutter:
         - asset: assets/fonts/PTSans/PTSans-Regular.ttf
         - asset: assets/fonts/PTSans/PTSans-Bold.ttf
           weight: 700
-     
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

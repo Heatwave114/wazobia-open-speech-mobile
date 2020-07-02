@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../../helpers/sound_devil.dart';
 import '../../models/resource.dart';
 import '../../models/user.dart' as userM;
+import '../../lifters/sieve_lift.dart';
 import '../../providers/firebase_helper.dart';
 import '../../providers/sound_tin.dart';
 import '../../providers/user.dart';
@@ -151,105 +152,109 @@ class DonateVoiceScreen extends StatelessWidget {
     // final resourcesStream = Provider.of<FireBaseHelper>(context).resources.snapshots();
     final SoundTin soundTin = Provider.of<SoundTin>(context);
     // final SoundDevil soundDevil = SoundDevil();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Donate Your Voice'),
-        actions: <Widget>[
-          IconButton(
-            key: this._donationHelpExpansionKey,
-            padding: EdgeInsets.only(right: 15),
-            icon: Icon(Icons.help),
-            onPressed: () => this._onTapHelp(
-              this._donationHelpExpansionKey.currentContext,
-              this._helpText(
-                donationHelpTexts['whattodo'],
-                donationHelpTexts['afterwards'],
-                donationHelpTexts['privacy'],
+    return SieveLift(
+          child: Scaffold(
+        appBar: AppBar(
+          title: Text('Donate Your Voice'),
+          actions: <Widget>[
+            IconButton(
+              key: this._donationHelpExpansionKey,
+              padding: EdgeInsets.only(right: 15),
+              icon: Icon(Icons.help),
+              onPressed: () => this._onTapHelp(
+                this._donationHelpExpansionKey.currentContext,
+                this._helpText(
+                  donationHelpTexts['whattodo'],
+                  donationHelpTexts['afterwards'],
+                  donationHelpTexts['privacy'],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: StreamBuilder(
-            stream: Provider.of<FireBaseHelper>(context).resources.snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return Container(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * .35),
-                    child: CentrallyUsed().waitingCircle());
-              final int resourceIndex = (soundTin
-                              .getShouldRefreshDonatingResourceIndex ==
-                          null ||
-                      soundTin.getShouldRefreshDonatingResourceIndex)
-                  ? () {
-                      soundTin.setCurrentDonatingResourceIndex =
-                          this._random.nextInt(snapshot.data.documents.length);
-                      soundTin.setShouldRefreshDonatingResourceIndex = false;
-                      // print(1);
-                      return soundTin.getCurrentDonatingResourceIndex;
-                    }()
-                  : () {
-                      // print(2);
-                      return soundTin.getCurrentDonatingResourceIndex;
-                    }();
-              final Resource resource = Resource.fromFireStore(
-                  snapshot.data.documents[resourceIndex]);
-              soundTin.setCurrentDonatingResource = resource;
-              return Column(
-                children: <Widget>[
-                  const SizedBox(
-                    height: 5.0,
-                  ),
-                  DashWidgets.dashboard([
-                    DashWidgets.dashItem('Title', resource.title),
-                    DashWidgets.dashItem('Genre', resource.genre),
-                    if (!soundTin.inDanger)
-                      DashWidgets.dashItem(
-                          'Read time', resource.formatedReadTime),
-                    if (soundTin.inDanger)
-                      DashWidgets.customDashItem(
-                        'Read time',
-                        resource.formatedReadTime,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: 'Abel',
-                          // color: Color(0xFF4FA978),
-                          color: Colors.red[900],
+          ],
+        ),
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: StreamBuilder(
+              stream:
+                  Provider.of<FireBaseHelper>(context).resources.snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData)
+                  return Container(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * .35),
+                      child: CentrallyUsed().waitingCircle());
+                final int resourceIndex =
+                    (soundTin.getShouldRefreshDonatingResourceIndex == null ||
+                            soundTin.getShouldRefreshDonatingResourceIndex)
+                        ? () {
+                            soundTin.setCurrentDonatingResourceIndex = this
+                                ._random
+                                .nextInt(snapshot.data.documents.length);
+                            soundTin.setShouldRefreshDonatingResourceIndex =
+                                false;
+                            // print(1);
+                            return soundTin.getCurrentDonatingResourceIndex;
+                          }()
+                        : () {
+                            // print(2);
+                            return soundTin.getCurrentDonatingResourceIndex;
+                          }();
+                final Resource resource = Resource.fromFireStore(
+                    snapshot.data.documents[resourceIndex]);
+                soundTin.setCurrentDonatingResource = resource;
+                return Column(
+                  children: <Widget>[
+                    const SizedBox(
+                      height: 5.0,
+                    ),
+                    DashWidgets.dashboard([
+                      DashWidgets.dashItem('Title', resource.title),
+                      DashWidgets.dashItem('Genre', resource.genre),
+                      if (!soundTin.inDanger)
+                        DashWidgets.dashItem(
+                            'Read time', resource.formatedReadTime),
+                      if (soundTin.inDanger)
+                        DashWidgets.customDashItem(
+                          'Read time',
+                          resource.formatedReadTime,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'Abel',
+                            // color: Color(0xFF4FA978),
+                            color: Colors.red[900],
+                          ),
                         ),
-                      ),
-                    if (resource.credit != '')
-                      DashWidgets.customDashItem(
-                        'Credit',
-                        resource.credit,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'Abel',
-                          // color: Color(0xFF4FA978),
-                          // color: Colors.red[900],
-                          color: Colors.grey[600],
-                          fontStyle: FontStyle.italic,
+                      if (resource.credit != '')
+                        DashWidgets.customDashItem(
+                          'Credit',
+                          resource.credit,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Abel',
+                            // color: Color(0xFF4FA978),
+                            // color: Colors.red[900],
+                            color: Colors.grey[600],
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
-                      ),
-                  ], _dashWidth),
-                  // MediaPanel(dashWidth: _dashWidth),
-                  SoundDevil(),
-                  // FlatButton(
-                  //   onPressed: () async {
-                  //     print((await soundTin.getDonatedVoiceDuration()));
-                  //   },
-                  //   child: null,
-                  //   color: Colors.grey,
-                  // ),
-                  TextPanel(
-                    dashWidth: _dashWidth,
-                    resource: resource,
-                  ),
-                ],
-              );
-            }),
+                    ], _dashWidth),
+                    // MediaPanel(dashWidth: _dashWidth),
+                    SoundDevil(),
+                    // FlatButton(
+                    //   onPressed: () async {
+                    //     print((await soundTin.getDonatedVoiceDuration()));
+                    //   },
+                    //   child: null,
+                    //   color: Colors.grey,
+                    // ),
+                    TextPanel(
+                      dashWidth: _dashWidth,
+                      resource: resource,
+                    ),
+                  ],
+                );
+              }),
+        ),
       ),
     );
   }

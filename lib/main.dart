@@ -111,16 +111,11 @@ class MyApp extends StatelessWidget {
                               return CentrallyUsed().waitingCircle();
                             } else if (userSnapshot.data == null) {
                               return Scaffold(
-                                body: Center(
-                                  child: Text(
-                                    'Check your internet connection',
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      fontFamily: 'Abel',
-                                      // color: Colors.red,
-                                    ),
-                                  ),
-                                ),
+                                body: (snp.hasData)
+                                    ? Center(
+                                        child: DashboardScreen(),
+                                      )
+                                    : AccountSelectScreen(),
                               );
                             }
                             return userSnapshot.data;
@@ -139,7 +134,8 @@ class MyApp extends StatelessWidget {
           DashboardScreen.routeName: (ctx) => DashboardScreen(),
           DonateVoiceScreen.routeName: (ctx) => DonateVoiceScreen(),
           MetadataScreen.routeName: (ctx) => MetadataScreen(),
-          TermsAndConditionsScreen.routeName: (ctx) => TermsAndConditionsScreen(),
+          TermsAndConditionsScreen.routeName: (ctx) =>
+              TermsAndConditionsScreen(),
           ValidateScreen.routeName: (ctx) => ValidateScreen(),
           WelcomeScreen.routeName: (ctx) => WelcomeScreen(),
         },
