@@ -1,7 +1,6 @@
 // Core
 import 'dart:io';
 
-
 // External
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
@@ -14,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './account_select_screen.dart';
 import './dashboard_screen.dart';
 import '../helpers/auth.dart';
+import '../lifters/sieve_lift.dart';
 import '../models/user.dart' as userM;
 import '../providers/user.dart';
 import '../terms_about_help.dart';
@@ -89,50 +89,52 @@ class _MetadataScreenState extends State<MetadataScreen> {
     // final Size _deviceSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: Scaffold(
-        body: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // SizedBox(
-              //   height: 0.0,
-              // ),
-              Container(
-                alignment: Alignment.center,
-                height: 50.0,
-                margin: EdgeInsets.only(
-                    top: MediaQuery.of(context).padding.top + 5.0,
-                    left: 30.0,
-                    right: 30.0),
-                // padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
-                width: double.infinity,
-                // alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    // color: Colors.green,
-                    border:
-                        Border(bottom: BorderSide(color: Colors.green[200]))),
-                child: FittedBox(
-                  child: Text(
-                    'Metadata',
-                    style: TextStyle(
-                      fontSize: 45.0,
-                      fontFamily: 'ComicNeue',
-                      color: Colors.green[900],
+      child: SieveLift(
+        child: Scaffold(
+          body: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // SizedBox(
+                //   height: 0.0,
+                // ),
+                Container(
+                  alignment: Alignment.center,
+                  height: 50.0,
+                  margin: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top + 5.0,
+                      left: 30.0,
+                      right: 30.0),
+                  // padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 6.0),
+                  width: double.infinity,
+                  // alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      // color: Colors.green,
+                      border:
+                          Border(bottom: BorderSide(color: Colors.green[200]))),
+                  child: FittedBox(
+                    child: Text(
+                      'Metadata',
+                      style: TextStyle(
+                        fontSize: 45.0,
+                        fontFamily: 'ComicNeue',
+                        color: Colors.green[900],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.only(
-                  // top: MediaQuery.of(context).padding.top + 20.0,
-                  top: 15.0,
-                  // left: 0.0,
-                  // right: 0.0,
+                Container(
+                  margin: EdgeInsets.only(
+                    // top: MediaQuery.of(context).padding.top + 20.0,
+                    top: 15.0,
+                    // left: 0.0,
+                    // right: 0.0,
+                  ),
+                  child: MetadataForm(),
                 ),
-                child: MetadataForm(),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -80,8 +80,7 @@ class _SoundDevilState extends State<SoundDevil> {
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
   t_MEDIA _media = t_MEDIA.FILE;
-  // t_CODEC _codec = t_CODEC.CODEC_AAC;
-  t_CODEC _codec = t_CODEC.CODEC_MP3;
+  t_CODEC _codec = t_CODEC.CODEC_AAC;
 
   bool _encoderSupported = true; // Optimist
   bool _decoderSupported = true; // Optimist
@@ -233,7 +232,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
       String path = await recorderModule.startRecorder(
         uri: '${tempDir.path}/${recorderModule.slotNo}-${paths[_codec.index]}',
-        codec: _codec,
+        codec: _codec, 
       );
       final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
       final User user = Provider.of<User>(context, listen: false);
@@ -279,27 +278,27 @@ class _SoundDevilState extends State<SoundDevil> {
           this._dbLevel = value;
         });
       });
-      if (REENTRANCE_CONCURENCY) {
-        try {
-          Uint8List dataBuffer =
-              (await rootBundle.load(assetSample[_codec.index]))
-                  .buffer
-                  .asUint8List();
-          await playerModule_2.startPlayerFromBuffer(dataBuffer, codec: _codec,
-              whenFinished: () {
-            //await playerModule_2.startPlayer(exampleAudioFilePath, codec: t_CODEC.CODEC_MP3, whenFinished: () {
-            print('Secondary Play finished');
-          });
-        } catch (e) {
-          print('startRecorder error: $e');
-        }
-        await recorderModule_2.startRecorder(
-          uri: '${tempDir.path}/flutter_sound_recorder2.aac',
-          codec: t_CODEC.CODEC_AAC,
-        );
-        print(
-            "Secondary record is '${tempDir.path}/flutter_sound_recorder2.aac'");
-      }
+      // if (REENTRANCE_CONCURENCY) {
+      //   try {
+      //     Uint8List dataBuffer =
+      //         (await rootBundle.load(assetSample[_codec.index]))
+      //             .buffer
+      //             .asUint8List();
+      //     await playerModule_2.startPlayerFromBuffer(dataBuffer, codec: _codec,
+      //         whenFinished: () {
+      //       //await playerModule_2.startPlayer(exampleAudioFilePath, codec: t_CODEC.CODEC_MP3, whenFinished: () {
+      //       print('Secondary Play finished');
+      //     });
+      //   } catch (e) {
+      //     print('startRecorder error: $e');
+      //   }
+      //   await recorderModule_2.startRecorder(
+      //     uri: '${tempDir.path}/flutter_sound_recorder2.aac',
+      //     codec: t_CODEC.CODEC_AAC,
+      //   );
+      //   print(
+      //       "Secondary record is '${tempDir.path}/flutter_sound_recorder2.aac'");
+      // }
 
       this.setState(() {
         this._isRecording = true;
@@ -1276,8 +1275,7 @@ class _SoundDevilState extends State<SoundDevil> {
                                       });
                                     }
 
-                                    final User user = Provider.of<User>(context,
-                                        listen: false);
+                                    final User user = Provider.of<User>(context, listen: false);
                                     user.setContext(context);
                                     final bool internet =
                                         await user.connectionStatus();

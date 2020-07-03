@@ -155,22 +155,23 @@ class User with ChangeNotifier {
   /////////////////////
 
   // FirstPref set
-  void setFirstTime(bool first) async {
+  void setFirstTime(bool firsttime) async {
     final pref = await this._pref;
     // final firstPref = _pref.getBool('firsttime');
     // if (!firstPref || firstPref == null) {}
-    if (first) {
-      pref.setBool('firsttime', true);
-    } else {
-      pref.setBool('firsttime', false);
-    }
+    // if (first) {
+    //   pref.setBool('firsttime', true);
+    // } else {
+    //   pref.setBool('firsttime', false);
+    // }
+    pref.setBool('firsttime', firsttime);
   }
 
   // FirstPref get
   Future<bool> getFirstTime() async {
     final pref = await this._pref;
     final firstPref = pref.getBool('firsttime');
-    return firstPref;
+    return firstPref ?? true;
   }
 
   // User add

@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 
 // Internal
 import '../customs/custom_checkbox.dart' as custm;
+import '../lifters/sieve_lift.dart';
 import '../providers/user.dart';
 import '../screens/metadata_screen.dart';
 import '../terms_about_help.dart';
@@ -133,212 +134,214 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
     if (_tabController.index != _tabController.length - 1) setState(() {});
 
-    return SafeArea(
-      child: Container(
-        height: double.infinity,
-        // padding: EdgeInsets.all(10.0)
-        //     .copyWith(top: MediaQuery.of(context).padding.top),
-        padding: EdgeInsets.only(
-          top: _deviceSize.height * .01,
-          bottom: _deviceSize.height * .01,
-          left: _deviceSize.height * .01,
-          right: _deviceSize.height * .01,
-        ),
-        // height: double.infinity,
-        // width: double.infinity,
+    return SieveLift(
+      child: SafeArea(
         child: Container(
-          // decoration: BoxDecoration(
-          //   border: Border.all(
-          //     color: Colors.green,
-          //     width: 2.0,
-          //   ),
-          // borderRadius: BorderRadius.circular(30.0),
-          // color: Colors.white,
-          // ),
-          child: ClipRRect(
+          height: double.infinity,
+          // padding: EdgeInsets.all(10.0)
+          //     .copyWith(top: MediaQuery.of(context).padding.top),
+          padding: EdgeInsets.only(
+            top: _deviceSize.height * .01,
+            bottom: _deviceSize.height * .01,
+            left: _deviceSize.height * .01,
+            right: _deviceSize.height * .01,
+          ),
+          // height: double.infinity,
+          // width: double.infinity,
+          child: Container(
+            // decoration: BoxDecoration(
+            //   border: Border.all(
+            //     color: Colors.green,
+            //     width: 2.0,
+            //   ),
             // borderRadius: BorderRadius.circular(30.0),
-            child: Card(
-              key: cardKey,
-              // margin: const EdgeInsets.all(0.0),
-              elevation: 2.0,
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: NotificationListener<ScrollEndNotification>(
-                      onNotification: (notification) {
-                        // print((NotificationListener == ScrollEndNotification));
-                        // print((notification == NotificationListener));
-                        // print(notification);
-                        setState(() {});
-                        return true;
-                      },
-                      child: TabBarView(
-                        // physics: BouncingScrollPhysics(),
-                        controller: _tabController,
-                        children: <Widget>[
-                          _buildCartridge(
-                            'Welcome',
-                            child: Text(
-                              aboutUsText,
-                              style: TextStyle(
-                                fontSize: 25.0,
-                                fontFamily: 'Abel',
+            // color: Colors.white,
+            // ),
+            child: ClipRRect(
+              // borderRadius: BorderRadius.circular(30.0),
+              child: Card(
+                key: cardKey,
+                // margin: const EdgeInsets.all(0.0),
+                elevation: 2.0,
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: NotificationListener<ScrollEndNotification>(
+                        onNotification: (notification) {
+                          // print((NotificationListener == ScrollEndNotification));
+                          // print((notification == NotificationListener));
+                          // print(notification);
+                          setState(() {});
+                          return true;
+                        },
+                        child: TabBarView(
+                          // physics: BouncingScrollPhysics(),
+                          controller: _tabController,
+                          children: <Widget>[
+                            _buildCartridge(
+                              'Welcome',
+                              child: Text(
+                                aboutUsText,
+                                style: TextStyle(
+                                  fontSize: 25.0,
+                                  fontFamily: 'Abel',
+                                ),
                               ),
                             ),
-                          ),
-                          // Must be the last Cartridge[agreedToTerms??]
-                          _buildCartridge(
-                            'Terms and Conditions',
-                            child: Column(
-                              children: <Widget>[
-                                Text(
-                                  termsAndConditionsText,
-                                  style: TextStyle(
-                                    fontSize: 25.0,
-                                    fontFamily: 'Abel',
+                            // Must be the last Cartridge[agreedToTerms??]
+                            _buildCartridge(
+                              'Terms and Conditions',
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+                                    termsAndConditionsText,
+                                    style: TextStyle(
+                                      fontSize: 25.0,
+                                      fontFamily: 'Abel',
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                              // others: [
+                              //   Row(
+                              //     mainAxisAlignment: MainAxisAlignment.center,
+                              //     children: <Widget>[
+                              //       Checkbox(
+                              //         value: _agreedToTerms,
+                              //         // useTapTarget: false,
+                              //         activeColor: Colors.deepOrange[600],
+                              //         onChanged: (toggle) {
+                              //           // User user =
+                              //           //     Provider.of<User>(context, listen: false)
+                              //           //       ..setRememberMe(toggle);
+                              //           // print(user.rememberMe);
+                              //           setState(() {
+                              //             _agreedToTerms = toggle;
+                              //           });
+                              //         },
+                              //       ),
+                              //       RichText(
+                              //         // overflow: TextOverflow.ellipsis,
+                              //         text: TextSpan(
+                              //           style: TextStyle(
+                              //               color: Colors.black, fontSize: 14),
+                              //           children: <TextSpan>[
+                              //             const TextSpan(text: 'I agree to '),
+                              //             TextSpan(
+                              //               text: 'terms and conditions',
+                              //               // recognizer: TapGestureRecognizer()
+                              //               //   ..onTap = () {
+
+                              //               //     // Navigate to Terms and Conditions Page
+                              //               //     // Navigator.of(context)
+                              //               //     //     .pushNamed(
+                              //               //     //         TermsConditionsScreen.routeName);
+
+                              //               //     showModalBottomSheet(
+                              //               //       context: context,
+                              //               //       builder: (_) {
+                              //               //         return GestureDetector(
+                              //               //           onTap: () {},
+                              //               //           child: Container(
+                              //               //             height:
+                              //               //                 MediaQuery.of(context)
+                              //               //                         .size
+                              //               //                         .height *
+                              //               //                     .70,
+                              //               //             child: Center(
+                              //               //                 child: Padding(
+                              //               //               padding:
+                              //               //                   const EdgeInsets.all(
+                              //               //                       15.0),
+                              //               //               child: const Text(
+                              //               //                 'You must consent to this terms and conditions before you gain acces to wazobia.',
+                              //               //                 style: const TextStyle(
+                              //               //                     fontSize: 20.0,
+                              //               //                     fontFamily:
+                              //               //                         'PTSans'),
+                              //               //               ),
+                              //               //             )),
+                              //               //           ),
+                              //               //           behavior:
+                              //               //               HitTestBehavior.opaque,
+                              //               //     );
+                              //               //   },
+                              //               // );
+                              //               // },
+                              //               style: TextStyle(
+                              //                 // color: Theme.of(context).accentColor,
+                              //                 color: Colors.deepOrange[400],
+                              //                 decoration: TextDecoration.underline,
+                              //               ),
+                              //             )
+                              //           ],
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ],
                             ),
-                            // others: [
-                            //   Row(
-                            //     mainAxisAlignment: MainAxisAlignment.center,
-                            //     children: <Widget>[
-                            //       Checkbox(
-                            //         value: _agreedToTerms,
-                            //         // useTapTarget: false,
-                            //         activeColor: Colors.deepOrange[600],
-                            //         onChanged: (toggle) {
-                            //           // User user =
-                            //           //     Provider.of<User>(context, listen: false)
-                            //           //       ..setRememberMe(toggle);
-                            //           // print(user.rememberMe);
-                            //           setState(() {
-                            //             _agreedToTerms = toggle;
-                            //           });
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 0.0)
+                          .copyWith(bottom: 15.0),
+                      // padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      height: this.backNextHeight,
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          // RaisedButton(onPressed: () {
+                          //   print(_tabController.index);
+                          //   print(_agreedToTerms);
+                          // }),
+                          FlatButton(
+                            child: Text(
+                              'Back',
+                              style: _welcomeStyle['button'],
+                            ),
+                            onPressed: () => _nextPreviousPage(true),
+                          ),
+                          TabPageSelector(
+                            color: Colors.white,
+                            selectedColor: Colors.black,
+                            controller: _tabController,
+                            indicatorSize: 7.0,
+                          ),
+                          FlatButton(
+                            child: Text(
+                              'Next',
+                              style: _welcomeStyle['button'],
+                            ),
+                            // onPressed: _agreedToTerms
+                            //         ? () {
+                            //             this._user.setFirstTime(false);
+                            //             Navigator.of(context)
+                            //                 .pushNamed(MetadataScreen.routeName);
+                            //           }
+                            //         : () {
+                            //           this._nextPreviousPage(false);
                             //         },
-                            //       ),
-                            //       RichText(
-                            //         // overflow: TextOverflow.ellipsis,
-                            //         text: TextSpan(
-                            //           style: TextStyle(
-                            //               color: Colors.black, fontSize: 14),
-                            //           children: <TextSpan>[
-                            //             const TextSpan(text: 'I agree to '),
-                            //             TextSpan(
-                            //               text: 'terms and conditions',
-                            //               // recognizer: TapGestureRecognizer()
-                            //               //   ..onTap = () {
+                            onPressed: (this._tabController.index ==
+                                    (this._tabController.length - 1))
+                                ? () {
+                                    // print('metadata now');
 
-                            //               //     // Navigate to Terms and Conditions Page
-                            //               //     // Navigator.of(context)
-                            //               //     //     .pushNamed(
-                            //               //     //         TermsConditionsScreen.routeName);
-
-                            //               //     showModalBottomSheet(
-                            //               //       context: context,
-                            //               //       builder: (_) {
-                            //               //         return GestureDetector(
-                            //               //           onTap: () {},
-                            //               //           child: Container(
-                            //               //             height:
-                            //               //                 MediaQuery.of(context)
-                            //               //                         .size
-                            //               //                         .height *
-                            //               //                     .70,
-                            //               //             child: Center(
-                            //               //                 child: Padding(
-                            //               //               padding:
-                            //               //                   const EdgeInsets.all(
-                            //               //                       15.0),
-                            //               //               child: const Text(
-                            //               //                 'You must consent to this terms and conditions before you gain acces to wazobia.',
-                            //               //                 style: const TextStyle(
-                            //               //                     fontSize: 20.0,
-                            //               //                     fontFamily:
-                            //               //                         'PTSans'),
-                            //               //               ),
-                            //               //             )),
-                            //               //           ),
-                            //               //           behavior:
-                            //               //               HitTestBehavior.opaque,
-                            //               //     );
-                            //               //   },
-                            //               // );
-                            //               // },
-                            //               style: TextStyle(
-                            //                 // color: Theme.of(context).accentColor,
-                            //                 color: Colors.deepOrange[400],
-                            //                 decoration: TextDecoration.underline,
-                            //               ),
-                            //             )
-                            //           ],
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ],
+                                    this._user.setFirstTime(false);
+                                    Navigator.of(context).pushReplacementNamed(
+                                        MetadataScreen.routeName);
+                                  }
+                                : () => this._nextPreviousPage(false),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 0.0)
-                        .copyWith(bottom: 15.0),
-                    // padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    height: this.backNextHeight,
-                    width: double.infinity,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        // RaisedButton(onPressed: () {
-                        //   print(_tabController.index);
-                        //   print(_agreedToTerms);
-                        // }),
-                        FlatButton(
-                          child: Text(
-                            'Back',
-                            style: _welcomeStyle['button'],
-                          ),
-                          onPressed: () => _nextPreviousPage(true),
-                        ),
-                        TabPageSelector(
-                          color: Colors.white,
-                          selectedColor: Colors.black,
-                          controller: _tabController,
-                          indicatorSize: 7.0,
-                        ),
-                        FlatButton(
-                          child: Text(
-                            'Next',
-                            style: _welcomeStyle['button'],
-                          ),
-                          // onPressed: _agreedToTerms
-                          //         ? () {
-                          //             this._user.setFirstTime(false);
-                          //             Navigator.of(context)
-                          //                 .pushNamed(MetadataScreen.routeName);
-                          //           }
-                          //         : () {
-                          //           this._nextPreviousPage(false);
-                          //         },
-                          onPressed: (this._tabController.index ==
-                                  (this._tabController.length - 1))
-                              ? () {
-                                  // print('metadata now');
-
-                                  this._user.setFirstTime(false);
-                                  Navigator.of(context).pushReplacementNamed(
-                                      MetadataScreen.routeName);
-                                }
-                              : () => this._nextPreviousPage(false),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

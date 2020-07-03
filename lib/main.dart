@@ -33,7 +33,6 @@ class MyApp extends StatelessWidget {
   bool counterfeit = true;
   @override
   Widget build(BuildContext context) {
-    final Widget waitingCirlcle = CentrallyUsed().waitingCircle();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
@@ -71,7 +70,7 @@ class MyApp extends StatelessWidget {
                 stream: Auth().onAuthStateChanged,
                 builder: (ctx, snp) {
                   if (snp.connectionState == ConnectionState.waiting) {
-                    return waitingCirlcle;
+                    return CentrallyUsed().waitingCircle();
                   }
                   // if (!snp.hasData) {
                   //   return AccountSelectScreen();
@@ -90,7 +89,7 @@ class MyApp extends StatelessWidget {
                                       MediaQuery.of(context).size.height * .40),
                               margin: EdgeInsets.all(20.0),
                               child: Column(children: <Widget>[
-                                waitingCirlcle,
+                                CentrallyUsed().waitingCircle(),
                                 Text(
                                   'Please wait a moment. If this message persists check your internet connection.',
                                   style: TextStyle(
@@ -104,45 +103,17 @@ class MyApp extends StatelessWidget {
                           );
                         }
 
-                        return FutureBuilder<bool>(
-                          future: user.connectionStatus(),
-                          builder: (ctxInternet, snpInternet) {
-                            if (snpInternet.connectionState ==
+                        return FutureBuilder(
+                          future: user.getLandingPage(snp.hasData),
+                          builder: (ctx, userSnapshot) {
+                            // print(snp.hasData);
+                            if (userSnapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return waitingCirlcle;
-                            } else if (snpInternet.data == false) {
-                              return Scaffold(
-                                body: Center(
-                                  child: Text(
-                                    'Check your internet',
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      fontFamily: 'Abel',
-                                      // color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              );
+                              return CentrallyUsed().waitingCircle();
+                            } else if (userSnapshot.data == null) {
+                              return (snp.hasData) ? DashboardScreen() : AccountSelectScreen();
                             }
-
-                            return FutureBuilder<Widget>(
-                              future: user.getLandingPage(snp.hasData),
-                              builder: (ctx, userSnapshot) {
-                                if (userSnapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return waitingCirlcle;
-                                } else if (userSnapshot.data == null) {
-                                  return Scaffold(
-                                    body: (snp.hasData)
-                                        ? Center(
-                                            child: DashboardScreen(),
-                                          )
-                                        : AccountSelectScreen(),
-                                  );
-                                }
-                                return userSnapshot.data;
-                              },
-                            );
+                            return userSnapshot.data;
                           },
                         );
                       });
