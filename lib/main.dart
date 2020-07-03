@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
   bool counterfeit = true;
   @override
   Widget build(BuildContext context) {
+    final Widget waitingCirlcle = CentrallyUsed().waitingCircle();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
@@ -70,7 +71,7 @@ class MyApp extends StatelessWidget {
                 stream: Auth().onAuthStateChanged,
                 builder: (ctx, snp) {
                   if (snp.connectionState == ConnectionState.waiting) {
-                    return CentrallyUsed().waitingCircle();
+                    return waitingCirlcle;
                   }
                   // if (!snp.hasData) {
                   //   return AccountSelectScreen();
@@ -89,7 +90,7 @@ class MyApp extends StatelessWidget {
                                       MediaQuery.of(context).size.height * .40),
                               margin: EdgeInsets.all(20.0),
                               child: Column(children: <Widget>[
-                                CentrallyUsed().waitingCircle(),
+                                waitingCirlcle,
                                 Text(
                                   'Please wait a moment. If this message persists check your internet connection.',
                                   style: TextStyle(
@@ -103,22 +104,45 @@ class MyApp extends StatelessWidget {
                           );
                         }
 
-                        return FutureBuilder(
-                          future: user.getLandingPage(snp.hasData),
-                          builder: (ctx, userSnapshot) {
-                            if (userSnapshot.connectionState ==
+                        return FutureBuilder<bool>(
+                          future: user.connectionStatus(),
+                          builder: (ctxInternet, snpInternet) {
+                            if (snpInternet.connectionState ==
                                 ConnectionState.waiting) {
-                              return CentrallyUsed().waitingCircle();
-                            } else if (userSnapshot.data == null) {
+                              return waitingCirlcle;
+                            } else if (snpInternet.data == false) {
                               return Scaffold(
-                                body: (snp.hasData)
-                                    ? Center(
-                                        child: DashboardScreen(),
-                                      )
-                                    : AccountSelectScreen(),
+                                body: Center(
+                                  child: Text(
+                                    'Check your internet',
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      fontFamily: 'Abel',
+                                      // color: Colors.red,
+                                    ),
+                                  ),
+                                ),
                               );
                             }
-                            return userSnapshot.data;
+
+                            return FutureBuilder<Widget>(
+                              future: user.getLandingPage(snp.hasData),
+                              builder: (ctx, userSnapshot) {
+                                if (userSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return waitingCirlcle;
+                                } else if (userSnapshot.data == null) {
+                                  return Scaffold(
+                                    body: (snp.hasData)
+                                        ? Center(
+                                            child: DashboardScreen(),
+                                          )
+                                        : AccountSelectScreen(),
+                                  );
+                                }
+                                return userSnapshot.data;
+                              },
+                            );
                           },
                         );
                       });

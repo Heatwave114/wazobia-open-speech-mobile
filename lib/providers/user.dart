@@ -214,6 +214,7 @@ class User with ChangeNotifier {
   void showSnackBar(String message) {
     Scaffold.of(this.context).showSnackBar(
       SnackBar(
+        duration: Duration(milliseconds: 600),
         behavior: SnackBarBehavior.floating,
         // backgroundColor: Theme.of(this.context).appBarTheme.color,
         // behavior: SnackBarBehavior.floating,
