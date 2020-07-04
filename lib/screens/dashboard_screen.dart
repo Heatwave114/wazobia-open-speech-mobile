@@ -124,7 +124,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 // final User user = User.fromSharedPreference(snapshot.data);
                 final User user = User.fromSharedPreference(snapshot.data);
-                return Text(user.nickname + '\'s Dashboard');
+                String nickname = user.nickname[user.nickname.length - 1] == 's'
+                    ? '${user.nickname}\''
+                    : '${user.nickname}\'s';
+
+                return Text('$nickname dashboard');
               },
             ),
             actions: <Widget>[
@@ -409,6 +413,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                         ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.info_outline,
+                            color: Color(0xffff0000),
+                          ),
+                          SizedBox(
+                            width: 2.0,
+                          ),
+                          Text(
+                            'Create a new user if someone else is contributing',
+                            style: TextStyle(
+                              fontFamily: 'Abel',
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

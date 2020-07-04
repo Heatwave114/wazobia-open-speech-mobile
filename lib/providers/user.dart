@@ -215,7 +215,7 @@ class User with ChangeNotifier {
   void showSnackBar(String message) {
     Scaffold.of(this.context).showSnackBar(
       SnackBar(
-        duration: Duration(milliseconds: 600),
+        duration: Duration(milliseconds: 1000),
         behavior: SnackBarBehavior.floating,
         // backgroundColor: Theme.of(this.context).appBarTheme.color,
         // behavior: SnackBarBehavior.floating,
@@ -416,7 +416,7 @@ class User with ChangeNotifier {
   final Map<String, dynamic> appInstanceInfo = {
     'admin': false,
     'counterfeit': true,
-    'version': 1.1,
+    'version': 1.2,
   };
 
   Widget updateButton() {

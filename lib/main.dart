@@ -104,16 +104,29 @@ class MyApp extends StatelessWidget {
                         }
 
                         return FutureBuilder(
-                          future: user.getLandingPage(snp.hasData),
-                          builder: (ctx, userSnapshot) {
-                            // print(snp.hasData);
-                            if (userSnapshot.connectionState ==
+                          future: user.getFirstTime(),
+                          builder: (ctxFirstTime, snpFirstTime) {
+                            if (snpFirstTime.connectionState ==
                                 ConnectionState.waiting) {
                               return CentrallyUsed().waitingCircle();
-                            } else if (userSnapshot.data == null) {
-                              return (snp.hasData) ? DashboardScreen() : AccountSelectScreen();
                             }
-                            return userSnapshot.data;
+                            return FutureBuilder(
+                              future: user.getLandingPage(snp.hasData),
+                              builder: (ctx, userSnapshot) {
+                                // print(snp.hasData);
+                                if (userSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CentrallyUsed().waitingCircle();
+                                } else if (userSnapshot.data == null) {
+                                  return (snp.hasData)
+                                      ? DashboardScreen()
+                                      : snpFirstTime.data
+                                          ? WelcomeScreen()
+                                          : AccountSelectScreen();
+                                }
+                                return userSnapshot.data;
+                              },
+                            );
                           },
                         );
                       });
