@@ -242,7 +242,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 return SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       const SizedBox(
                         height: 10.0,
@@ -414,24 +414,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.info_outline,
-                            color: Color(0xffff0000),
+                      FittedBox(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.info_outline,
+                                color: Color(0xffff0000),
+                              ),
+                              SizedBox(
+                                width: 2.0,
+                              ),
+                              Text(
+                                'Switch or create a new user if someone else is contributing',
+                                style: TextStyle(
+                                  fontFamily: 'Abel',
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 2.0,
-                          ),
-                          Text(
-                            'Create a new user if someone else is contributing',
-                            style: TextStyle(
-                              fontFamily: 'Abel',
-                              fontSize: 16.0,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
