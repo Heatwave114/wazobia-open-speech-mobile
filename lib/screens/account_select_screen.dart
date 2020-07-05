@@ -196,7 +196,7 @@ class AccountSelectScreen extends StatelessWidget {
                     // ),
                     Expanded(
                       child: FutureBuilder(
-                        future: this._user.getUsers(),
+                        future: this._user.getUsers,
                         builder: (ctx, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {

@@ -20,7 +20,7 @@ import '../helpers/auth.dart';
 import '../models/user.dart';
 import '../lifters/sieve_lift.dart';
 import '../providers/firebase_helper.dart';
-import '../providers/user.dart' as user;
+import '../providers/user.dart' as userP;
 // import '../resources.dart';
 import '../screens/account_select_screen.dart';
 import '../widgets/centrally_used.dart';
@@ -106,7 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
     // final FireBaseHelper _firebaseHelper = Provider.of<FireBaseHelper>(context);
-    final user.User _user = Provider.of<user.User>(context);
+    final userP.User _user = Provider.of<userP.User>(context);
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -116,7 +116,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             automaticallyImplyLeading: false,
             // title: Text('Dashboard'),
             title: FutureBuilder(
-              future: _user.getCurrentUser(),
+              future: _user.getCurrentUser,
               builder: (ctx, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return SizedBox.shrink();
@@ -138,6 +138,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               //     print(await _user.getCurrentUser());
               //   },
               // ),
+
               IconButton(
                 padding: EdgeInsets.only(right: 15.0),
                 key: this._moreKey,
@@ -229,7 +230,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
           body: FutureBuilder(
-            future: _user.getCurrentUser(),
+            future: _user.getCurrentUser,
             builder: (ctx, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return CentrallyUsed().waitingCircle();
@@ -289,126 +290,156 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             width: _dashWidth,
                             child: Padding(
                               padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 20.0),
-                                    child: const Text(
-                                      'Contribute',
-                                      style: TextStyle(
-                                        fontSize: 20.0,
-                                        fontFamily: 'ComicNeue',
-                                        // fontStyle: FontStyle.italic,
+                              child: FutureBuilder(
+                                future: _user.getPermissions,
+                                builder: (ctxPermissions, snpPermissions) {
+                                  if (snpPermissions.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CentrallyUsed().waitingCircle();
+                                  }
+                                  final bool allowDonation =
+                                      (snpPermissions.data['allowdonation']);
+                                  final bool allowValidation =
+                                      (snpPermissions.data['allowvalidation']);
+                                  final bool allowSharing =
+                                      (snpPermissions.data['allowsharing']);
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      const Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0, horizontal: 20.0),
+                                        child: const Text(
+                                          'Contribute',
+                                          style: const TextStyle(
+                                            fontSize: 20.0,
+                                            fontFamily: 'ComicNeue',
+                                            // fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  ListTile(
-                                    // selected: true,
-                                    leading: const Icon(
-                                      Icons.mic,
-                                      color: Colors.deepOrange,
-                                    ),
-                                    title: const Text('Donate your voice'),
-                                    onTap: () async {
-                                      Navigator.of(context).pushNamed(
-                                          DonateVoiceScreen.routeName);
-                                    },
-                                  ),
-                                  ListTile(
-                                    // selected: true,
-                                    leading: const Icon(
-                                      Icons.check,
-                                      color: const Color(0xff2A6041),
-                                    ),
-                                    title: Text('Validate'),
-                                    onTap: () {
-                                      Navigator.of(context)
-                                          .pushNamed(ValidateScreen.routeName);
-                                    },
-                                  ),
-                                  Divider(),
-                                  ListTile(
-                                    // selected: true,
-                                    leading: const Icon(
-                                      Icons.share,
-                                      color: const Color(0xff2A6041),
-                                    ),
-                                    title: const Text('Invite to wazobia'),
-                                    onTap: () async {
-                                      final RenderBox box =
-                                          context.findRenderObject();
-                                      final DocumentSnapshot sharelinks =
-                                          await Firestore.instance
-                                              .collection('critical')
-                                              .document('versions')
-                                              .get();
+                                      ListTile(
+                                        // selected: true,
+                                        leading: const Icon(
+                                          Icons.mic,
+                                          color: Colors.deepOrange,
+                                        ),
+                                        title: Text(
+                                            'Donate your voice${allowDonation ? '' : '(disabled)'}'),
+                                        onTap: allowDonation
+                                            ? () async {
+                                                Navigator.of(context).pushNamed(
+                                                    DonateVoiceScreen
+                                                        .routeName);
+                                              }
+                                            : null,
+                                      ),
+                                      ListTile(
+                                        // selected: true,
+                                        leading: const Icon(
+                                          Icons.check,
+                                          color: const Color(0xff2A6041),
+                                        ),
+                                        title: Text(
+                                            'Validate${allowValidation ? '' : '(disabled)'}'),
+                                        onTap: allowValidation
+                                            ? () async {
+                                                Navigator.of(context).pushNamed(
+                                                    ValidateScreen.routeName);
+                                              }
+                                            : null,
+                                      ),
+                                      Divider(),
+                                      ListTile(
+                                        // selected: true,
+                                        leading: const Icon(
+                                          Icons.share,
+                                          color: const Color(0xff2A6041),
+                                        ),
+                                        title: Text(
+                                            'Invite to wazobia${allowSharing ? '' : '(disabled)'}'),
+                                        onTap: allowSharing
+                                            ? () async {
+                                                final RenderBox box =
+                                                    context.findRenderObject();
 
-                                      // SPACES NEEDED TO INDENT BTW NAME & LINK
-                                      //arm64_v8a:     5
-                                      //armeabi_v7a:   3
-                                      //x86_64:        8
-                                      //fat_all_abis:  2
+                                                final DocumentSnapshot
+                                                    shareLinks = await Firestore
+                                                        .instance
+                                                        .collection('critical')
+                                                        .document('versions')
+                                                        .get();
 
-                                      Share.share(
-                                          '''Help us at wazobia with your voice and ears:\n\narm64_v8a:     ${sharelinks["arm64_v8a"]}\narmeabi_v7a:  ${sharelinks["armeabi_v7a"]}\nx86_64:            ${sharelinks["x86_64"]}\nfat_all_abis:   ${sharelinks["fat_all_abis"]}''',
-                                          subject: 'Latest apk download link',
-                                          sharePositionOrigin:
-                                              box.localToGlobal(Offset.zero) &
-                                                  box.size);
+                                                // SPACES NEEDED TO INDENT BTW NAME & LINK
+                                                //arm64_v8a:     5
+                                                //armeabi_v7a:   3
+                                                //x86_64:        8
+                                                //fat_all_abis:  2
 
-                                      // final databaseRoot = _user.databaseRoot;
-                                      // for (var resource in Resources) {
-                                      //   if (resource.paperName != null &&
-                                      //       resource.paperDate != null &&
-                                      //       resource.author != null) {
-                                      //     databaseRoot
-                                      //         .collection('resources')
-                                      //         .document(resource.uid)
-                                      //         .setData({
-                                      //       'title': resource.title,
-                                      //       'author': resource.author,
-                                      //       'genre': resource.genre,
-                                      //       'text': resource.text,
-                                      //       'readtimesecs':
-                                      //           resource.readTime.inSeconds,
-                                      //       'papername': resource.paperName,
-                                      //       'paperdate': resource.paperDate,
-                                      //       'credit': resource.credit,
-                                      //     });
-                                      //   } else if (resource.paperName != null &&
-                                      //       resource.paperDate != null &&
-                                      //       resource.author == null) {
-                                      //     databaseRoot
-                                      //         .collection('resources')
-                                      //         .document(resource.uid)
-                                      //         .setData({
-                                      //       'title': resource.title,
-                                      //       'genre': resource.genre,
-                                      //       'text': resource.text,
-                                      //       'readtime':
-                                      //           resource.readTime.inSeconds,
-                                      //       'credit': resource.credit,
-                                      //     });
-                                      //   } else {
-                                      //     databaseRoot
-                                      //         .collection('resources')
-                                      //         .document(resource.uid)
-                                      //         .setData({
-                                      //       'title': resource.title,
-                                      //       'author': resource.author,
-                                      //       'genre': resource.genre,
-                                      //       'text': resource.text,
-                                      //       'readtime':
-                                      //           resource.readTime.inSeconds,
-                                      //       'credit': resource.credit,
-                                      //     });
-                                      //   }
-                                      // }
-                                    },
-                                  ),
-                                ],
+                                                Share.share(
+                                                    '''Help us at wazobia with your voice and ears:\n\narm64_v8a:     ${shareLinks["arm64_v8a"]}\narmeabi_v7a:  ${shareLinks["armeabi_v7a"]}\nx86_64:            ${shareLinks["x86_64"]}\nfat_all_abis:   ${shareLinks["fat_all_abis"]}''',
+                                                    subject:
+                                                        'Latest apk download link',
+                                                    sharePositionOrigin:
+                                                        box.localToGlobal(
+                                                                Offset.zero) &
+                                                            box.size);
+
+                                                // final databaseRoot = _user.databaseRoot;
+                                                // for (var resource in Resources) {
+                                                //   if (resource.paperName != null &&
+                                                //       resource.paperDate != null &&
+                                                //       resource.author != null) {
+                                                //     databaseRoot
+                                                //         .collection('resources')
+                                                //         .document(resource.uid)
+                                                //         .setData({
+                                                //       'title': resource.title,
+                                                //       'author': resource.author,
+                                                //       'genre': resource.genre,
+                                                //       'text': resource.text,
+                                                //       'readtimesecs':
+                                                //           resource.readTime.inSeconds,
+                                                //       'papername': resource.paperName,
+                                                //       'paperdate': resource.paperDate,
+                                                //       'credit': resource.credit,
+                                                //     });
+                                                //   } else if (resource.paperName != null &&
+                                                //       resource.paperDate != null &&
+                                                //       resource.author == null) {
+                                                //     databaseRoot
+                                                //         .collection('resources')
+                                                //         .document(resource.uid)
+                                                //         .setData({
+                                                //       'title': resource.title,
+                                                //       'genre': resource.genre,
+                                                //       'text': resource.text,
+                                                //       'readtime':
+                                                //           resource.readTime.inSeconds,
+                                                //       'credit': resource.credit,
+                                                //     });
+                                                //   } else {
+                                                //     databaseRoot
+                                                //         .collection('resources')
+                                                //         .document(resource.uid)
+                                                //         .setData({
+                                                //       'title': resource.title,
+                                                //       'author': resource.author,
+                                                //       'genre': resource.genre,
+                                                //       'text': resource.text,
+                                                //       'readtime':
+                                                //           resource.readTime.inSeconds,
+                                                //       'credit': resource.credit,
+                                                //     });
+                                                //   }
+                                                // }
+                                              }
+                                            : null,
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -422,14 +453,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             children: <Widget>[
                               Icon(
                                 Icons.info_outline,
-                                color: Color(0xffff0000),
+                                color: const Color(0xffff0000),
                               ),
                               SizedBox(
                                 width: 2.0,
                               ),
                               Text(
                                 'Switch or create a new user if someone else is contributing',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Abel',
                                   fontSize: 16.0,
                                 ),

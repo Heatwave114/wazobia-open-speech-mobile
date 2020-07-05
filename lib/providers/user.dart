@@ -64,7 +64,7 @@ class User with ChangeNotifier {
     // @required userM.User reader,
   }) async {
     final uid = (await _auth.currentUser()).uid;
-    final currentUser = await getCurrentUser();
+    final currentUser = await getCurrentUser;
     final DateTime now =
         DateTime.now(); // universal epoch so that name is more general
     final String voiceName =
@@ -168,7 +168,7 @@ class User with ChangeNotifier {
   }
 
   // FirstPref get
-  Future<bool> getFirstTime() async {
+  Future<bool> get getFirstTime async {
     final pref = await this._pref;
     final firstPref = pref.getBool('firsttime');
     return firstPref ?? true;
@@ -301,7 +301,7 @@ class User with ChangeNotifier {
   // }
 
   // Users get
-  Future<Map<String, dynamic>> getUsers() async {
+  Future<Map<String, dynamic>> get getUsers async {
     final pref = await this._pref;
     final users = pref.getString('users');
     final decodedUsers = json.decode(users);
@@ -312,7 +312,7 @@ class User with ChangeNotifier {
   }
 
   // curretUser get
-  Future<Map<String, dynamic>> getCurrentUser() async {
+  Future<Map<String, dynamic>> get getCurrentUser async {
     final pref = await this._pref;
     final currentUser = pref.getString('currentuser');
     // print(currentUser);
@@ -327,7 +327,7 @@ class User with ChangeNotifier {
   // currentUser set
   void setCurrentUser(String nickname) async {
     final pref = await this._pref;
-    final users = await this.getUsers();
+    final users = await this.getUsers;
     final encodedUser = json.encode(users[nickname]);
 
     if (nickname == null) {
@@ -340,8 +340,8 @@ class User with ChangeNotifier {
   // cuurentUser Delete
   Future<void> deleteCurrentUser() async {
     final pref = await this._pref;
-    final users = await this.getUsers();
-    final currentUserNickname = (await this.getCurrentUser())['nickname'];
+    final users = await this.getUsers;
+    final currentUserNickname = (await this.getCurrentUser)['nickname'];
     users.remove(currentUserNickname);
     print('entered: $users');
     pref.setString('users', json.encode(users));
@@ -356,6 +356,18 @@ class User with ChangeNotifier {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // User Data related
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //////////
+  // Control
+  //////////
+
+  Future<DocumentSnapshot> get getPermissions {
+    return this
+        .databaseRoot
+        .collection('critical')
+        .document('permissions')
+        .get();
+  }
 
   /////////////////
   // Instance Data
@@ -548,8 +560,8 @@ class User with ChangeNotifier {
   }
 
   Future<Widget> getLandingPage(bool hasAuth) async {
-    final firstTime = await getFirstTime();
-    final currentUser = await getCurrentUser();
+    final firstTime = await getFirstTime;
+    final currentUser = await getCurrentUser;
     final DocumentSnapshot controlParams = await this
         .databaseRoot
         .collection('critical')

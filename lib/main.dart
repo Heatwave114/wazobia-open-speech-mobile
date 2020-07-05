@@ -104,7 +104,7 @@ class MyApp extends StatelessWidget {
                         }
 
                         return FutureBuilder(
-                          future: user.getFirstTime(),
+                          future: user.getFirstTime,
                           builder: (ctxFirstTime, snpFirstTime) {
                             if (snpFirstTime.connectionState ==
                                 ConnectionState.waiting) {
