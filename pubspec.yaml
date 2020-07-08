@@ -47,7 +47,7 @@ flutter_icons:
   android: true
   ios: true
   image_path: "dev_assets/wazobia_launch_icon_transparent.png"
-  # adaptive_icon_background: "#ffffff"
+  adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "dev_assets/wazobia_launch_icon_transparent.png"
 
 # For information on the generic Dart part of this file, see the

@@ -16,6 +16,7 @@ import './contribute/donate_voice_screen.dart';
 import './contribute/validate_screen.dart';
 import './legal/about_us_screen.dart';
 import './legal/terms_and_conditions_screen.dart';
+import 'legal/privacy_policy_screen.dart';
 import '../helpers/auth.dart';
 import '../models/user.dart';
 import '../lifters/sieve_lift.dart';
@@ -153,22 +154,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     items: <PopupMenuItem<String>>[
                       const PopupMenuItem<String>(
                           child: const InkWell(
-                            child: const Text('switch user'),
+                            child: const Text('Switch user'),
                           ),
                           value: 'switch user'),
                       const PopupMenuItem<String>(
                           child: const InkWell(
-                            child: const Text('delete this user'),
+                            child: const Text('Delete this user'),
                           ),
                           value: 'delete'),
                       const PopupMenuItem<String>(
                           child: const InkWell(
-                            child: const Text('terms and conditions'),
+                            child: const Text('Terms and Conditions'),
                           ),
                           value: 'tandc'),
                       const PopupMenuItem<String>(
                           child: const InkWell(
-                            child: const Text('about us'),
+                            child: const Text('Privacy Policy'),
+                          ),
+                          value: 'privacy'),
+                      const PopupMenuItem<String>(
+                          child: const InkWell(
+                            child: const Text('About us'),
                           ),
                           value: 'about'),
                     ],
@@ -218,6 +224,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   if (_result == 'tandc') {
                     Navigator.of(context)
                         .pushNamed(TermsAndConditionsScreen.routeName);
+                  }
+
+                  if (_result == 'privacy') {
+                    Navigator.of(context)
+                        .pushNamed(PrivacyPolicyScreen.routeName);
                   }
 
                   if (_result == 'about') {

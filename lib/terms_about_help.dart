@@ -25,7 +25,7 @@ const Map<String, String> donationHelpTexts = {
 // Nickname (?)
 const Map<String, String> nicknameHelpText = {
   'help':
-      'Any name you can recall. e.g "winterknight". We do not store your nickname in our servers. It is sored only locally in your device to aid wazobia\'s multi-user feature.',
+      'Any name you can recall. e.g "winterknight". We do not store your nickname in our servers. It is sored only locally in your device to aid Wazobia\'s multi-user feature.',
 };
 
 // Proceded (?)
@@ -38,12 +38,14 @@ const Map<String, String> proceedHelpText = {
 /// Terms and Conditions
 ////////////////////////
 
+const String effectiveDate = "Effective July 8, 2020";
+
 const String termsAndConditionsTextTentative =
     'You must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions\n\nYou must consent to this terms and conditions';
 
 const String termsAndConditionsText = """Wazobia Legal Terms
 
-Effective  July 8, 2020 
+$effectiveDate
 
 Through Wazobia, you can donate your voice and validate other donations. We need to build an open-source voice database for African English dialects that anyone can use to make innovative voice recognition apps for devices and the web.
 You may only participate in Wazobia if you agree to these Terms.
@@ -77,6 +79,21 @@ The recordings you submit to Wazobia will remain publicly available as part of W
 7. Governing Law
 Nigerian law applies to these Terms. These terms are the entire agreement between you and Wazobia.
 """;
+
+const String privacyPolicyText = '''Wazobia Privacy Notice
+
+$effectiveDate
+
+When Wazobia (that’s us), receives information from you, our Wazobia Privacy Policy describes how we handle that information.
+
+1. Account Data
+You do not have to create an account to participate in Wazobia. You will be signed in anonymously to our server, which means that you will get a temporary authentication token that allows your donations and validations gain access into our database. It is a measure to protect our server from hackers. Your authentication is valid until you delete a user or switch to another user. All the metadata collected in this page are non-traceable. Hence, it is impossible to associate you(specifically) with them. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.
+
+2. Voice Recordings
+Voice recordings, may be available in the Wazobia database for public consumption and use under a Creative Commons Zero License (CC0).
+
+3. Interaction and Technical Data
+We use Google Analytics to better understand how you interact with the Wazobia app. For example, we may track de-identified information such as the number of voice samples you record or listen to, interactions with buttons and menus, and session length.''';
 
 ////////////
 /// About Us

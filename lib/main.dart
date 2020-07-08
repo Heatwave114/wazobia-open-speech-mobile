@@ -19,6 +19,7 @@ import './screens/contribute/donate_voice_screen.dart';
 import './screens/contribute/validate_screen.dart';
 import './screens/legal/about_us_screen.dart';
 import './screens/legal/terms_and_conditions_screen.dart';
+import './screens/legal/privacy_policy_screen.dart';
 import './widgets/centrally_used.dart';
 
 // Sound _
@@ -142,6 +143,7 @@ class MyApp extends StatelessWidget {
           DashboardScreen.routeName: (ctx) => DashboardScreen(),
           DonateVoiceScreen.routeName: (ctx) => DonateVoiceScreen(),
           MetadataScreen.routeName: (ctx) => MetadataScreen(),
+          PrivacyPolicyScreen.routeName: (ctx) => PrivacyPolicyScreen(),
           TermsAndConditionsScreen.routeName: (ctx) =>
               TermsAndConditionsScreen(),
           ValidateScreen.routeName: (ctx) => ValidateScreen(),

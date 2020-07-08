@@ -26,7 +26,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2);
+    _tabController = TabController(vsync: this, length: 3);
   }
 
   @override
@@ -280,6 +280,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               //     ],
                               //   ),
                               // ],
+                            ),
+                             _buildCartridge(
+                              'Privacy Policy',
+                              child: Text(
+                                privacyPolicyText,
+                                style: TextStyle(
+                                  fontSize: 25.0,
+                                  fontFamily: 'Abel',
+                                ),
+                              ),
                             ),
                           ],
                         ),
