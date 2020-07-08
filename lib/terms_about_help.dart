@@ -43,7 +43,7 @@ const String termsAndConditionsTextTentative =
 
 const String termsAndConditionsText = """Wazobia Legal Terms
 
-Effective  MM/DD/YYYY [TBD] 
+Effective  July 8, 2020 
 
 Through Wazobia, you can donate your voice and validate other donations. We need to build an open-source voice database for African English dialects that anyone can use to make innovative voice recognition apps for devices and the web.
 You may only participate in Wazobia if you agree to these Terms.
@@ -58,7 +58,7 @@ First, that your Contributions are entirely your own creation.
 Second, that your Contributions do not infringe on any third parties’ rights.
 If you cannot make these assurances, you may not participate in Wazobia.
 
-3. Your Account [From App]
+3. Your Account
 You do not have to create an account to participate in Wazobia. You will be signed in anonymously to our server, which means that you will get a temporary authentication token that allows your donations and validations gain access into our database. It is a measure to protect our server from hackers. Your authentication is valid until you delete a user or switch to another user. All the metadata collected in this page are non-traceable. Hence, it is impossible to associate you(specifically) with them. The metadata excluding the nickname is merely used to classify voice donations. Your nickname is stored only locally in your device to aid the multi-user feature. Thus, we do not save it in our servers.
 
 4. Disclaimers
@@ -66,18 +66,15 @@ By participating in Wazobia, you agree that Wazobia will not be liable in any wa
 Any liability under this agreement is limited to \$500. You agree to indemnify and hold Wazobia harmless for any liability or claim that comes results from your participation in Wazobia.
 Wazobia provides the service “as is.” Wazobia specifically disclaims any legal guarantees or warranties such as “merchantability,” “fitness for a particular purpose,” “non-infringement,” and warranties arising out of a course of dealing, usage or trade.
 
-5. Notices of Infringement [TBD]
-If you think something in Wazobia infringes your copyright or trademark rights, please see our policy for how to report infringement.
-
-6. Updates
+5. Updates
 Every once in a while, Wazobia may decide to update these Terms. We will post the updated Terms online.
 If you continue to use Wazobia after we post updated Terms, you agree to accept that this constitutes your acceptance of such changes. We will post an effective date at the top of this page to make it clear when we made our most recent update.
 
-7. Termination
+6. Termination
 Wazobia can suspend or end anyone’s access to Wazobia at any time for any reason. 
 The recordings you submit to Wazobia will remain publicly available as part of Wazobia, even if we terminate or suspend your access.
 
-8. Governing Law
+7. Governing Law
 Nigerian law applies to these Terms. These terms are the entire agreement between you and Wazobia.
 """;
 
