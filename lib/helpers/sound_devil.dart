@@ -427,7 +427,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
           // Allow validation if .6 of the voice has been listen
           if (netPlayTime >
-              (.75 * soundTin.getCurrentValidatingDonation.duration * 1000)
+              (.5 * soundTin.getCurrentValidatingDonation.duration * 1000)
                   .toInt()) {
             soundTin.setShouldAllowValidation = true;
           }
@@ -435,7 +435,7 @@ class _SoundDevilState extends State<SoundDevil> {
           print(soundTin.getShouldAllowValidation);
           print(netPlayTime.toString() +
               '>>>>>>>' +
-              (.75 * soundTin.getCurrentValidatingDonation.duration * 1000)
+              (.5 * soundTin.getCurrentValidatingDonation.duration * 1000)
                   .toInt()
                   .toString());
 

@@ -153,7 +153,7 @@ class DonateVoiceScreen extends StatelessWidget {
     final SoundTin soundTin = Provider.of<SoundTin>(context);
     // final SoundDevil soundDevil = SoundDevil();
     return SieveLift(
-          child: Scaffold(
+      child: Scaffold(
         appBar: AppBar(
           title: Text('Donate Your Voice'),
           actions: <Widget>[
@@ -585,7 +585,7 @@ class _TextPanelState extends State<TextPanel> {
 
                                             if ((await soundTin
                                                     .getDonatedVoiceDuration()) <
-                                                (.75 *
+                                                (.5 *
                                                     widget.resource.readTime
                                                         .inSeconds)) {
                                               user.showDialogue('Alert',
