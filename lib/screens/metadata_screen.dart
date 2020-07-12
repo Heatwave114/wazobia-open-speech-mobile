@@ -14,7 +14,9 @@ import './account_select_screen.dart';
 import './dashboard_screen.dart';
 import '../helpers/auth.dart';
 import '../lifters/sieve_lift.dart';
+import '../models/resource.dart';
 import '../models/user.dart' as userM;
+import '../providers/sound_tin.dart';
 import '../providers/user.dart';
 import '../terms_about_help.dart';
 import '../widgets/centrally_used.dart';
@@ -32,6 +34,10 @@ class _MetadataScreenState extends State<MetadataScreen> {
     return showDialog(
           context: context,
           builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5.0),
+              side: BorderSide(color: Colors.green, width: 2.0),
+            ),
             title: Text(
               'Are you sure',
               style: TextStyle(
@@ -87,8 +93,12 @@ class _MetadataScreenState extends State<MetadataScreen> {
     // print(MediaQuery.of(context).size.height);
     // print(MediaQuery.of(context).size.width);
     // final Size _deviceSize = MediaQuery.of(context).size;
+    final Map<String, dynamic> routeArguments =
+        ModalRoute.of(context).settings.arguments;
+    final bool fromDonation = routeArguments['fromdonation'] ?? false;
+
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: fromDonation ? () => Future(() => true) : _onWillPop,
       child: SieveLift(
         child: Scaffold(
           body: SingleChildScrollView(
@@ -288,8 +298,9 @@ class _MetadataFormState extends State<MetadataForm> {
     return null;
   }
 
-  Future<void> _submit() async {
+  Future<Map<String, dynamic>> _submit([bool fromDonation]) async {
     // this._isLoading = true;
+    bool _fromDonation = fromDonation ?? false;
     try {
       setState(() {
         _isLoading = true;
@@ -299,7 +310,10 @@ class _MetadataFormState extends State<MetadataForm> {
         // setState(() {
         //   _isLoading = false;
         // });
-        return;
+        return {
+          'shouldproceed': false,
+          'user': null,
+        };
       }
       _metaFormKey.currentState.save();
       final userModel = _setUserData(
@@ -319,7 +333,10 @@ class _MetadataFormState extends State<MetadataForm> {
       this._auth.signInAnonymously().then((authenticatedUser) {
         this._user.addUser(userModel).then((_) {
           this._user.setCurrentUser(_metaData['nickname']);
-          Navigator.of(context).pushReplacementNamed(DashboardScreen.routeName);
+
+          if (!_fromDonation)
+            Navigator.of(context)
+                .pushReplacementNamed(DashboardScreen.routeName);
         }).catchError((e) {
           this._user.setCurrentUser(null);
           authenticatedUser.delete();
@@ -331,7 +348,11 @@ class _MetadataFormState extends State<MetadataForm> {
                 'This nickname is already taken by another local user';
             this._user.setContext(context);
             this._user.showSnackBar(errorMessage);
-            return;
+            return {
+              'shouldproceed': false,
+              'user': null,
+            };
+            ;
           }
           _showDialog('Error', errorMessage);
         });
@@ -343,11 +364,27 @@ class _MetadataFormState extends State<MetadataForm> {
         }
         this._user.setContext(context);
         this._user.showSnackBar(errorMessage);
+        return {
+          'shouldproceed': false,
+          'user': null,
+        };
       });
 
       // setState(() {
       //   _isLoading = false;
       // });
+
+      return {
+        'shouldproceed': true,
+        'user': userM.User(
+          nickname: _metaData['nickname'],
+          country: _metaData['country'],
+          gender: _metaData['gender'],
+          // nickname: _metaData['nickname'],
+          ageRange: _metaData['agerange'],
+          eduBG: _metaData['edubg'],
+        ),
+      };
     } catch (e) {
       // setState(() {
       //   _isLoading = false;
@@ -361,7 +398,10 @@ class _MetadataFormState extends State<MetadataForm> {
         errorMessage = 'This nickname is already taken by another local user';
         this._user.setContext(context);
         this._user.showSnackBar(errorMessage);
-        return;
+        return {
+          'shouldproceed': false,
+          'user': null,
+        };
       } else if (e.message.toString().contains(
           'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
         errorMessage = 'An error occured. Check your internet connection.';
@@ -377,6 +417,10 @@ class _MetadataFormState extends State<MetadataForm> {
       barrierDismissible: false,
       context: context,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.0),
+          side: BorderSide(color: Colors.green, width: 2.0),
+        ),
         title: Text(
           title,
           style: const TextStyle(
@@ -594,6 +638,16 @@ class _MetadataFormState extends State<MetadataForm> {
     final Widget _spacer = const SizedBox(
       height: 8,
     );
+    // To know if creating user after donation
+    final Map<String, dynamic> routeArguments =
+        ModalRoute.of(context).settings.arguments;
+    bool fromDonation;
+    Resource resource;
+    if (routeArguments != null) {
+      fromDonation = routeArguments['fromdonation'] ?? false;
+      resource = routeArguments['resource'];
+    }
+
     _countryController.text = _selectedCountry.name;
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
@@ -611,9 +665,9 @@ class _MetadataFormState extends State<MetadataForm> {
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: const Text(
+                            child: Text(
                               // 'Your data is private',
-                              'Please fill the form  OR ',
+                              'Please fill the form  ${(routeArguments != null) ? '' : 'OR'} ',
                               style: const TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: 16.00,
@@ -622,27 +676,29 @@ class _MetadataFormState extends State<MetadataForm> {
                               ),
                             ),
                           ),
-                          Expanded(
-                            child: RaisedButton.icon(
-                              color: Colors.lightGreen,
-                              icon: Icon(Icons.keyboard_arrow_down),
-                              label: const Text(
-                                'Choose Existing',
-                                style: const TextStyle(
-                                  fontFamily: 'ComicNeue',
-                                  fontSize: 16.00,
-                                  fontWeight: FontWeight.w600,
-                                  // color: const Color(0xff2A6041),
-                                  color: Colors.white,
+                          if (routeArguments == null)
+                            Expanded(
+                              child: RaisedButton.icon(
+                                color: Colors.lightGreen,
+                                icon: Icon(Icons.keyboard_arrow_down),
+                                label: const Text(
+                                  'Choose Existing',
+                                  style: const TextStyle(
+                                    fontFamily: 'ComicNeue',
+                                    fontSize: 16.00,
+                                    fontWeight: FontWeight.w600,
+                                    // color: const Color(0xff2A6041),
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                // child: Text(),
+                                onPressed: () =>
+                                    Navigator.of(context).pushNamed(
+                                  AccountSelectScreen.routeName,
+                                  arguments: true,
                                 ),
                               ),
-                              // child: Text(),
-                              onPressed: () => Navigator.of(context).pushNamed(
-                                AccountSelectScreen.routeName,
-                                arguments: true,
-                              ),
                             ),
-                          ),
                         ]),
                     _spacer,
                     _spacer,
@@ -761,7 +817,7 @@ class _MetadataFormState extends State<MetadataForm> {
 
                         if (value.isEmpty) {
                           // user['nickname'] = user['firstname'];
-                          return null;
+                          return 'Enter your nickname';
                         } else if (value.length > 20) {
                           return 'Nickname too long';
                         } else if (!regExp.hasMatch(value)) {
@@ -878,7 +934,7 @@ class _MetadataFormState extends State<MetadataForm> {
                           padding: const EdgeInsets.only(right: 10),
                           child: Checkbox(
                             value: _agreedToTerms,
-                            activeColor: Colors.deepOrange[600],
+                            // activeColor: Colors.deepOrange[600],
                             // useTapTarget: false,
                             onChanged: (toggle) {
                               // User user =
@@ -1055,30 +1111,109 @@ class _MetadataFormState extends State<MetadataForm> {
                                   ),
                                   onPressed: !this._agreedToTerms
                                       ? null
-                                      : () async {
-                                          setState(() {
-                                            _isLoading = true;
-                                          });
-                                          final user = Provider.of<User>(
-                                              context,
-                                              listen: false);
-                                          user.setContext(context);
-                                          final bool internet =
-                                              await user.connectionStatus();
-                                          _submit().then((value) => setState(
-                                              () => this._isLoading = false));
-                                          // if (internet) {
-                                          // } else {
-                                          //   setState(() {
-                                          //     _isLoading = false;
-                                          //   });
-                                          //   user.showSnackBar(
-                                          //       'Check your internet');
-                                          // }
-                                          // setState(() {
-                                          //   _isLoading = false;
-                                          // });
-                                        },
+                                      : (routeArguments == null)
+                                          ? () async {
+                                              setState(() {
+                                                _isLoading = true;
+                                              });
+                                              // final user = Provider.of<User>(
+                                              //     context,
+                                              //     listen: false);
+                                              // user.setContext(context);
+
+                                              _submit(fromDonation).then((_) =>
+                                                  setState(() =>
+                                                      this._isLoading = false));
+                                              // if (internet) {
+                                              // } else {
+                                              //   setState(() {
+                                              //     _isLoading = false;
+                                              //   });
+                                              //   user.showSnackBar(
+                                              //       'Check your internet');
+                                              // }
+                                              // }
+                                              // setState(() {
+                                              //   _isLoading = false;
+                                              // });
+                                            }
+                                          : () async {
+                                              setState(() {
+                                                _isLoading = true;
+                                              });
+
+                                              final SoundTin soundTin =
+                                                  Provider.of<SoundTin>(context,
+                                                      listen: false);
+                                              final user = Provider.of<User>(
+                                                  context,
+                                                  listen: false);
+                                              user.setContext(context);
+
+                                              final internet =
+                                                  await user.connectionStatus();
+
+                                              if (!internet) {
+                                                setState(() {
+                                                  _isLoading = false;
+                                                });
+                                                user.showSnackBar(
+                                                    'Check your internet');
+                                                return;
+                                              }
+
+                                              _submit(fromDonation)
+                                                  .then((details) async {
+                                                if (!details['shouldproceed']) {
+                                                  setState(() {
+                                                    _isLoading = false;
+                                                  });
+                                                  return;
+                                                }
+                                                // Undo Comment ...../
+
+                                                // So that will upload this new user
+                                                soundTin.setCurrentDonatingUser =
+                                                    details['user'];
+                                                user
+                                                    .uploadDonation(
+                                                  voiceToUpload: File(soundTin
+                                                      .getDonatedVoicePath),
+                                                  resourceID: resource.uid,
+                                                  duration: await soundTin
+                                                      .getDonatedVoiceDuration(),
+                                                  currentDonatingUser: soundTin
+                                                      .getCurrentDonatingUser,
+                                                )
+
+                                                    // Future.delayed(
+                                                    //         Duration(seconds: 4),
+                                                    //         () => print('pppp'))
+                                                    .then((_) {
+                                                  // Can now bring a new resource for donation
+                                                  soundTin.setShouldRefreshDonatingResourceIndex =
+                                                      true;
+                                                  soundTin.setDonatedVoicePath =
+                                                      null;
+                                                  // this.stopLoadingForDonation();
+                                                  user.showDialogue('Thank you',
+                                                      'We sincerely appreciate your donation. You can always make another',
+                                                      whenFinished: () {
+                                                    setState(() {
+                                                      _isLoading = false;
+                                                    });
+                                                    soundTin.setInDanger =
+                                                        false;
+                                                    soundTin.setShouldInitDevil =
+                                                        true;
+                                                    Navigator.of(context)
+                                                        .pushReplacementNamed(
+                                                            DashboardScreen
+                                                                .routeName);
+                                                  });
+                                                });
+                                              });
+                                            },
                                   // (){_showDialog('tt', 'content');}
                                 ),
                         ),

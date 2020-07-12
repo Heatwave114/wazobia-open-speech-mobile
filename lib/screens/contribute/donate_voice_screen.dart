@@ -10,6 +10,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
 // Internal
+import '../metadata_screen.dart';
+import '../../helpers/auth.dart';
 import '../../helpers/sound_devil.dart';
 import '../../models/resource.dart';
 import '../../models/user.dart' as userM;
@@ -145,6 +147,8 @@ class DonateVoiceScreen extends StatelessWidget {
     );
   }
 
+  GlobalKey textPanelKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     // _scrollController
@@ -248,6 +252,8 @@ class DonateVoiceScreen extends StatelessWidget {
                     //   color: Colors.grey,
                     // ),
                     TextPanel(
+                      key: textPanelKey,
+                      donateVoiceScreen: this,
                       dashWidth: _dashWidth,
                       resource: resource,
                     ),
@@ -358,11 +364,15 @@ class DonateVoiceScreen extends StatelessWidget {
 class TextPanel extends StatefulWidget {
   final double dashWidth;
   final Resource resource;
-  const TextPanel({
+  final DonateVoiceScreen donateVoiceScreen;
+  TextPanel({
     Key key,
+    @required this.donateVoiceScreen,
     @required this.dashWidth,
     @required this.resource,
   }) : super(key: key);
+
+  int submitTapCounter = 0;
 
   @override
   _TextPanelState createState() => _TextPanelState();
@@ -370,94 +380,36 @@ class TextPanel extends StatefulWidget {
 
 class _TextPanelState extends State<TextPanel> {
   double _textSizePercent = .7;
-  int _submitTapCounter = 0;
 
   // stopLoadingForDonation
   void stopLoadingForDonation() {
     setState(() {
-      this._submitTapCounter = 0;
+      this.widget.submitTapCounter = 0;
     });
   }
 
   // Whether to proceed with voice submission
-  Future<void> confirmProceedWithDonation(String title, String content,
-      {Function submitDonation}) async {
-    bool proceedWithDonation;
+  Future<void> confirmProceedWithDonation({Function submitDonation}) async {
+    // bool proceedWithDonation;
     // print('before:' + proceedWithDonation.toString());
     // final bool evaluate = await showDialog(
-    final user = Provider.of<User>(context, listen: false);
-    user.setContext(context);
+    // final user = Provider.of<User>(context, listen: false);
+    final soundTin = Provider.of<SoundTin>(context, listen: false);
+    // user.setContext(context);
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (ctx) => WillPopScope(
         onWillPop: () => Future(() => false),
-        child: AlertDialog(
-          title: Text(
-            title,
-            style: const TextStyle(
-              fontFamily: 'Abel',
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.green,
-            ),
-          ),
-          content: Text(
-            content,
-            style: const TextStyle(
-              fontFamily: 'Abel',
-              fontSize: 17.0,
-              // fontWeight: FontWeight.bold
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text(
-                'Return',
-                style: const TextStyle(
-                  fontFamily: 'PTSans',
-                  fontSize: 17.0,
-                  // fontWeight: FontWeight.bold
-                ),
-              ),
-              onPressed: () {
-                this.stopLoadingForDonation();
-                proceedWithDonation = false;
-                // this.stopLoadingForValidation();
-                Navigator.of(context).pop();
-                // return;
-              },
-            ),
-            RaisedButton(
-              color: Colors.lightGreen,
-              child: const Text(
-                'Donate',
-                style: const TextStyle(
-                  fontFamily: 'PTSans',
-                  fontSize: 17.0,
-                  // fontWeight: FontWeight.bold
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: () async {
-                final bool internet = await user.connectionStatus();
-                if (!internet) {
-                  user.showSnackBar('Check your internet');
-                  Navigator.of(context).pop();
-                  this.stopLoadingForDonation();
-                  return;
-                }
-                proceedWithDonation = true;
-                Navigator.of(context).pop();
-                // this.stopLoadingForValidation();
-              },
-            ),
-          ],
+        child: SubmitDonationAlertDialog(
+          donateVoiceScreen: this.widget.donateVoiceScreen,
+          textPanel: this.widget,
         ),
       ),
     ).then((_) {
       // so that no duplicate
-      if (proceedWithDonation && this._submitTapCounter != 0) {
+      if (soundTin.getProceedWithDonationEvaluation &&
+          this.widget.submitTapCounter != 0) {
         submitDonation();
       }
     });
@@ -523,7 +475,7 @@ class _TextPanelState extends State<TextPanel> {
                         Expanded(
                           flex: 3,
                           child: FittedBox(
-                            child: (this._submitTapCounter > 0)
+                            child: (this.widget.submitTapCounter > 0)
                                 ? CircularProgressIndicator(
                                     backgroundColor: Color(0xff2A6041),
                                     strokeWidth: 2.0,
@@ -553,6 +505,9 @@ class _TextPanelState extends State<TextPanel> {
                                             // if (this._submitTapCounter > 0) {
                                             //   print('waitForUpload');
                                             // }
+
+                                            // Undo Comment ......//
+
                                             if (soundTin.getDonatedVoicePath ==
                                                 null) {
                                               user.showSnackBar(
@@ -562,6 +517,8 @@ class _TextPanelState extends State<TextPanel> {
                                               return;
                                             }
 
+                                            //Undo Comment .......//
+
                                             if (!(await user
                                                 .connectionStatus())) {
                                               user.showSnackBar(
@@ -570,7 +527,7 @@ class _TextPanelState extends State<TextPanel> {
                                             }
                                             // this._submitTapCounter++;
                                             setState(() {
-                                              this._submitTapCounter++;
+                                              this.widget.submitTapCounter++;
                                             });
 
                                             // No need for this
@@ -583,6 +540,8 @@ class _TextPanelState extends State<TextPanel> {
                                             //   return;
                                             // }
 
+                                            // Undo Comment ............//
+
                                             if ((await soundTin
                                                     .getDonatedVoiceDuration()) <
                                                 (.5 *
@@ -592,7 +551,8 @@ class _TextPanelState extends State<TextPanel> {
                                                   'Recording too short');
                                               // print('2: ${await soundTin.getDonatedVoiceDuration()}');
                                               setState(() {
-                                                this._submitTapCounter = 0;
+                                                this.widget.submitTapCounter =
+                                                    0;
                                               });
                                               return;
                                             }
@@ -601,8 +561,7 @@ class _TextPanelState extends State<TextPanel> {
                                             // print((await soundTin.getDonatedVoiceDuration())/3600);3
 
                                             this.confirmProceedWithDonation(
-                                                'Alert',
-                                                'Are you sure want to submit your donation?',
+                                                // Undo Comment .....//
                                                 submitDonation: () async {
                                               user.setContext(context);
                                               user
@@ -613,6 +572,8 @@ class _TextPanelState extends State<TextPanel> {
                                                     this.widget.resource.uid,
                                                 duration: await soundTin
                                                     .getDonatedVoiceDuration(),
+                                                currentDonatingUser: soundTin
+                                                    .getCurrentDonatingUser,
                                               )
                                                   .then((_) {
                                                 // Can now bring a new resource for donation
@@ -678,5 +639,327 @@ class _TextPanelState extends State<TextPanel> {
         ),
       )
     ]);
+  }
+}
+
+class SubmitDonationAlertDialog extends StatefulWidget {
+  // int _submitTapCounter;
+  final DonateVoiceScreen donateVoiceScreen;
+  final TextPanel textPanel;
+  SubmitDonationAlertDialog({
+    Key key,
+    // @required this.ctxTextPanel,
+    // @required int submitTapCounter,
+    // @required this.user,
+    // void<Function> stopLoadingForDonation,
+    @required this.donateVoiceScreen,
+    @required this.textPanel,
+  }) : super(key: key);
+
+  @override
+  _SubmitDonationAlertDialogState createState() =>
+      _SubmitDonationAlertDialogState();
+}
+
+class _SubmitDonationAlertDialogState extends State<SubmitDonationAlertDialog> {
+  String userGroupValue = 'this';
+  String userName;
+  String currentUser;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
+    final soundTin = Provider.of<SoundTin>(context, listen: false);
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        side: BorderSide(color: Colors.green, width: 2.0),
+      ),
+      scrollable: true,
+      title: Text(
+        'Submit Donation',
+        style: const TextStyle(
+          fontFamily: 'Abel',
+          fontSize: 20.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.green,
+        ),
+      ),
+      content: Container(
+        // width: double.infinity,
+        // height: 300.0,
+        // color: Colors.red,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            // Text(
+            //   'Ensure the donation is tagged with the proper details',
+            //   style: const TextStyle(
+            //     fontFamily: 'Abel',
+            //     fontSize: 20.0,
+            //     fontWeight: FontWeight.bold
+            //   ),
+            // ),
+
+            Text(
+              'Who is donating ?',
+              style: const TextStyle(
+                fontFamily: 'Abel',
+                fontSize: 19.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FutureBuilder(
+                  future: user.getCurrentUser,
+                  builder: (ctxCurrentUser, snpCurrentUser) {
+                    if (snpCurrentUser.connectionState ==
+                        ConnectionState.waiting) {
+                      return this.userName != null
+                          ? Text(this.userName)
+                          : CentrallyUsed().waitingCircle();
+                    }
+                    this.currentUser = snpCurrentUser.data['nickname'];
+                    return Text(this.userName ?? this.currentUser);
+                  },
+                ),
+                Radio(
+                  groupValue: this.userGroupValue,
+                  value: 'this',
+                  onChanged: (value) {
+                    setState(() {
+                      this.userGroupValue = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('Someone else'),
+                Radio(
+                  groupValue: this.userGroupValue,
+                  value: 'else',
+                  onChanged: (value) {
+                    setState(() {
+                      this.userGroupValue = value;
+                    });
+                  },
+                  // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ],
+            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: <Widget>[
+            //     Text('New user'),
+            //     Radio(
+            //       groupValue: this.userGroupValue,
+            //       value: 'new',
+            //       onChanged: (value) {
+            //         setState(() {
+            //           this.userGroupValue = value;
+            //         });
+            //       },
+            //     ),
+            //   ],
+            // ),
+            if (this.userGroupValue == 'else')
+              FutureBuilder(
+                future: user.getUsers,
+                builder: (ctxUsers, snpUsers) {
+                  if (snpUsers.connectionState == ConnectionState.waiting) {
+                    return SizedBox.shrink();
+                  } else if (snpUsers.connectionState == ConnectionState.done) {
+                    final users = snpUsers.data;
+                    users.remove(this.userName ?? this.currentUser);
+                    final otherUsers =
+                        (users == null || users.length == 0) ? null : users;
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Container(
+                            width: double.infinity,
+                            // padding: EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.green),
+                              borderRadius: BorderRadius.circular(5.0),
+                              // color: Colors.grey,
+                            ),
+                            child: Container(
+                              height: 150.0,
+                              child: Scrollbar(
+                                child: SingleChildScrollView(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 5.0),
+                                    physics: BouncingScrollPhysics(),
+                                    child: Column(
+                                      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        if (otherUsers != null)
+                                          ...otherUsers.entries
+                                              .map((entry) => _buildUserOption(
+                                                  ctxUsers, entry.key))
+                                              .toList(),
+                                        if (otherUsers == null ||
+                                            otherUsers.length == 0)
+                                          Text('There are no users'),
+                                        // Text(snapshot.data),
+                                      ],
+                                    )),
+                              ),
+                            ),
+                          ),
+                          FlatButton.icon(
+                            icon: Icon(Icons.add),
+                            label: Text('Add User'),
+                            // child: Text(),
+                            onPressed: () => Navigator.of(context).pushNamed(
+                                MetadataScreen.routeName,
+                                arguments: {
+                                  'fromdonation': true,
+                                  'resource': this.widget.textPanel.resource
+                                }),
+                          ),
+                        ]);
+                  }
+                  return null;
+                },
+              ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: const Text(
+            'Return',
+            style: const TextStyle(
+              fontFamily: 'PTSans',
+              fontSize: 17.0,
+              // fontWeight: FontWeight.bold
+            ),
+          ),
+          onPressed: () {
+            this
+                .widget
+                .donateVoiceScreen
+                .textPanelKey
+                .currentState
+                .setState(() {
+              this.widget.textPanel.submitTapCounter = 0;
+            });
+            soundTin.setProceedWithDonationEvaluation = false;
+            // this.stopLoadingForValidation();
+            Navigator.of(context).pop();
+            // return;
+          },
+        ),
+        RaisedButton(
+          color: Colors.lightGreen,
+          child: const Text(
+            'Donate',
+            style: const TextStyle(
+              fontFamily: 'PTSans',
+              fontSize: 17.0,
+              // fontWeight: FontWeight.bold
+              color: Colors.white,
+            ),
+          ),
+          onPressed: () async {
+            final bool internet = await user.connectionStatus();
+            if (!internet) {
+              user.showSnackBar('Check your internet');
+              Navigator.of(context).pop();
+              this
+                  .widget
+                  .donateVoiceScreen
+                  .textPanelKey
+                  .currentState
+                  .setState(() {
+                this.widget.textPanel.submitTapCounter = 0;
+              });
+              return;
+            }
+            soundTin.setProceedWithDonationEvaluation = true;
+            Navigator.of(context).pop();
+            // this.stopLoadingForValidation();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUserOption(BuildContext ctx, String nickname) {
+    return InkWell(
+      child: Container(
+        height: 45.0,
+        padding: EdgeInsets.symmetric(horizontal: 15.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Expanded(
+              flex: 4,
+              child: Text(
+                nickname,
+                style: TextStyle(
+                    fontSize: 20.0,
+                    fontFamily: 'Abel',
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            // Expanded(
+            //   flex: 6,
+            //   child: FittedBox(
+            //     child: Text(
+            //       userID,
+            //       style: TextStyle(fontSize: 17.0, fontFamily: 'ComicNeue'),
+            //     ),
+            //   ),
+            // ),
+          ],
+        ),
+      ),
+      onTap: () async {
+        final user = Provider.of<User>(context, listen: false);
+        final soundTin = Provider.of<SoundTin>(context, listen: false);
+        // print((await user.getCurrentUser)['nickname']);
+        final allUsers = await user.getUsers;
+        final thisUser = allUsers[nickname];
+
+        setState(() {
+          this.userGroupValue = 'this';
+          this.userName = nickname;
+        });
+        soundTin.setCurrentDonatingUser =
+            userM.User.fromSharedPreference(thisUser);
+        // user.setCurrentUser(nickname);
+
+        // final bool internet = await user.connectionStatus();
+
+        // user.setContext(context);
+        // if (internet) {
+        //   Auth().signInAnonymously().then((_) {
+        //     user.setCurrentUser(nickname);
+        //     // Navigator.of(ctx).pushReplacementNamed(DashboardScreen.routeName);
+        //   }).catchError((e) async {
+        //     user.setCurrentUser(null);
+        //     var errorMessage = 'An error occured. Try again later.';
+        //     if (e.message.toString().contains(
+        //         'A network error (such as timeout, interrupted connection or unreachable host) has occurred.')) {
+        //       errorMessage =
+        //           'An error occured. Check your internet connection.';
+        //     }
+        //     user.showSnackBar(errorMessage);
+        //   });
+        // } else {
+        //   user.showSnackBar('Check your internet');
+        // }
+      },
+    );
   }
 }

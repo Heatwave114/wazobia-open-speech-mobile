@@ -8,6 +8,7 @@ import 'package:flutter_sound/flauto.dart';
 // Internal
 import '../models/donation.dart';
 import '../models/resource.dart';
+import '../models/user.dart';
 
 class SoundTin with ChangeNotifier {
   String donatedVoicePath;
@@ -26,6 +27,7 @@ class SoundTin with ChangeNotifier {
   bool isRecording = false;
   bool isPlaying = false;
   bool shouldAllowValidation = false;
+  User currentDonatingUser;
 
   ///////////
   // Control
@@ -192,4 +194,14 @@ class SoundTin with ChangeNotifier {
 
   // get resource
   Resource get getCurrentValidatingResource => this.currentValidatingResource;
+
+  /////////////////////////
+  // Currrent Donating User
+  /////////////////////////
+
+  // set donating user
+  set setCurrentDonatingUser(User user) => this.currentDonatingUser = user;
+
+  // get donating user
+  get getCurrentDonatingUser => this.currentDonatingUser;
 }

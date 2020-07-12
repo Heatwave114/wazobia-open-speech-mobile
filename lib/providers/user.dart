@@ -62,9 +62,11 @@ class User with ChangeNotifier {
     @required String resourceID,
     @required double duration,
     // @required userM.User reader,
+    userM.User currentDonatingUser,
   }) async {
     final uid = (await _auth.currentUser()).uid;
-    final currentUser = await getCurrentUser;
+    final currentUser = currentDonatingUser ??
+        userM.User.fromSharedPreference(await getCurrentUser);
     final DateTime now =
         DateTime.now(); // universal epoch so that name is more general
     final String voiceName =
@@ -77,12 +79,12 @@ class User with ChangeNotifier {
         voiceToUpload,
         StorageMetadata(customMetadata: {
           'reader': json.encode({
-            'country': currentUser['country'],
-            'gender': currentUser['gender'],
-            'age': currentUser['age'],
-            'education': currentUser['edubg'],
+            'country': currentUser.country,
+            'gender': currentUser.gender,
+            'agerange': currentUser.ageRange,
+            'education': currentUser.eduBG,
           }),
-          'donationdateniglocal': now.toIso8601String(),
+          'donationdatelocal': now.toIso8601String(),
           'duration': duration.toString(),
           'cqi': 'NA',
           'snr': 'NA',
@@ -96,13 +98,13 @@ class User with ChangeNotifier {
       var url = downloadUrl.toString();
       databaseRoot.collection('unvalidated').document(voiceName).setData({
         'reader': {
-          'country': currentUser['country'],
-          'gender': currentUser['gender'],
-          'agerange': currentUser['agerange'],
-          'education': currentUser['edubg'],
+          'country': currentUser.country,
+          'gender': currentUser.gender,
+          'agerange': currentUser.ageRange,
+          'education': currentUser.eduBG,
         },
 
-        'donationdateniglocal': now.toIso8601String(),
+        'donationdatelocal': now.toIso8601String(),
         // 'invalidreasons': [],
         'cqi': 'NA',
         'snr': 'NA',
@@ -113,6 +115,7 @@ class User with ChangeNotifier {
         'duration': duration,
         'url': url,
       });
+
       final DocumentSnapshot critical = await databaseRoot
           .collection('critical')
           .document('cumulative')
@@ -124,7 +127,9 @@ class User with ChangeNotifier {
               freshSnap['cumulativehoursread'].toDouble() + (duration / 3600.0),
         });
       });
-      print(url);
+
+      // print(url);
+
       // return CloudStorageResult(
       //   imageUrl: url,
       //   imageFileName: imageFileName,
@@ -244,6 +249,10 @@ class User with ChangeNotifier {
       // barrierDismissible: false,
       context: context,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.0),
+          side: BorderSide(color: Colors.green, width: 2.0),
+        ),
         title: Text(
           title,
           style: TextStyle(

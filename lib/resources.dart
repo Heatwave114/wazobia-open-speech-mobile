@@ -425,7 +425,7 @@ const Resources = const <Resource>[
   Resource(
     uid: 'T-036',
     genre: 'memoir',
-    readTime: Duration(seconds: 144),
+    readTime: Duration(seconds: 159), // Added 15
     title: 'The Game',
     author: 'Mary Roberts Rinehart',
     text:

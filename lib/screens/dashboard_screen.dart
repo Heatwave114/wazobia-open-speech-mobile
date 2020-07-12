@@ -52,6 +52,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return showDialog(
           context: context,
           builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5.0),
+              side: BorderSide(color: Colors.green, width: 2.0),
+            ),
             title: Text(
               'Are you sure',
               style: TextStyle(
@@ -456,30 +460,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ),
                       ),
-                      FittedBox(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Icon(
-                                Icons.info_outline,
-                                color: const Color(0xffff0000),
-                              ),
-                              SizedBox(
-                                width: 2.0,
-                              ),
-                              Text(
-                                'Switch or create a new user if someone else is contributing',
-                                style: const TextStyle(
-                                  fontFamily: 'Abel',
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // FittedBox(
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      //     child: Row(
+                      //       mainAxisAlignment: MainAxisAlignment.center,
+                      //       children: <Widget>[
+                      //         Icon(
+                      //           Icons.info_outline,
+                      //           color: const Color(0xffff0000),
+                      //         ),
+                      //         SizedBox(
+                      //           width: 2.0,
+                      //         ),
+                      //         Text(
+                      //           'Switch or create a new user if someone else is contributing',
+                      //           style: const TextStyle(
+                      //             fontFamily: 'Abel',
+                      //             fontSize: 16.0,
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 );

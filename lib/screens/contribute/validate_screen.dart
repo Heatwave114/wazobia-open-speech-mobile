@@ -630,9 +630,9 @@ class _TextPanelState extends State<TextPanel> {
                                                     .setData({
                                                   'reader':
                                                       widget.donation.reader,
-                                                  'donationdateniglocal': widget
+                                                  'donationdatelocal': widget
                                                       .donation
-                                                      .donationDateNIGLocal
+                                                      .donationDateLocal
                                                       .toIso8601String(),
                                                   'duration':
                                                       widget.donation.duration,
@@ -815,9 +815,9 @@ class _TextPanelState extends State<TextPanel> {
                                                     .setData({
                                                   'reader':
                                                       widget.donation.reader,
-                                                  'donationdateniglocal': widget
+                                                  'donationdatelocal': widget
                                                       .donation
-                                                      .donationDateNIGLocal
+                                                      .donationDateLocal
                                                       .toIso8601String(),
                                                   'duration':
                                                       widget.donation.duration,
@@ -923,7 +923,7 @@ class SubmitValidationAlertDialog extends StatefulWidget {
         super(key: key);
 
   int _validateTapCounter;
-  int _invalidateTapCounter;
+  // int _invalidateTapCounter;
   final String validInvalidUpperPreText;
   final String validInvalidText;
   final String validInvalidLowerPreText;
@@ -956,6 +956,10 @@ class _SubmitValidationAlertDialogState
     final user = Provider.of<User>(context, listen: false);
     user.setContext(context);
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        side: BorderSide(color: Colors.green, width: 2.0),
+      ),
       title: Text(
         'Submit ${widget.validInvalidUpperPreText}${widget.validInvalidText}ation',
         style: TextStyle(
@@ -1084,7 +1088,7 @@ class _SubmitValidationAlertDialogState
             if (!internet) {
               user.showSnackBar('Check your internet');
               soundTin.setProceedWithDonationEvaluation =
-                  false; // Redunddant ??
+                  false; // Redundant ??
               Navigator.of(context).pop();
               return;
             }

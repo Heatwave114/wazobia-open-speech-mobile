@@ -112,6 +112,19 @@ flutter:
         - asset: assets/fonts/PTSans/PTSans-Regular.ttf
         - asset: assets/fonts/PTSans/PTSans-Bold.ttf
           weight: 700
+    - family: Armata
+      fonts:
+        - asset: assets/fonts/Armata/Armata-Regular.ttf
+    - family: Dosis
+      fonts:
+        - asset: assets/fonts/Dosis/Dosis-Regular.ttf
+        - asset: assets/fonts/Dosis/Dosis-Bold.ttf
+          weight: 700
+    - family: Rajdhani
+      fonts:
+        - asset: assets/fonts/Rajdhani/Rajdhani-Regular.ttf
+        - asset: assets/fonts/Rajdhani/Rajdhani-Bold.ttf
+          weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
