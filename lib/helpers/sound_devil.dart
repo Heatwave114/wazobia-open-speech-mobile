@@ -1053,6 +1053,7 @@ class _SoundDevilState extends State<SoundDevil> {
     Widget _recorderSection = Container(
       // Record/Play Panel
       width: double.infinity,
+      height: 55.0,
       margin: const EdgeInsets.only(
         // bottom: 5.0,
         left: 10.0,
@@ -1098,8 +1099,7 @@ class _SoundDevilState extends State<SoundDevil> {
                               // borderSide: BorderSide(
                               //     color: Colors.green, width: 0.5),
                               // padding: EdgeInsets.all(0.0),
-                              onTap: soundTin
-                                      .getProceedWithDonationEvaluation // so that can't record when submitting dontion
+                              onTap: soundTin.getProceedWithDonationEvaluation // so that can't record when submitting dontion
                                   ? null
                                   : onStartRecorderPressed(),
                               child: SizedBox(
@@ -1122,8 +1122,7 @@ class _SoundDevilState extends State<SoundDevil> {
                               // borderSide: BorderSide(
                               //     color: Colors.green, width: 0.5),
                               // padding: EdgeInsets.all(0.0),
-                              onTap: soundTin
-                                      .getProceedWithDonationEvaluation // so that can't record when submitting dontion
+                              onTap: soundTin.getProceedWithDonationEvaluation // so that can't record when submitting dontion
                                   ? null
                                   : onStartRecorderPressed(),
                               child: SizedBox(
@@ -1224,6 +1223,7 @@ class _SoundDevilState extends State<SoundDevil> {
     Widget _playerSection = Container(
       // Record/Play Panel
       width: double.infinity,
+      height: 55.0,
       margin: const EdgeInsets.only(
         // bottom: 5.0,
         left: 10.0,

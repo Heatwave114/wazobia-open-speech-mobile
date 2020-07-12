@@ -423,236 +423,233 @@ class _TextPanelState extends State<TextPanel> {
     final SoundTin soundTin = Provider.of<SoundTin>(context);
     final user = Provider.of<User>(context);
     user.setContext(context);
-    return Column(children: <Widget>[
-      Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(
-          // vertical: 5.0,
-          horizontal: 10.0,
-        ),
-        child: Card(
-          elevation: 2.0,
-          child: Container(
-            width: this.widget.dashWidth,
-            child: Padding(
-              padding: EdgeInsets.all(15.0),
-              // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.only(bottom: 7.0),
-                    height: 50.0,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          flex: 7,
-                          child: FittedBox(
-                            child: Row(
-                              children: <Widget>[
-                                const Text(
-                                  'Font Size',
-                                  style: const TextStyle(
-                                    fontSize: 14.0,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.bold,
-                                  ),
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(
+        // vertical: 5.0,
+        horizontal: 10.0,
+      ),
+      child: Card(
+        elevation: 2.0,
+        child: Container(
+          width: this.widget.dashWidth,
+          child: Padding(
+            padding: EdgeInsets.all(15.0),
+            // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(bottom: 7.0),
+                  height: 50.0,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 7,
+                        child: FittedBox(
+                          child: Row(
+                            children: <Widget>[
+                              const Text(
+                                'Font Size',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                Slider.adaptive(
-                                  value: _textSizePercent,
-                                  // divisions: 5,
-                                  min: .5, activeColor: Colors.deepOrange,
-                                  onChanged: (_textSizePercent) {
-                                    setState(() => this._textSizePercent =
-                                        _textSizePercent);
-                                  },
-                                ),
-                              ],
-                            ),
+                              ),
+                              Slider.adaptive(
+                                value: _textSizePercent,
+                                // divisions: 5,
+                                min: .5, activeColor: Colors.deepOrange,
+                                onChanged: (_textSizePercent) {
+                                  setState(() =>
+                                      this._textSizePercent = _textSizePercent);
+                                },
+                              ),
+                            ],
                           ),
                         ),
-                        Expanded(
-                          flex: 3,
-                          child: FittedBox(
-                            child: (this.widget.submitTapCounter > 0)
-                                ? CircularProgressIndicator(
-                                    backgroundColor: Color(0xff2A6041),
-                                    strokeWidth: 2.0,
-                                    // value: .5,
-                                  )
-                                : OutlineButton.icon(
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .primaryColor, //Color of the border
-                                      style: BorderStyle
-                                          .solid, //Style of the border
-                                      width: 1.0, //width of the border
-                                    ),
-                                    label: const Text(
-                                      'Donate',
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    icon: const Icon(
-                                      Icons.check,
-                                      color: const Color(0xff2A6041),
-                                    ),
-                                    onPressed: soundTin.getIsRecording
-                                        ? null
-                                        :
-                                        // null
-                                        () async {
-                                            // if (this._submitTapCounter > 0) {
-                                            //   print('waitForUpload');
-                                            // }
-
-                                            // Undo Comment ......//
-
-                                            if (soundTin.getDonatedVoicePath ==
-                                                null) {
-                                              user.showSnackBar(
-                                                'Make a recording first',
-                                              );
-                                              // print('No path yet');
-                                              return;
-                                            }
-
-                                            //Undo Comment .......//
-
-                                            if (!(await user
-                                                .connectionStatus())) {
-                                              user.setContext(context);
-                                              user.showSnackBar(
-                                                  'Check your internet');
-                                              return;
-                                            }
-
-                                            // this._submitTapCounter++;
-                                            setState(() {
-                                              this.widget.submitTapCounter++;
-                                            });
-
-                                            // No need for this
-                                            // if ((await soundTin
-                                            //         .getDonatedVoiceDuration()) >
-                                            //     widget.resource.readTime.inSeconds) {
-                                            //   user.showDialogue('Alert',
-                                            //       'Alloted read time has been exceed.');
-                                            //   // print('1: ${await soundTin.getDonatedVoiceDuration()}');
-                                            //   return;
-                                            // }
-
-                                            // Undo Comment ............//
-
-                                            if ((await soundTin
-                                                    .getDonatedVoiceDuration()) <
-                                                (.5 *
-                                                    widget.resource.readTime
-                                                        .inSeconds)) {
-                                              user.showDialogue('Alert',
-                                                  'Recording too short');
-                                              // print('2: ${await soundTin.getDonatedVoiceDuration()}');
-                                              setState(() {
-                                                this.widget.submitTapCounter =
-                                                    0;
-                                              });
-                                              return;
-                                            }
-
-                                            // print(soundTin.getDonatedVoicePath);
-                                            // print((await soundTin.getDonatedVoiceDuration())/3600);3
-
-                                            this.confirmProceedWithDonation(
-                                                // Undo Comment .....//
-                                                submitDonation: () async {
-                                              user.setContext(context);
-
-                                              user
-                                                  .uploadDonation(
-                                                voiceToUpload: File(soundTin
-                                                    .getDonatedVoicePath),
-                                                resourceID:
-                                                    this.widget.resource.uid,
-                                                duration: await soundTin
-                                                    .getDonatedVoiceDuration(),
-                                                currentDonatingUser: soundTin
-                                                    .getCurrentDonatingUser,
-                                              )
-
-                                                  // Future.delayed(
-                                                  //         Duration(seconds: 4),
-                                                  //         () => print('pppp'))
-
-                                                  .then((_) {
-                                                // Can now bring a new resource for donation
-                                                soundTin.setShouldRefreshDonatingResourceIndex =
-                                                    true;
-                                                soundTin.setDonatedVoicePath =
-                                                    null;
-                                                this.stopLoadingForDonation();
-                                                user.showDialogue('Thank you',
-                                                    'We sincerely appreciate your donation. You can always make another',
-                                                    whenFinished: () {
-                                                      soundTin.setInDanger =
-                                                          false;
-                                                      soundTin.setShouldInitDevil =
-                                                          true;
-                                                      soundTin.setProceedWithDonationEvaluation =
-                                                          false;
-                                                    },
-                                                    whenComplete: () => soundTin
-                                                            .setProceedWithDonationEvaluation =
-                                                        false);
-                                              });
-                                            });
-
-                                            // print(_user);
-                                            // () async {print((await Auth().currentUser()).uid);}();
-                                            // _submit();
-                                            // print('${_selectedCountry.name}');
-
-                                            // Persist Auth ?
-                                            // print(_rememberMe);
-                                            // SSSprint(ur.rememberMe);
-                                          },
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: FittedBox(
+                          child: (this.widget.submitTapCounter > 0)
+                              ? CircularProgressIndicator(
+                                  backgroundColor: Color(0xff2A6041),
+                                  strokeWidth: 2.0,
+                                  // value: .5,
+                                )
+                              : OutlineButton.icon(
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context)
+                                        .primaryColor, //Color of the border
+                                    style:
+                                        BorderStyle.solid, //Style of the border
+                                    width: 1.0, //width of the border
                                   ),
-                          ),
-                        )
-                      ],
-                    ),
+                                  label: const Text(
+                                    'Donate',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  icon: const Icon(
+                                    Icons.check,
+                                    color: const Color(0xff2A6041),
+                                  ),
+                                  onPressed: soundTin.getIsRecording
+                                      ? null
+                                      :
+                                      // null
+                                      () async {
+                                          // if (this._submitTapCounter > 0) {
+                                          //   print('waitForUpload');
+                                          // }
+
+                                          // Undo Comment ......//
+
+                                          if (soundTin.getDonatedVoicePath ==
+                                              null) {
+                                            user.showSnackBar(
+                                              'Make a recording first',
+                                            );
+                                            // print('No path yet');
+                                            return;
+                                          }
+
+                                          //Undo Comment .......//
+
+                                          if (!(await user
+                                              .connectionStatus())) {
+                                            user.setContext(context);
+                                            user.showSnackBar(
+                                                'Check your internet');
+                                            return;
+                                          }
+
+                                          // this._submitTapCounter++;
+                                          setState(() {
+                                            this.widget.submitTapCounter++;
+                                          });
+
+                                          // No need for this
+                                          // if ((await soundTin
+                                          //         .getDonatedVoiceDuration()) >
+                                          //     widget.resource.readTime.inSeconds) {
+                                          //   user.showDialogue('Alert',
+                                          //       'Alloted read time has been exceed.');
+                                          //   // print('1: ${await soundTin.getDonatedVoiceDuration()}');
+                                          //   return;
+                                          // }
+
+                                          // Undo Comment ............//
+
+                                          if ((await soundTin
+                                                  .getDonatedVoiceDuration()) <
+                                              (.5 *
+                                                  widget.resource.readTime
+                                                      .inSeconds)) {
+                                            user.showDialogue(
+                                                'Alert', 'Recording too short');
+                                            // print('2: ${await soundTin.getDonatedVoiceDuration()}');
+                                            setState(() {
+                                              this.widget.submitTapCounter = 0;
+                                            });
+                                            return;
+                                          }
+
+                                          // print(soundTin.getDonatedVoicePath);
+                                          // print((await soundTin.getDonatedVoiceDuration())/3600);3
+
+                                          this.confirmProceedWithDonation(
+                                              // Undo Comment .....//
+                                              submitDonation: () async {
+                                            user.setContext(context);
+
+                                            user
+                                                .uploadDonation(
+                                              voiceToUpload: File(
+                                                  soundTin.getDonatedVoicePath),
+                                              resourceID:
+                                                  this.widget.resource.uid,
+                                              duration: await soundTin
+                                                  .getDonatedVoiceDuration(),
+                                              currentDonatingUser: soundTin
+                                                  .getCurrentDonatingUser,
+                                            )
+
+                                                // Future.delayed(
+                                                //         Duration(seconds: 4),
+                                                //         () => print('pppp'))
+
+                                                .then((_) {
+                                              // Can now bring a new resource for donation
+                                              soundTin.setShouldRefreshDonatingResourceIndex =
+                                                  true;
+                                              soundTin.setDonatedVoicePath =
+                                                  null;
+                                              this.stopLoadingForDonation();
+                                              user.showDialogue('Thank you',
+                                                  'We sincerely appreciate your donation. You can always make another',
+                                                  whenFinished: () {
+                                                    soundTin.setInDanger =
+                                                        false;
+                                                    soundTin.setShouldInitDevil =
+                                                        true;
+                                                    soundTin.setProceedWithDonationEvaluation =
+                                                        false;
+                                                  },
+                                                  whenComplete: () => soundTin
+                                                          .setProceedWithDonationEvaluation =
+                                                      false);
+                                            });
+                                          });
+
+                                          // print(_user);
+                                          // () async {print((await Auth().currentUser()).uid);}();
+                                          // _submit();
+                                          // print('${_selectedCountry.name}');
+
+                                          // Persist Auth ?
+                                          // print(_rememberMe);
+                                          // SSSprint(ur.rememberMe);
+                                        },
+                                ),
+                        ),
+                      )
+                    ],
                   ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * .45,
-                    padding: const EdgeInsets.all(10.0),
-                    // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.green),
-                      borderRadius: BorderRadius.circular(5.0),
-                      // color: Colors.grey,
-                    ),
-                    child: Scrollbar(
-                      // controller: _scrollController,
-                      child: SingleChildScrollView(
-                        physics: BouncingScrollPhysics(),
-                        child: Text(
-                          // 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making i t over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
-                          this.widget.resource.text,
-                          style: TextStyle(
-                            fontSize: 30.0 * _textSizePercent,
-                            fontFamily: 'Abel',
-                            // fontWeight: FontWeight.bold,
-                          ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * .50,
+                  padding: const EdgeInsets.all(10.0),
+                  // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.green),
+                    borderRadius: BorderRadius.circular(5.0),
+                    // color: Colors.grey,
+                  ),
+                  child: Scrollbar(
+                    // controller: _scrollController,
+                    child: SingleChildScrollView(
+                      physics: BouncingScrollPhysics(),
+                      child: Text(
+                        // 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making i t over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
+                        this.widget.resource.text,
+                        style: TextStyle(
+                          fontSize: 30.0 * _textSizePercent,
+                          fontFamily: 'Abel',
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-      )
-    ]);
+      ),
+    );
   }
 }
 
