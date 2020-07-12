@@ -1175,20 +1175,20 @@ class _MetadataFormState extends State<MetadataForm> {
                                                 // So that will upload this new user
                                                 soundTin.setCurrentDonatingUser =
                                                     details['user'];
-                                                user
-                                                    .uploadDonation(
-                                                  voiceToUpload: File(soundTin
-                                                      .getDonatedVoicePath),
-                                                  resourceID: resource.uid,
-                                                  duration: await soundTin
-                                                      .getDonatedVoiceDuration(),
-                                                  currentDonatingUser: soundTin
-                                                      .getCurrentDonatingUser,
-                                                )
+                                                // user
+                                                //     .uploadDonation(
+                                                //   voiceToUpload: File(soundTin
+                                                //       .getDonatedVoicePath),
+                                                //   resourceID: resource.uid,
+                                                //   duration: await soundTin
+                                                //       .getDonatedVoiceDuration(),
+                                                //   currentDonatingUser: soundTin
+                                                //       .getCurrentDonatingUser,
+                                                // )
 
-                                                    // Future.delayed(
-                                                    //         Duration(seconds: 4),
-                                                    //         () => print('pppp'))
+                                                Future.delayed(
+                                                        Duration(seconds: 4),
+                                                        () => print('pppp'))
                                                     .then((_) {
                                                   // Can now bring a new resource for donation
                                                   soundTin.setShouldRefreshDonatingResourceIndex =
@@ -1199,18 +1199,23 @@ class _MetadataFormState extends State<MetadataForm> {
                                                   user.showDialogue('Thank you',
                                                       'We sincerely appreciate your donation. You can always make another',
                                                       whenFinished: () {
-                                                    setState(() {
-                                                      _isLoading = false;
-                                                    });
-                                                    soundTin.setInDanger =
-                                                        false;
-                                                    soundTin.setShouldInitDevil =
-                                                        true;
-                                                    Navigator.of(context)
-                                                        .pushReplacementNamed(
-                                                            DashboardScreen
-                                                                .routeName);
-                                                  });
+                                                        setState(() {
+                                                          _isLoading = false;
+                                                        });
+                                                        soundTin.setInDanger =
+                                                            false;
+                                                        soundTin.setShouldInitDevil =
+                                                            true;
+                                                        soundTin.setProceedWithDonationEvaluation =
+                                                            false; // redundant
+                                                        Navigator.of(context)
+                                                            .pushReplacementNamed(
+                                                                DashboardScreen
+                                                                    .routeName);
+                                                      },
+                                                      whenComplete: () => soundTin
+                                                              .setProceedWithDonationEvaluation =
+                                                          false); // redundant
                                                 });
                                               });
                                             },

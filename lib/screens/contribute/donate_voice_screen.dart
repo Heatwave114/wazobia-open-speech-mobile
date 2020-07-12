@@ -521,10 +521,12 @@ class _TextPanelState extends State<TextPanel> {
 
                                             if (!(await user
                                                 .connectionStatus())) {
+                                              user.setContext(context);
                                               user.showSnackBar(
                                                   'Check your internet');
                                               return;
                                             }
+
                                             // this._submitTapCounter++;
                                             setState(() {
                                               this.widget.submitTapCounter++;
@@ -542,20 +544,20 @@ class _TextPanelState extends State<TextPanel> {
 
                                             // Undo Comment ............//
 
-                                            if ((await soundTin
-                                                    .getDonatedVoiceDuration()) <
-                                                (.5 *
-                                                    widget.resource.readTime
-                                                        .inSeconds)) {
-                                              user.showDialogue('Alert',
-                                                  'Recording too short');
-                                              // print('2: ${await soundTin.getDonatedVoiceDuration()}');
-                                              setState(() {
-                                                this.widget.submitTapCounter =
-                                                    0;
-                                              });
-                                              return;
-                                            }
+                                            // if ((await soundTin
+                                            //         .getDonatedVoiceDuration()) <
+                                            //     (.5 *
+                                            //         widget.resource.readTime
+                                            //             .inSeconds)) {
+                                            //   user.showDialogue('Alert',
+                                            //       'Recording too short');
+                                            //   // print('2: ${await soundTin.getDonatedVoiceDuration()}');
+                                            //   setState(() {
+                                            //     this.widget.submitTapCounter =
+                                            //         0;
+                                            //   });
+                                            //   return;
+                                            // }
 
                                             // print(soundTin.getDonatedVoicePath);
                                             // print((await soundTin.getDonatedVoiceDuration())/3600);3
@@ -564,17 +566,20 @@ class _TextPanelState extends State<TextPanel> {
                                                 // Undo Comment .....//
                                                 submitDonation: () async {
                                               user.setContext(context);
-                                              user
-                                                  .uploadDonation(
-                                                voiceToUpload: File(soundTin
-                                                    .getDonatedVoicePath),
-                                                resourceID:
-                                                    this.widget.resource.uid,
-                                                duration: await soundTin
-                                                    .getDonatedVoiceDuration(),
-                                                currentDonatingUser: soundTin
-                                                    .getCurrentDonatingUser,
-                                              )
+                                              // user
+                                              //     .uploadDonation(
+                                              //   voiceToUpload: File(soundTin
+                                              //       .getDonatedVoicePath),
+                                              //   resourceID:
+                                              //       this.widget.resource.uid,
+                                              //   duration: await soundTin
+                                              //       .getDonatedVoiceDuration(),
+                                              //   currentDonatingUser: soundTin
+                                              //       .getCurrentDonatingUser,
+                                              // )
+                                              Future.delayed(
+                                                      Duration(seconds: 4),
+                                                      () => print('pppp'))
                                                   .then((_) {
                                                 // Can now bring a new resource for donation
                                                 soundTin.setShouldRefreshDonatingResourceIndex =
@@ -585,10 +590,16 @@ class _TextPanelState extends State<TextPanel> {
                                                 user.showDialogue('Thank you',
                                                     'We sincerely appreciate your donation. You can always make another',
                                                     whenFinished: () {
-                                                  soundTin.setInDanger = false;
-                                                  soundTin.setShouldInitDevil =
-                                                      true;
-                                                });
+                                                      soundTin.setInDanger =
+                                                          false;
+                                                      soundTin.setShouldInitDevil =
+                                                          true;
+                                                      soundTin.setProceedWithDonationEvaluation =
+                                                          false;
+                                                    },
+                                                    whenComplete: () => soundTin
+                                                            .setProceedWithDonationEvaluation =
+                                                        false);
                                               });
                                             });
 
@@ -873,6 +884,7 @@ class _SubmitDonationAlertDialogState extends State<SubmitDonationAlertDialog> {
           onPressed: () async {
             final bool internet = await user.connectionStatus();
             if (!internet) {
+              // user.setContext(context);
               user.showSnackBar('Check your internet');
               Navigator.of(context).pop();
               this

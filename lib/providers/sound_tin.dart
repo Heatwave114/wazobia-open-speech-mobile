@@ -41,8 +41,10 @@ class SoundTin with ChangeNotifier {
   get getReasonForEvaluation => this.reasonForEvaluation;
 
   // _proceedWithDonationEvaluation set
-  set setProceedWithDonationEvaluation(bool proceedWithDonationEvaluation) =>
-      this._proceedWithDonationEvaluation = proceedWithDonationEvaluation;
+  set setProceedWithDonationEvaluation(bool proceedWithDonationEvaluation) {
+    this._proceedWithDonationEvaluation = proceedWithDonationEvaluation;
+    notifyListeners();
+  }
 
   // _proceedWithDonationEvaluation get
   get getProceedWithDonationEvaluation => this._proceedWithDonationEvaluation;

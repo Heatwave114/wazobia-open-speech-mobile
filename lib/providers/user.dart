@@ -116,6 +116,8 @@ class User with ChangeNotifier {
         'url': url,
       });
 
+      // Undo Comment .....//
+
       final DocumentSnapshot critical = await databaseRoot
           .collection('critical')
           .document('cumulative')
@@ -244,7 +246,7 @@ class User with ChangeNotifier {
 
   // Updating dialog
   void showDialogue(String title, String content,
-      {Function whenFinished, bool isRed = false}) {
+      {Function whenFinished, Function() whenComplete, bool isRed = false}) {
     showDialog(
       // barrierDismissible: false,
       context: context,
@@ -287,7 +289,7 @@ class User with ChangeNotifier {
       ),
     ).then((_) {
       whenFinished();
-    });
+    }).whenComplete(() => whenComplete());
   }
 
   // User get by nick

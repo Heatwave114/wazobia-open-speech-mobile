@@ -232,7 +232,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
       String path = await recorderModule.startRecorder(
         uri: '${tempDir.path}/${recorderModule.slotNo}-${paths[_codec.index]}',
-        codec: _codec, 
+        codec: _codec,
       );
       final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
       final User user = Provider.of<User>(context, listen: false);
@@ -1098,7 +1098,10 @@ class _SoundDevilState extends State<SoundDevil> {
                               // borderSide: BorderSide(
                               //     color: Colors.green, width: 0.5),
                               // padding: EdgeInsets.all(0.0),
-                              onTap: onStartRecorderPressed(),
+                              onTap: soundTin
+                                      .getProceedWithDonationEvaluation // so that can't record when submitting dontion
+                                  ? null
+                                  : onStartRecorderPressed(),
                               child: SizedBox(
                                 height: 56.0,
                                 width: 56.0,
@@ -1119,7 +1122,10 @@ class _SoundDevilState extends State<SoundDevil> {
                               // borderSide: BorderSide(
                               //     color: Colors.green, width: 0.5),
                               // padding: EdgeInsets.all(0.0),
-                              onTap: onStartRecorderPressed(),
+                              onTap: soundTin
+                                      .getProceedWithDonationEvaluation // so that can't record when submitting dontion
+                                  ? null
+                                  : onStartRecorderPressed(),
                               child: SizedBox(
                                 height: 56.0,
                                 width: 56.0,
@@ -1275,7 +1281,8 @@ class _SoundDevilState extends State<SoundDevil> {
                                       });
                                     }
 
-                                    final User user = Provider.of<User>(context, listen: false);
+                                    final User user = Provider.of<User>(context,
+                                        listen: false);
                                     user.setContext(context);
                                     final bool internet =
                                         await user.connectionStatus();
