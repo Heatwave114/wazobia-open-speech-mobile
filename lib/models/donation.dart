@@ -7,8 +7,8 @@ class Donation {
   final Map reader;
   final DateTime donationDateLocal;
   final double duration;
-  final String cqi;
-  final String snr;
+  // final String cqi;
+  // final String snr;
   int bias;
   int validCount;
   final String resourceId;
@@ -20,8 +20,8 @@ class Donation {
     @required this.reader,
     @required this.donationDateLocal,
     @required this.duration,
-    @required this.cqi,
-    @required this.snr,
+    // @required this.cqi,
+    // @required this.snr,
     @required this.bias,
     @required this.validCount,
     @required this.resourceId,
@@ -43,8 +43,8 @@ class Donation {
         this.reader = donation['reader'],
         this.donationDateLocal = DateTime.parse(donation['donationdatelocal']),
         this.duration = donation['duration'],
-        this.cqi = donation['cqi'],
-        this.snr = donation['snr'],
+        // this.cqi = donation['cqi'],
+        // this.snr = donation['snr'],
         this.bias = donation['bias'],
         this.validCount = donation['validcount'],
         this.resourceId = donation['resourceid'],

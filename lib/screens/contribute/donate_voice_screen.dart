@@ -211,37 +211,41 @@ class DonateVoiceScreen extends StatelessWidget {
                     const SizedBox(
                       height: 5.0,
                     ),
-                    DashWidgets.dashboard([
-                      DashWidgets.dashItem('Title', resource.title),
-                      DashWidgets.dashItem('Genre', resource.genre),
-                      if (!soundTin.inDanger)
-                        DashWidgets.dashItem(
-                            'Read time', resource.formatedReadTime),
-                      if (soundTin.inDanger)
-                        DashWidgets.customDashItem(
-                          'Read time',
-                          resource.formatedReadTime,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'Abel',
-                            // color: Color(0xFF4FA978),
-                            color: Colors.red[900],
+                    DashWidgets.dashboard(
+                      context,
+                      _dashWidth,
+                      [
+                        DashWidgets.dashItem('Title', resource.title),
+                        DashWidgets.dashItem('Genre', resource.genre),
+                        if (!soundTin.inDanger)
+                          DashWidgets.dashItem(
+                              'Read time', resource.formatedReadTime),
+                        if (soundTin.inDanger)
+                          DashWidgets.customDashItem(
+                            'Read time',
+                            resource.formatedReadTime,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: 'Abel',
+                              // color: Color(0xFF4FA978),
+                              color: Colors.red[900],
+                            ),
                           ),
-                        ),
-                      if (resource.credit != '')
-                        DashWidgets.customDashItem(
-                          'Credit',
-                          resource.credit,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Abel',
-                            // color: Color(0xFF4FA978),
-                            // color: Colors.red[900],
-                            color: Colors.grey[600],
-                            fontStyle: FontStyle.italic,
+                        if (resource.credit != '')
+                          DashWidgets.customDashItem(
+                            'Credit',
+                            resource.credit,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Abel',
+                              // color: Color(0xFF4FA978),
+                              // color: Colors.red[900],
+                              color: Colors.grey[600],
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
-                        ),
-                    ], _dashWidth),
+                      ],
+                    ),
                     // MediaPanel(dashWidth: _dashWidth),
                     SoundDevil(),
                     // FlatButton(
@@ -437,38 +441,38 @@ class _TextPanelState extends State<TextPanel> {
             padding: EdgeInsets.all(15.0),
             // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              // crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
                   width: double.infinity,
                   margin: EdgeInsets.only(bottom: 7.0),
-                  height: 50.0,
+                  // height: 63.0,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      Expanded(
+                      Flexible(
                         flex: 7,
-                        child: FittedBox(
-                          child: Row(
-                            children: <Widget>[
-                              const Text(
-                                'Font Size',
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        child: Column(
+                          children: <Widget>[
+                            const Text(
+                              'Font Size',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
                               ),
-                              Slider.adaptive(
-                                value: _textSizePercent,
-                                // divisions: 5,
-                                min: .5, activeColor: Colors.deepOrange,
-                                onChanged: (_textSizePercent) {
-                                  setState(() =>
-                                      this._textSizePercent = _textSizePercent);
-                                },
-                              ),
-                            ],
-                          ),
+                            ),
+                            Slider.adaptive(
+                              value: _textSizePercent,
+                              // divisions: 5,
+                              min: .5, activeColor: Colors.deepOrange,
+                              onChanged: (_textSizePercent) {
+                                setState(() =>
+                                    this._textSizePercent = _textSizePercent);
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(

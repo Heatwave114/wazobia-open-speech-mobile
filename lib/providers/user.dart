@@ -86,8 +86,8 @@ class User with ChangeNotifier {
           }),
           'donationdatelocal': now.toIso8601String(),
           'duration': duration.toString(),
-          'cqi': 'NA',
-          'snr': 'NA',
+          // 'cqi': 'NA',
+          // 'snr': 'NA',
           // 'validcount': '0',
           'validationstatus': 'unvalidated',
           'resource': resourceID,
@@ -106,8 +106,8 @@ class User with ChangeNotifier {
 
         'donationdatelocal': now.toIso8601String(),
         // 'invalidreasons': [],
-        'cqi': 'NA',
-        'snr': 'NA',
+        // 'cqi': 'NA',
+        // 'snr': 'NA',
         'bias': 0,
         'validcount': 0,
         'validationstatus': 'unvalidated',
@@ -439,56 +439,64 @@ class User with ChangeNotifier {
   final Map<String, dynamic> appInstanceInfo = {
     'admin': false,
     'counterfeit': true,
-    'version': 1.03,
+    'version': 1.05,
   };
 
   Widget updateButton() {
     return Padding(
         padding: const EdgeInsets.only(top: 0.0),
         child: RaisedButton(
-            color: Colors.lightGreen,
-            child: Text(
-              'Update',
-              style: TextStyle(
-                  fontSize: 16.0, color: Colors.white, fontFamily: 'PTSans'),
-            ),
-            onPressed: () async {
-              // Store params
-              final DocumentSnapshot storeParams = await this
-                  .databaseRoot
-                  .collection('critical')
-                  .document('store')
-                  .get();
-              final ids = storeParams['id'];
+          color: Colors.lightGreen,
+          child: Text(
+            'Update',
+            style: TextStyle(
+                fontSize: 16.0, color: Colors.white, fontFamily: 'PTSans'),
+          ),
+          
+          onPressed: () async {
+            // Store params
+            final DocumentSnapshot storeParams = await this
+                .databaseRoot
+                .collection('critical')
+                .document('store')
+                .get();
 
-              StoreRedirect.redirect(
-                  androidAppId: ids['android'], iOSAppId: ids['ios']);
-            }));
+            final ids = storeParams['id'];
+
+            StoreRedirect.redirect(
+                androidAppId: ids['android'], iOSAppId: ids['ios']);
+          },
+        ));
   }
 
   Widget controlScaffold(String controlMessage, {Widget child}) {
+    final device = MediaQuery.of(context);
     return Scaffold(
       // appBar: AppBar(
       //   title: Text('Welcome to Wazobia'),
       // ),
       body: Center(
-        child: Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(20.0),
-              padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * .45),
-              child: Text(
+        child: Container(
+          alignment: Alignment.center,
+          // color: Colors.green,
+          margin: EdgeInsets.all(20.0),
+          padding: EdgeInsets.only(
+              top: (device.size.height - device.padding.vertical - 40.0) *
+                  .50), // 40.0 is the vertical margin
+          child: Column(
+            children: <Widget>[
+              Text(
                 controlMessage,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20.0,
                   fontFamily: 'Abel',
                   // color: Colors.red,
                 ),
               ),
-            ),
-            if (child != null) child,
-          ],
+              if (child != null) child,
+            ],
+          ),
         ),
       ),
     );
