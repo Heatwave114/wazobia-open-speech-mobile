@@ -165,7 +165,7 @@ class AccountSelectScreen extends StatelessWidget {
                               bottom: BorderSide(color: Colors.green[200]))),
                       child: FittedBox(
                         child: Text(
-                          'Choose your account',
+                          'Existing Users',
                           style: TextStyle(
                             fontSize: 45.0,
                             fontFamily: 'ComicNeue',

@@ -221,32 +221,36 @@ class ValidateScreen extends StatelessWidget {
                       }
                       final Resource resource =
                           Resource.fromFireStore(snapshot.data);
-                      // print('cccccccccccccccccc');
+                      print(MediaQuery.of(context).textScaleFactor);
                       soundTin.setCurrentValidatingResource = resource;
                       return Column(
                         children: <Widget>[
                           const SizedBox(
                             height: 5.0,
                           ),
-                          DashWidgets.dashboard([
-                            DashWidgets.dashItem('Title', resource.title),
-                            DashWidgets.dashItem('Genre', resource.genre),
-                            DashWidgets.dashItem(
-                                'Duration', donation.formatedDurationTime),
-                            if (resource.credit != '')
-                              DashWidgets.customDashItem(
-                                'Credit',
-                                resource.credit,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Abel',
-                                  // color: Color(0xFF4FA978),
-                                  // color: Colors.red[900],
-                                  color: Colors.grey[600],
-                                  fontStyle: FontStyle.italic,
+                          DashWidgets.dashboard(
+                            context,
+                            _dashWidth,
+                            [
+                              DashWidgets.dashItem('Title', resource.title),
+                              DashWidgets.dashItem('Genre', resource.genre),
+                              DashWidgets.dashItem(
+                                  'Duration', donation.formatedDurationTime),
+                              if (resource.credit != '')
+                                DashWidgets.customDashItem(
+                                  'Credit',
+                                  resource.credit,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Abel',
+                                    // color: Color(0xFF4FA978),
+                                    // color: Colors.red[900],
+                                    color: Colors.grey[600],
+                                    fontStyle: FontStyle.italic,
+                                  ),
                                 ),
-                              ),
-                          ], _dashWidth),
+                            ],
+                          ),
                           // MediaPanel(dashWidth: _dashWidth),
                           SoundDevil()..validating(),
                           // FlatButton(
@@ -451,6 +455,7 @@ class _TextPanelState extends State<TextPanel> {
     user.setContext(context);
     return Container(
       width: double.infinity,
+      // width: 200.0,
       margin: const EdgeInsets.symmetric(
         // vertical: 5.0,
         horizontal: 10.0,
@@ -468,396 +473,428 @@ class _TextPanelState extends State<TextPanel> {
                 Container(
                   width: double.infinity,
                   margin: EdgeInsets.only(bottom: 7.0),
-                  // height: 50.0,
+                  // height: 63.0,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      Expanded(
-                        flex: 5,
-                        child: FittedBox(
-                          child: Row(
-                            children: <Widget>[
-                              const Text(
-                                'Font Size',
-                                style: const TextStyle(
-                                  fontSize: 30.0,
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.bold,
-                                ),
+                      Flexible(
+                        flex: 7,
+                        child: Column(
+                          // mainAxisAlignment: MainAxisAlignment.end,
+                    // crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const Text(
+                              'Font Size',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
                               ),
-                              Slider.adaptive(
-                                value: _textSizePercent,
-                                // divisions: 5,
-                                min: .5, activeColor: Colors.deepOrange,
-                                onChanged: (_textSizePercent) {
-                                  setState(() =>
-                                      this._textSizePercent = _textSizePercent);
-                                },
-                              ),
-                            ],
-                          ),
+                            ),
+                            Slider.adaptive(
+                              value: _textSizePercent,
+                              // divisions: 5,
+                              min: .5, activeColor: Colors.deepOrange,
+                              onChanged: (_textSizePercent) {
+                                setState(() =>
+                                    this._textSizePercent = _textSizePercent);
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(
                         flex: 3,
-                        child: FittedBox(
-                          child: (this._invalidateTapCounter > 0)
-                              ? CircularProgressIndicator(
-                                  backgroundColor: Colors.red,
-                                  strokeWidth: 2.0,
-                                  // value: .5,
-                                )
-                              : OutlineButton.icon(
-                                  borderSide: BorderSide(
-                                    color:
-                                        Colors.red[900], //Color of the border
-                                    style:
-                                        BorderStyle.solid, //Style of the border
-                                    width: 1.0, //width of the border
-                                  ),
-                                  label: const Text(
-                                    'Invalidate',
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  icon: const Icon(
-                                    Icons.clear,
-                                    // color: const Color(0xff2A6041),
-                                    color: Colors.red,
-                                  ),
-                                  onPressed:
-                                      // soundTin.getIsPlaying
-                                      //     ? null
-                                      //     : // null
-                                      () async {
-                                    if (!(await user.connectionStatus())) {
-                                      user.showSnackBar('Check your internet');
-                                      return;
-                                    }
-                                    // if(soundTin.)
-                                    // print(soundTin
-                                    //     .currentValidatingResource.title);
-                                    // soundTin.setShouldAllowValidate = false;
-
-                                    if (!soundTin.getShouldAllowValidation) {
-                                      user.showDialogue('Alert',
-                                          'Ensure the whole audio corresponds to the this text resource. Listen more.',
-                                          isRed: true);
-                                      return;
-                                    }
-
-                                    setState(() {
-                                      this._invalidateTapCounter++;
-                                    });
-
-                                    // Remain in unvalidated if validCount > -2 with the following valid count
-                                    widget.donation.validCount++;
-                                    widget.donation.bias--;
-
-                                    this.confirmProceedWithDonation(
-                                        isValid: false,
-                                        submitEvaluation: () async {
-                                          // print(
-                                          //     widget.donation.invalidReasons);
-                                          if (widget.donation.invalidReasons ==
-                                              null) {
-                                            widget.donation.setInvalidReasons =
-                                                [];
-                                            widget.donation.addInvalidReason({
-                                              '${DateTime.now().millisecondsSinceEpoch}':
-                                                  '${soundTin.getReasonForEvaluation}',
-                                              'valid': false,
-                                            });
+                        child: Column(
+                          children: <Widget>[
+                            FittedBox(
+                              child: (this._invalidateTapCounter > 0)
+                                  ? CircularProgressIndicator(
+                                      backgroundColor: Colors.red,
+                                      strokeWidth: 2.0,
+                                      // value: .5,
+                                    )
+                                  : Container(
+                                      // height: 50.0,
+                                      child: OutlineButton.icon(
+                                        borderSide: BorderSide(
+                                          color: Colors
+                                              .red[900], //Color of the border
+                                          style: BorderStyle
+                                              .solid, //Style of the border
+                                          width: 1.0, //width of the border
+                                        ),
+                                        label: const Text(
+                                          'Invalidate',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              // fontFamily: 'AdventPro'
+                                              ),
+                                        ),
+                                        icon: const Icon(
+                                          Icons.clear,
+                                          // color: const Color(0xff2A6041),
+                                          color: Colors.red,
+                                        ),
+                                        onPressed:
+                                            // soundTin.getIsPlaying
+                                            //     ? null
+                                            //     : // null
+                                            () async {
+                                          if (!(await user
+                                              .connectionStatus())) {
+                                            user.showSnackBar(
+                                                'Check your internet');
+                                            return;
                                           }
-                                          // print(
-                                          //     widget.donation.invalidReasons);
-                                          // print(widget.donation.invalidReasons
-                                          //     .length);
+                                          // if(soundTin.)
+                                          // print(soundTin
+                                          //     .currentValidatingResource.title);
+                                          // soundTin.setShouldAllowValidate = false;
 
-                                          if (widget.donation.bias > -2) {
-                                            fbHelper.unvalidatedURLs
-                                                .document(widget.donation.name)
-                                                .updateData({
-                                              'bias': widget.donation.bias,
-                                              'validcount':
-                                                  widget.donation.validCount,
-                                              if (soundTin
-                                                      .getReasonForEvaluation
-                                                      .trim() !=
-                                                  '')
-                                                'invalidreasons': (widget
-                                                            .donation
-                                                            .invalidReasons
-                                                            .length >
-                                                        0)
-                                                    ? FieldValue.arrayUnion([
-                                                        {
-                                                          '${DateTime.now().millisecondsSinceEpoch}':
-                                                              '${soundTin.getReasonForEvaluation}',
-                                                          'valid': false,
-                                                        }
-                                                      ])
-                                                    : FieldValue.arrayUnion(
-                                                        widget.donation
-                                                            .invalidReasons),
-                                            }).then((_) {
-                                              // Can now bring a new donation for validation
-                                              soundTin.setShouldRefreshValidatingDonationIndex =
-                                                  true;
-                                              this.stopLoadingForValidation();
+                                          if (!soundTin
+                                              .getShouldAllowValidation) {
+                                            user.showDialogue('Alert',
+                                                'Ensure the whole audio corresponds to the this text resource. Listen more.',
+                                                isRed: true);
+                                            return;
+                                          }
 
-                                              // this._invalidateTapCounter = 0;
+                                          setState(() {
+                                            this._invalidateTapCounter++;
+                                          });
 
-                                              // Appreciation
-                                              user.showDialogue('Thank you',
-                                                  'We sincerely appreciate your validation. You can always do another');
-                                            });
-                                          } else {
-                                            // Change validation status in FBStorage
-                                            user
-                                                .changeValidationStatus(
-                                              donationName:
-                                                  widget.donation.name,
-                                              validationStatus: 'invalid',
-                                            )
-                                                .then((_) async {
-                                              // Move to invalid
-                                              fbHelper.invalidURLs
-                                                  .document(
-                                                      widget.donation.name)
-                                                  .setData({
-                                                'reader':
-                                                    widget.donation.reader,
-                                                'donationdatelocal': widget
-                                                    .donation.donationDateLocal
-                                                    .toIso8601String(),
-                                                'duration':
-                                                    widget.donation.duration,
-                                                'cqi': widget.donation.cqi,
-                                                'snr': widget.donation.snr,
-                                                'invalidreasons': widget
-                                                    .donation.invalidReasons,
-                                                'validcount':
-                                                    widget.donation.validCount,
-                                                'resourceid':
-                                                    widget.donation.resourceId,
-                                                'url': widget.donation.url,
-                                                'timeofvalidation':
-                                                    DateTime.now()
-                                                        .toIso8601String(),
-                                              }).then((_) async {
-                                                // Delete from unvalidated
-                                                await fbHelper.unvalidatedURLs
-                                                    .document(
-                                                        widget.donation.name)
-                                                    .delete()
-                                                    .then((_) {
-                                                  // setState(() {});
+                                          // Remain in unvalidated if validCount > -2 with the following valid count
+                                          widget.donation.validCount++;
+                                          widget.donation.bias--;
 
-                                                  // Can now bring a new donation for validation
-                                                  soundTin.setShouldRefreshValidatingDonationIndex =
-                                                      true;
-                                                });
-                                                this.stopLoadingForValidation();
+                                          this.confirmProceedWithDonation(
+                                              isValid: false,
+                                              submitEvaluation: () async {
+                                                // print(
+                                                //     widget.donation.invalidReasons);
+                                                if (widget.donation
+                                                        .invalidReasons ==
+                                                    null) {
+                                                  widget.donation
+                                                      .setInvalidReasons = [];
+                                                  widget.donation
+                                                      .addInvalidReason({
+                                                    '${DateTime.now().millisecondsSinceEpoch}':
+                                                        '${soundTin.getReasonForEvaluation}',
+                                                    'valid': false,
+                                                  });
+                                                }
+                                                // print(
+                                                //     widget.donation.invalidReasons);
+                                                // print(widget.donation.invalidReasons
+                                                //     .length);
 
-                                                // this._invalidateTapCounter =
-                                                //     0; // redundant because of this.stopLoadingForValidation ??
-                                                // Appreciation
-                                                user.showDialogue('Thank you',
-                                                    'We sincerely appreciate your validation. You can always do another');
+                                                if (widget.donation.bias > -2) {
+                                                  fbHelper.unvalidatedURLs
+                                                      .document(
+                                                          widget.donation.name)
+                                                      .updateData({
+                                                    'bias':
+                                                        widget.donation.bias,
+                                                    'validcount': widget
+                                                        .donation.validCount,
+                                                    if (soundTin
+                                                            .getReasonForEvaluation
+                                                            .trim() !=
+                                                        '')
+                                                      'invalidreasons': (widget
+                                                                  .donation
+                                                                  .invalidReasons
+                                                                  .length >
+                                                              0)
+                                                          ? FieldValue
+                                                              .arrayUnion([
+                                                              {
+                                                                '${DateTime.now().millisecondsSinceEpoch}':
+                                                                    '${soundTin.getReasonForEvaluation}',
+                                                                'valid': false,
+                                                              }
+                                                            ])
+                                                          : FieldValue
+                                                              .arrayUnion(widget
+                                                                  .donation
+                                                                  .invalidReasons),
+                                                  }).then((_) {
+                                                    // Can now bring a new donation for validation
+                                                    soundTin.setShouldRefreshValidatingDonationIndex =
+                                                        true;
+                                                    this.stopLoadingForValidation();
+
+                                                    // this._invalidateTapCounter = 0;
+
+                                                    // Appreciation
+                                                    user.showDialogue(
+                                                        'Thank you',
+                                                        'We sincerely appreciate your validation. You can always do another');
+                                                  });
+                                                } else {
+                                                  // Change validation status in FBStorage
+                                                  user
+                                                      .changeValidationStatus(
+                                                    donationName:
+                                                        widget.donation.name,
+                                                    validationStatus: 'invalid',
+                                                  )
+                                                      .then((_) async {
+                                                    // Move to invalid
+                                                    fbHelper.invalidURLs
+                                                        .document(widget
+                                                            .donation.name)
+                                                        .setData({
+                                                      'reader': widget
+                                                          .donation.reader,
+                                                      'donationdatelocal': widget
+                                                          .donation
+                                                          .donationDateLocal
+                                                          .toIso8601String(),
+                                                      'duration': widget
+                                                          .donation.duration,
+                                                      // 'cqi': widget.donation.cqi,
+                                                      // 'snr': widget.donation.snr,
+                                                      'invalidreasons': widget
+                                                          .donation
+                                                          .invalidReasons,
+                                                      'validcount': widget
+                                                          .donation.validCount,
+                                                      'resourceid': widget
+                                                          .donation.resourceId,
+                                                      'url':
+                                                          widget.donation.url,
+                                                      'timeofvalidation':
+                                                          DateTime.now()
+                                                              .toIso8601String(),
+                                                    }).then((_) async {
+                                                      // Delete from unvalidated
+                                                      await fbHelper
+                                                          .unvalidatedURLs
+                                                          .document(widget
+                                                              .donation.name)
+                                                          .delete()
+                                                          .then((_) {
+                                                        // setState(() {});
+
+                                                        // Can now bring a new donation for validation
+                                                        soundTin.setShouldRefreshValidatingDonationIndex =
+                                                            true;
+                                                      });
+                                                      this.stopLoadingForValidation();
+
+                                                      // this._invalidateTapCounter =
+                                                      //     0; // redundant because of this.stopLoadingForValidation ??
+                                                      // Appreciation
+                                                      user.showDialogue(
+                                                          'Thank you',
+                                                          'We sincerely appreciate your validation. You can always do another');
+                                                    });
+                                                  });
+
+                                                  // fbHelper.validatedURLs
+                                                  //     .document(widget.donation.name)
+                                                  //     .setData({
+
+                                                  //     });
+                                                }
                                               });
-                                            });
 
-                                            // fbHelper.validatedURLs
-                                            //     .document(widget.donation.name)
-                                            //     .setData({
+                                          // print(_user);
+                                          // () async {print((await Auth().currentUser()).uid);}();
+                                          // _submit();
+                                          // print('${_selectedCountry.name}');
 
-                                            //     });
-                                          }
-                                        });
+                                          // Persist Auth ?
+                                          // print(_rememberMe);
+                                          // SSSprint(ur.rememberMe);
+                                        },
+                                      ),
+                                    ),
+                            ),
+                            FittedBox(
+                              child: (this._validateTapCounter > 0)
+                                  ? CircularProgressIndicator(
+                                      backgroundColor: Color(0xff2A6041),
+                                      strokeWidth: 2.0,
+                                      // value: .5,
+                                    )
+                                  : OutlineButton.icon(
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context)
+                                            .primaryColor, //Color of the border
+                                        style: BorderStyle
+                                            .solid, //Style of the border
+                                        width: 1.0, //width of the border
+                                      ),
+                                      label: const Text(
+                                        'Validate',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      icon: const Icon(
+                                        Icons.check,
+                                        color: const Color(0xff2A6041),
+                                      ),
+                                      onPressed:
+                                          // soundTin.getIsPlaying
+                                          //     ? null
+                                          //     : // null
+                                          () async {
+                                        if (!(await user.connectionStatus())) {
+                                          user.showSnackBar(
+                                              'Check your internet');
+                                          return;
+                                        }
+                                        // if(soundTin.)
+                                        // print(soundTin
+                                        //     .currentValidatingResource.title);
+                                        // soundTin.setShouldAllowValidate = false;
 
-                                    // print(_user);
-                                    // () async {print((await Auth().currentUser()).uid);}();
-                                    // _submit();
-                                    // print('${_selectedCountry.name}');
+                                        if (!soundTin
+                                            .getShouldAllowValidation) {
+                                          user.showDialogue('Alert',
+                                              'Ensure the whole audio corresponds to the this text resource. Listen more.');
+                                          return;
+                                        }
 
-                                    // Persist Auth ?
-                                    // print(_rememberMe);
-                                    // SSSprint(ur.rememberMe);
-                                  },
-                                ),
-                        ),
-                      ),
-                      VerticalDivider(
-                        thickness: 0.1,
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: FittedBox(
-                          child: (this._validateTapCounter > 0)
-                              ? CircularProgressIndicator(
-                                  backgroundColor: Color(0xff2A6041),
-                                  strokeWidth: 2.0,
-                                  // value: .5,
-                                )
-                              : OutlineButton.icon(
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context)
-                                        .primaryColor, //Color of the border
-                                    style:
-                                        BorderStyle.solid, //Style of the border
-                                    width: 1.0, //width of the border
-                                  ),
-                                  label: const Text(
-                                    'Validate',
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  icon: const Icon(
-                                    Icons.check,
-                                    color: const Color(0xff2A6041),
-                                  ),
-                                  onPressed:
-                                      // soundTin.getIsPlaying
-                                      //     ? null
-                                      //     : // null
-                                      () async {
-                                    if (!(await user.connectionStatus())) {
-                                      user.showSnackBar('Check your internet');
-                                      return;
-                                    }
-                                    // if(soundTin.)
-                                    // print(soundTin
-                                    //     .currentValidatingResource.title);
-                                    // soundTin.setShouldAllowValidate = false;
+                                        setState(
+                                            () => this._validateTapCounter++);
 
-                                    if (!soundTin.getShouldAllowValidation) {
-                                      user.showDialogue('Alert',
-                                          'Ensure the whole audio corresponds to the this text resource. Listen more.');
-                                      return;
-                                    }
+                                        // Remain in unvalidated with the following validcount
+                                        widget.donation.validCount++;
+                                        widget.donation.bias++;
 
-                                    setState(() => this._validateTapCounter++);
+                                        this.confirmProceedWithDonation(
+                                            isValid: true,
+                                            submitEvaluation: () {
+                                              if (widget.donation
+                                                      .invalidReasons ==
+                                                  null) {
+                                                widget.donation
+                                                    .setInvalidReasons = [];
+                                                widget.donation
+                                                    .addInvalidReason({
+                                                  '${DateTime.now().millisecondsSinceEpoch}':
+                                                      '${soundTin.getReasonForEvaluation}',
+                                                  'valid': true,
+                                                });
+                                              }
 
-                                    // Remain in unvalidated with the following validcount
-                                    widget.donation.validCount++;
-                                    widget.donation.bias++;
-
-                                    this.confirmProceedWithDonation(
-                                        isValid: true,
-                                        submitEvaluation: () {
-                                          if (widget.donation.invalidReasons ==
-                                              null) {
-                                            widget.donation.setInvalidReasons =
-                                                [];
-                                            widget.donation.addInvalidReason({
-                                              '${DateTime.now().millisecondsSinceEpoch}':
-                                                  '${soundTin.getReasonForEvaluation}',
-                                              'valid': true,
-                                            });
-                                          }
-
-                                          if (widget.donation.bias < 2) {
-                                            fbHelper.unvalidatedURLs
-                                                .document(widget.donation.name)
-                                                .updateData({
-                                              'bias': widget.donation.bias,
-                                              'validcount':
-                                                  widget.donation.validCount,
-                                              if (soundTin
-                                                      .getReasonForEvaluation
-                                                      .trim() !=
-                                                  '')
-                                                'invalidreasons': (widget
-                                                            .donation
-                                                            .invalidReasons
-                                                            .length >
-                                                        0)
-                                                    ? FieldValue.arrayUnion([
-                                                        {
-                                                          '${DateTime.now().millisecondsSinceEpoch}':
-                                                              '${soundTin.getReasonForEvaluation}',
-                                                          'valid': true,
-                                                        }
-                                                      ])
-                                                    : FieldValue.arrayUnion(
-                                                        widget.donation
-                                                            .invalidReasons),
-                                            }).then((_) {
-                                              // Can now bring a new donation for validation
-                                              soundTin.setShouldRefreshValidatingDonationIndex =
-                                                  true;
-                                              this.stopLoadingForValidation();
-                                              // this._validateTapCounter = 0;
-                                              // Appreciation
-                                              user.showDialogue('Thank you',
-                                                  'We sincerely appreciate your validation. You can always do another');
-                                            });
-                                          } else {
-                                            // Change validation status in FBStorage
-                                            user
-                                                .changeValidationStatus(
-                                              donationName:
-                                                  widget.donation.name,
-                                              validationStatus: 'validated',
-                                            )
-                                                .then((_) async {
-                                              // Move to validated
-                                              fbHelper.validatedURLs
-                                                  .document(
-                                                      widget.donation.name)
-                                                  .setData({
-                                                'reader':
-                                                    widget.donation.reader,
-                                                'donationdatelocal': widget
-                                                    .donation.donationDateLocal
-                                                    .toIso8601String(),
-                                                'duration':
-                                                    widget.donation.duration,
-                                                'cqi': widget.donation.cqi,
-                                                'snr': widget.donation.snr,
-                                                'invalidreasons': widget
-                                                    .donation.invalidReasons,
-                                                'validcount':
-                                                    widget.donation.validCount,
-                                                'resourceid':
-                                                    widget.donation.resourceId,
-                                                'url': widget.donation.url,
-                                                'timeofvalidation':
-                                                    DateTime.now()
-                                                        .toIso8601String(),
-                                              }).then((_) async {
-                                                // Delete from unvalidated
-                                                await fbHelper.unvalidatedURLs
+                                              if (widget.donation.bias < 2) {
+                                                fbHelper.unvalidatedURLs
                                                     .document(
                                                         widget.donation.name)
-                                                    .delete()
-                                                    .then((_) {
-                                                  // setState(() {});
-
+                                                    .updateData({
+                                                  'bias': widget.donation.bias,
+                                                  'validcount': widget
+                                                      .donation.validCount,
+                                                  if (soundTin
+                                                          .getReasonForEvaluation
+                                                          .trim() !=
+                                                      '')
+                                                    'invalidreasons': (widget
+                                                                .donation
+                                                                .invalidReasons
+                                                                .length >
+                                                            0)
+                                                        ? FieldValue
+                                                            .arrayUnion([
+                                                            {
+                                                              '${DateTime.now().millisecondsSinceEpoch}':
+                                                                  '${soundTin.getReasonForEvaluation}',
+                                                              'valid': true,
+                                                            }
+                                                          ])
+                                                        : FieldValue.arrayUnion(
+                                                            widget.donation
+                                                                .invalidReasons),
+                                                }).then((_) {
                                                   // Can now bring a new donation for validation
                                                   soundTin.setShouldRefreshValidatingDonationIndex =
                                                       true;
-
                                                   this.stopLoadingForValidation();
-                                                  // this._validateTapCounter =
-                                                  //     0; // redundant because of this.stopLoadingForValidation ??
+                                                  // this._validateTapCounter = 0;
                                                   // Appreciation
                                                   user.showDialogue('Thank you',
                                                       'We sincerely appreciate your validation. You can always do another');
                                                 });
-                                              });
+                                              } else {
+                                                // Change validation status in FBStorage
+                                                user
+                                                    .changeValidationStatus(
+                                                  donationName:
+                                                      widget.donation.name,
+                                                  validationStatus: 'validated',
+                                                )
+                                                    .then((_) async {
+                                                  // Move to validated
+                                                  fbHelper.validatedURLs
+                                                      .document(
+                                                          widget.donation.name)
+                                                      .setData({
+                                                    'reader':
+                                                        widget.donation.reader,
+                                                    'donationdatelocal': widget
+                                                        .donation
+                                                        .donationDateLocal
+                                                        .toIso8601String(),
+                                                    'duration': widget
+                                                        .donation.duration,
+                                                    // 'cqi': widget.donation.cqi,
+                                                    // 'snr': widget.donation.snr,
+                                                    'invalidreasons': widget
+                                                        .donation
+                                                        .invalidReasons,
+                                                    'validcount': widget
+                                                        .donation.validCount,
+                                                    'resourceid': widget
+                                                        .donation.resourceId,
+                                                    'url': widget.donation.url,
+                                                    'timeofvalidation':
+                                                        DateTime.now()
+                                                            .toIso8601String(),
+                                                  }).then((_) async {
+                                                    // Delete from unvalidated
+                                                    await fbHelper
+                                                        .unvalidatedURLs
+                                                        .document(widget
+                                                            .donation.name)
+                                                        .delete()
+                                                        .then((_) {
+                                                      // setState(() {});
+
+                                                      // Can now bring a new donation for validation
+                                                      soundTin.setShouldRefreshValidatingDonationIndex =
+                                                          true;
+
+                                                      this.stopLoadingForValidation();
+                                                      // this._validateTapCounter =
+                                                      //     0; // redundant because of this.stopLoadingForValidation ??
+                                                      // Appreciation
+                                                      user.showDialogue(
+                                                          'Thank you',
+                                                          'We sincerely appreciate your validation. You can always do another');
+                                                    });
+                                                  });
+                                                });
+                                              }
                                             });
-                                          }
-                                        });
 
-                                    // print(_user);
-                                    // () async {print((await Auth().currentUser()).uid);}();
-                                    // _submit();
-                                    // print('${_selectedCountry.name}');
+                                        // print(_user);
+                                        // () async {print((await Auth().currentUser()).uid);}();
+                                        // _submit();
+                                        // print('${_selectedCountry.name}');
 
-                                    // Persist Auth ?
-                                    // print(_rememberMe);
-                                    // SSSprint(ur.rememberMe);
-                                  },
-                                ),
+                                        // Persist Auth ?
+                                        // print(_rememberMe);
+                                        // SSSprint(ur.rememberMe);
+                                      },
+                                    ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

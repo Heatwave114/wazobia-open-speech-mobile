@@ -95,7 +95,8 @@ class _MetadataScreenState extends State<MetadataScreen> {
     // final Size _deviceSize = MediaQuery.of(context).size;
     final Map<String, dynamic> routeArguments =
         ModalRoute.of(context).settings.arguments;
-    final bool fromDonation = routeArguments['fromdonation'] ?? false;
+    final bool fromDonation =
+        (routeArguments == null) ? false : routeArguments['fromdonation'];
 
     return WillPopScope(
       onWillPop: fromDonation ? () => Future(() => true) : _onWillPop,
@@ -644,7 +645,8 @@ class _MetadataFormState extends State<MetadataForm> {
     bool fromDonation;
     Resource resource;
     if (routeArguments != null) {
-      fromDonation = routeArguments['fromdonation'] ?? false;
+      fromDonation =
+          (routeArguments == null) ? false : routeArguments['fromdonation'];
       resource = routeArguments['resource'];
     }
 
@@ -660,25 +662,26 @@ class _MetadataFormState extends State<MetadataForm> {
                 padding: EdgeInsets.symmetric(horizontal: 5.0),
                 child: Column(
                   children: <Widget>[
-                    Row(
-                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: Text(
-                              // 'Your data is private',
-                              'Please fill the form  ${(routeArguments != null) ? '' : 'OR'} ',
-                              style: const TextStyle(
-                                fontFamily: 'ComicNeue',
-                                fontSize: 16.00,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xff2A6041),
+                    FittedBox(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Text(
+                                // 'Your data is private',
+                                'Fill the form  ${(routeArguments != null) ? '' : 'OR'} ',
+                                style: const TextStyle(
+                                  fontFamily: 'ComicNeue',
+                                  fontSize: 16.00,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xff2A6041),
+                                ),
                               ),
                             ),
-                          ),
-                          if (routeArguments == null)
-                            Expanded(
-                              child: RaisedButton.icon(
+                            if (routeArguments == null)
+                              RaisedButton.icon(
                                 color: Colors.lightGreen,
                                 icon: Icon(Icons.keyboard_arrow_down),
                                 label: const Text(
@@ -698,11 +701,11 @@ class _MetadataFormState extends State<MetadataForm> {
                                   arguments: true,
                                 ),
                               ),
-                            ),
-                        ]),
+                          ]),
+                    ),
                     _spacer,
                     _spacer,
-                    _spacer,
+                    // _spacer,
                     TextFormField(
                       // Country
                       readOnly: true,
@@ -1186,9 +1189,9 @@ class _MetadataFormState extends State<MetadataForm> {
                                                       .getCurrentDonatingUser,
                                                 )
 
-                                                // Future.delayed(
-                                                //         Duration(seconds: 4),
-                                                //         () => print('pppp'))
+                                                    // Future.delayed(
+                                                    //         Duration(seconds: 4),
+                                                    //         () => print('pppp'))
                                                     .then((_) {
                                                   // Can now bring a new resource for donation
                                                   soundTin.setShouldRefreshDonatingResourceIndex =

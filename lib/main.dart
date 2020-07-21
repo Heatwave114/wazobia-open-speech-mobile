@@ -79,6 +79,8 @@ class MyApp extends StatelessWidget {
                   // }
                   // print('data: ${snp.data}');
 
+                  final device = MediaQuery.of(ctx);
+
                   return StreamBuilder(
                       stream:
                           Firestore.instance.collection('critical').snapshots(),
@@ -86,14 +88,17 @@ class MyApp extends StatelessWidget {
                         if (!snapshot.hasData) {
                           return Center(
                             child: Container(
-                              padding: EdgeInsets.only(
-                                  top:
-                                      MediaQuery.of(context).size.height * .40),
                               margin: EdgeInsets.all(20.0),
+                              padding: EdgeInsets.only(
+                                  top: (device.size.height -
+                                          device.padding.vertical -
+                                          40.0) *
+                                      .50), // 40.0 is the vertical margin
                               child: Column(children: <Widget>[
                                 CentrallyUsed().waitingCircle(),
                                 Text(
                                   'Please wait a moment. If this message persists check your internet connection.',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 20.0,
                                     fontFamily: 'Abel',

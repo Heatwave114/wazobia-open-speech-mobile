@@ -263,30 +263,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(
                         height: 10.0,
                       ),
-                      DashWidgets.dashboard([
-                        // Info self
-                        // FutureBuilder(
-                        //   future: this._user.userNickname(),
-                        //   builder: (ctx, snapshot) {
-                        //     if (snapshot.connectionState ==
-                        //         ConnectionState.waiting) {
-                        //       return CentrallyUsed().waitingCircle();
-                        //     } else if (snapshot.connectionState ==
-                        //         ConnectionState.done) {
-                        //       return DashWidgets.dashItem(
-                        //           'Nickname', snapshot.data);
-                        //     }
-                        //     return null;
-                        //   },
-                        // ),
-                        // DashWidgets.dashItem('ID', user.uid),
-                        DashWidgets.dashItem('Country', userCountry.name),
-                        // DashWidgets.dashItem('Telephone',
-                        //     '+${userCountry.dialingCode}-${user.telephone.substring(1)}'),
-                        DashWidgets.dashItem('Gender', user.gender),
-                        DashWidgets.dashItem('Age range', user.ageRange),
-                        DashWidgets.dashItem('Education', user.eduBG),
-                      ], _dashWidth),
+                      DashWidgets.dashboard(
+                        context,
+                        _dashWidth,
+                        [
+                          // Info self
+                          // FutureBuilder(
+                          //   future: this._user.userNickname(),
+                          //   builder: (ctx, snapshot) {
+                          //     if (snapshot.connectionState ==
+                          //         ConnectionState.waiting) {
+                          //       return CentrallyUsed().waitingCircle();
+                          //     } else if (snapshot.connectionState ==
+                          //         ConnectionState.done) {
+                          //       return DashWidgets.dashItem(
+                          //           'Nickname', snapshot.data);
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
+                          // DashWidgets.dashItem('ID', user.uid),
+                          DashWidgets.dashItem('Country', userCountry.name),
+                          // DashWidgets.dashItem('Telephone',
+                          //     '+${userCountry.dialingCode}-${user.telephone.substring(1)}'),
+                          DashWidgets.dashItem('Gender', user.gender),
+                          DashWidgets.dashItem('Age range', user.ageRange),
+                          DashWidgets.dashItem('Education', user.eduBG),
+                        ],
+                      ),
                       // DashWidgets.dashboard([
                       //   // Info wazobia
                       //   DashWidgets.dashItem(
@@ -393,7 +397,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 //fat_all_abis:  2
 
                                                 Share.share(
-                                                    '''Help us at wazobia with your voice and ears:\n\narm64_v8a:     ${shareLinks["arm64_v8a"]}\narmeabi_v7a:  ${shareLinks["armeabi_v7a"]}\nx86_64:            ${shareLinks["x86_64"]}\nfat_all_abis:   ${shareLinks["fat_all_abis"]}''',
+                                                    // '''Help us at wazobia with your voice and ears:\n\narm64_v8a:     ${shareLinks["arm64_v8a"]}\narmeabi_v7a:  ${shareLinks["armeabi_v7a"]}\nx86_64:            ${shareLinks["x86_64"]}\nfat_all_abis:   ${shareLinks["fat_all_abis"]}''',
+                                                    '''Help us at wazobia with your voice and ears:\n\nhttps://play.google.com/store/apps/details?id=com.fgml5g.wazobia''',
                                                     subject:
                                                         'Latest apk download link',
                                                     sharePositionOrigin:
