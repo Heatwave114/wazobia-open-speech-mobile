@@ -439,7 +439,7 @@ class User with ChangeNotifier {
   final Map<String, dynamic> appInstanceInfo = {
     'admin': false,
     'counterfeit': true,
-    'version': 1.05,
+    'version': 1.06,
   };
 
   Widget updateButton() {
