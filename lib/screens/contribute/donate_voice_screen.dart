@@ -103,7 +103,7 @@ class DonateVoiceScreen extends StatelessWidget {
 
           // Afterwards
           TextSpan(
-            text: 'WHAT HAPPENS AFTER YOUR VALIDATION\n',
+            text: 'WHAT HAPPENS AFTER YOUR DONATION\n',
             style: _style['header'],
           ),
           TextSpan(
