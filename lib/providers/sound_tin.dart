@@ -3,10 +3,8 @@
 
 // External
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_sound/flauto.dart';
 
 // Internal
-import '../models/donation.dart';
 import '../models/resource.dart';
 
 class SoundTin with ChangeNotifier {
@@ -14,85 +12,44 @@ class SoundTin with ChangeNotifier {
   String validatingVoiceURL;
   Resource currentDonatingResource;
   Resource currentValidatingResource;
-  Donation currentValidatingDonation;
   int _currentDonatingResourceIndex;
-  int _currentValidatingDonationIndex;
+  int _currentValidatingResourceIndex;
   bool _shouldRefreshDonatingResourceIndex;
-  bool _shouldRefreshValidatingDonationIndex;
-  bool shouldInitDevil=false;
-  bool inDanger = false;
-  bool isRecording = false;
-  bool isPlaying = false;
-  bool shouldAllowValidation = false;
+  bool _shouldRefreshValidatingResourceIndex;
 
   ///////////
   // Control
   //////////
 
-  // _shouldInitDevil set
-  set setShouldInitDevil(bool shouldInitDevil) {
-    this.shouldInitDevil = shouldInitDevil;
-    notifyListeners();
-  }
-
-  // _shouldInitDevil get
-  get getShouldInitDevil => this.shouldInitDevil;
-
   // _shouldRefreshDonatingResourceIndex get
   get getShouldRefreshDonatingResourceIndex =>
       this._shouldRefreshDonatingResourceIndex;
+
   // _shouldRefreshDonatingResourceIndex set
   set setShouldRefreshDonatingResourceIndex(bool shouldResfresh) {
     this._shouldRefreshDonatingResourceIndex = shouldResfresh;
-    notifyListeners();
-  }
-
-  // _getShouldAllowValidate
-  get getShouldAllowValidation => this.shouldAllowValidation;
-  // _setShouldAllowValidate
-  set setShouldAllowValidation(bool shouldAllowValidation) {
-    this.shouldAllowValidation = shouldAllowValidation;
-    notifyListeners();
-  }
-
-  // _getInDanger
-  get getInDanger => this.inDanger;
-  // _setInDanger
-  set setInDanger(bool inDanger) {
-    this.inDanger = inDanger;
-    notifyListeners();
+    // notifyListeners();
   }
 
   // _shouldRefreshValidatingResourceIndex get
-  get getShouldRefreshValidatingDonationIndex =>
-      this._shouldRefreshValidatingDonationIndex;
+  get getShouldRefreshValidatingResourceIndex =>
+      this._shouldRefreshValidatingResourceIndex;
+
   // _shouldRefreshValidatingResourceIndex set
-  set setShouldRefreshValidatingDonationIndex(bool shouldResfresh) {
-    this._shouldRefreshValidatingDonationIndex = shouldResfresh;
-    notifyListeners();
+  set setShouldRefreshValidatingResourceIndex(bool shouldResfresh) {
+    this._shouldRefreshValidatingResourceIndex = shouldResfresh;
+    // notifyListeners();
   }
-
-  // _getIsRecording
-  get getIsRecording => this.isRecording;
-  // _setIsRecording
-  set setIsRecording(bool isRecording) {
-    this.isRecording = isRecording;
-    notifyListeners();
-  }
-
-  // _getIsPlaying
-  get getIsPlaying => this.isPlaying;
-  // _setIsPlaying
-  set setIsPlaying(bool isPlaying) => this.isPlaying = isPlaying;
 
   //////////////////////
   // Donated Voice Path
   //////////////////////
 
   // set
-  set setDonatedVoicePath(String donatedVoicePath) =>
-      this.donatedVoicePath = donatedVoicePath;
-  // notifyListeners();
+  set setDonatedVoicePath(String donatedVoicePath) {
+    this.donatedVoicePath = donatedVoicePath;
+    // notifyListeners();
+  }
 
   // get
   get getDonatedVoicePath => this.donatedVoicePath;
@@ -110,21 +67,14 @@ class SoundTin with ChangeNotifier {
   // set resource
   set setCurrentDonatingResource(Resource resource) {
     this.currentDonatingResource = resource;
-    notifyListeners();
+    // notifyListeners();
   }
 
   // get index
   get getCurrentDonatingResourceIndex => this._currentDonatingResourceIndex;
 
-  // get donation
+  // get resource
   Resource get getCurrentDonatingResource => this.currentDonatingResource;
-
-  // get Duration
-  Future<double> getDonatedVoiceDuration() async {
-    int d = await flutterSoundHelper.duration(this.donatedVoicePath);
-    double _duration = d != null ? d / 1000.0 : null;
-    return _duration;
-  }
 
   ///////////////////////
   // Validating Voice url
@@ -140,36 +90,23 @@ class SoundTin with ChangeNotifier {
   get getValidatingVoiceURL => this.validatingVoiceURL;
 
   //////////////////////////////
-  // Current Validating Donation
+  // Current Validating Resource
   //////////////////////////////
 
   // set index
-  set setCurrentValidatingDonationIndex(int index) {
-    this._currentValidatingDonationIndex = index;
+  set setCurrentValidatingResourceIndex(int index) {
+    this._currentValidatingResourceIndex = index;
     // notifyListeners();
   }
-
-  // get index
-  get getCurrentValidatingDonationIndex => this._currentValidatingDonationIndex;
-
-  // set donation
-  set setCurrentValidatingDonation(Donation donation) {
-    this.currentValidatingDonation = donation;
-    // notifyListeners();
-  }
-
-  // get donation
-  Donation get getCurrentValidatingDonation => this.currentValidatingDonation;
-
-  //////////////////////////////
-  // Current Validating Resource
-  //////////////////////////////
 
   // set resource
   set setCurrentValidatingResource(Resource resource) {
     this.currentValidatingResource = resource;
     // notifyListeners();
   }
+
+  // get index
+  get getCurrentValidatingResourceIndex => this._currentValidatingResourceIndex;
 
   // get resource
   Resource get getCurrentValidatingResource => this.currentValidatingResource;

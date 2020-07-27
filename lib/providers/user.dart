@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Internal
-import '../models/donation.dart';
 import '../models/user.dart' as userM;
 import '../helpers/auth.dart';
 import '../screens/account_select_screen.dart';
@@ -54,23 +53,19 @@ class User with ChangeNotifier {
   // Firebase Storage
   ///////////////////
 
-  // Upload Donation
-  Future<void> uploadDonation({
+  // Upload voice
+  Future<void> uploadVoice({
     @required File voiceToUpload,
     @required String resourceID,
-    @required double duration,
     // @required userM.User reader,
   }) async {
     final uid = (await _auth.currentUser()).uid;
     final currentUser = await getCurrentUser();
-    final DateTime now =
-        DateTime.now(); // universal epoch so that name is more general
-    final String voiceName =
-        resourceID + '__${uid}__' + now.millisecondsSinceEpoch.toString();
+    final String now = DateTime.now().toString();
+    var voiceName = resourceID + '__${uid}__' + now;
     // var voiceName = title;
     final StorageReference firebaseStorageRef =
-        storageRoot.ref().child('/donatedvoices/$voiceName');
-
+        storageRoot.ref().child('/unvalidated/$voiceName');
     StorageUploadTask uploadTask = firebaseStorageRef.putFile(
         voiceToUpload,
         StorageMetadata(customMetadata: {
@@ -80,44 +75,27 @@ class User with ChangeNotifier {
             'age': currentUser['age'],
             'education': currentUser['edubg'],
           }),
-          'donationdateniglocal': now.toIso8601String(),
           'cqi': 'NA',
           'snr': 'NA',
-          // 'validcount': '0',
-          'validationstatus': 'unvalidated',
+          'validcount': '0',
           'resource': resourceID,
-          'duration': duration.toString(),
         }));
     StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
     var downloadUrl = await storageSnapshot.ref.getDownloadURL();
     if (uploadTask.isComplete) {
       var url = downloadUrl.toString();
       databaseRoot.collection('unvalidated').document(voiceName).setData({
-        'reader': {
+        'reader': json.encode({
           'country': currentUser['country'],
           'gender': currentUser['gender'],
           'age': currentUser['age'],
           'education': currentUser['edubg'],
-        },
-        'donationdateniglocal': now.toIso8601String(),
+        }),
         'cqi': 'NA',
         'snr': 'NA',
-        'validcount': 0,
-        'validationstatus': 'unvalidated',
-        'resourceid': resourceID,
-        'duration': duration,
+        'validcount': '0',
+        'resource': resourceID,
         'url': url,
-      });
-      final DocumentSnapshot critical = await databaseRoot
-          .collection('critical')
-          .document('cumulative')
-          .get();
-      databaseRoot.runTransaction((transaction) async {
-        DocumentSnapshot freshSnap = await transaction.get(critical.reference);
-        await transaction.update(freshSnap.reference, {
-          'cumulativehoursread':
-              freshSnap['cumulativehoursread'].toDouble() + (duration / 3600.0),
-        });
       });
       print(url);
       // return CloudStorageResult(
@@ -126,23 +104,6 @@ class User with ChangeNotifier {
       //   );
     }
     return null;
-  }
-
-  // // Delete unvalidated
-  // Future<void> deleteUnvalidatedDonation({String donationName}) async {
-  //   final StorageReference firebaseStorageRef =
-  //       storageRoot.ref().child('/unvalidated/$donationName');
-  //   await firebaseStorageRef.delete();
-  // }
-
-  Future<void> changeValidationStatus(
-      {@required String donationName,
-      @required String validationStatus}) async {
-    final StorageReference donationReference =
-        storageRoot.ref().child('/donatedvoices/$donationName');
-    donationReference.updateMetadata(StorageMetadata(customMetadata: {
-      'validationstatus': '$validationStatus',
-    }));
   }
 
   //////////////////////
@@ -175,7 +136,6 @@ class User with ChangeNotifier {
     if (oldUsers == null) {
       var users = json.encode({
         user.nickname: {
-          'nickname': user.nickname,
           'country': user.country,
           'gender': user.gender,
           'age': user.age,
@@ -193,7 +153,6 @@ class User with ChangeNotifier {
     } else {
       final decodedOldUsers = json.decode(oldUsers);
       decodedOldUsers[user.nickname] = {
-        'nickname': user.nickname,
         'country': user.country,
         'gender': user.gender,
         'age': user.age,
@@ -229,38 +188,36 @@ class User with ChangeNotifier {
     );
   }
 
-// Updating dialog
-  void showDialogue(String title, String content, {Function whenFinished}) {
-    showDialog(
-      barrierDismissible: true,
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          title,
-          style: const TextStyle(
-              fontFamily: 'Abel', fontSize: 20.0, fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          content,
-          style: const TextStyle(
-            fontFamily: 'Abel',
-            fontSize: 17.0,
-            // fontWeight: FontWeight.bold
-          ),
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: const Text('Okay'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
-      ),
-    ).then((_) {
-      whenFinished();
-    });
-  }
+// // Updating dialog
+//   void _showDialog(String title, String content) {
+//     showDialog(
+//       barrierDismissible: true,
+//       context: context,
+//       builder: (ctx) => AlertDialog(
+//         title: Text(
+//           title,
+//           style: const TextStyle(
+//               fontFamily: 'Abel', fontSize: 20.0, fontWeight: FontWeight.bold),
+//         ),
+//         content: Text(
+//           content,
+//           style: const TextStyle(
+//             fontFamily: 'Abel',
+//             fontSize: 17.0,
+//             // fontWeight: FontWeight.bold
+//           ),
+//         ),
+//         actions: <Widget>[
+//           FlatButton(
+//             child: const Text('Okay'),
+//             onPressed: () {
+//               Navigator.of(context).pop();
+//             },
+//           )
+//         ],
+//       ),
+//     );
+//   }
 
   // User get by nick
   // Future<String> userIDByNickname(String nickname) async {
@@ -313,16 +270,6 @@ class User with ChangeNotifier {
       return;
     }
     pref.setString('currentuser', encodedUser);
-  }
-
-  // cuurentUser Delete
-  void deleteCurrentUser() async {
-    final pref = await this._pref;
-    final users = await this.getUsers();
-    final currentUserNickname = (await this.getCurrentUser())['nickname'];
-    users.remove(currentUserNickname);
-    print('entered: $users');
-    pref.setString('users', json.encode(users));
   }
 
   // CLear
@@ -378,161 +325,37 @@ class User with ChangeNotifier {
   //   );
   // }
 
-  Future<bool> connectionStatus() async {
+  Future<void> connectionStatus() async {
     try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // print('connected');
-        return true;
-      }
+      // final result =
+      await InternetAddress.lookup('google.com');
+      // if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      //   print('connected');
+      // }
     } on SocketException catch (_) {
-      return false;
-      // showSnackBar('Check your internet connection');
+      showSnackBar('Check your internet connection');
     }
   }
-
-  final Map<String, dynamic> appInstanceInfo = {
-    'admin': false,
-    'counterfeit': true,
-    'version': 1.1,
-  };
 
   Future<Widget> getLandingPage() async {
-    bool internet = await this.connectionStatus();
     final firstTime = await getFirstTime();
     final currentUser = await getCurrentUser();
-    final DocumentSnapshot controlParams = await this
-        .databaseRoot
-        .collection('critical')
-        .document('control')
-        .get();
-
-    Widget controlScaffold(String controlMessage) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Welcome to Wazobia'),
-        ),
-        body: Center(
-          child: Container(
-            margin: EdgeInsets.all(20.0),
-            child: Text(
-              !internet
-                  ? controlMessage +
-                      ' Make sure to connect to the internet when you return.'
-                  : controlMessage,
-              style: TextStyle(
-                fontSize: 20.0,
-                fontFamily: 'Abel',
-                // color: Colors.red,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    Widget go() {
-      // Allow access
-      if (firstTime == null || firstTime) {
-        // setFirstTime(false);
-        return WelcomeScreen();
-      } else if (currentUser == null) {
-        return AccountSelectScreen();
-      } else {
-        return DashboardScreen();
-      }
-    }
-
-    // Control params
-    final bool kill = controlParams['kill'];
-    final bool nonAdminAllowed = controlParams['nonadminallowed'];
-    final bool allowCounterfeit = controlParams['allowcounterfeit'];
-    final bool mustUpdate = controlParams['updaterequired'];
-    final bool mustUpdateLazy = controlParams['updaterequiredlazy'];
-    final double lazyVersion = controlParams['lazyversion'];
-    final double mustVersion = controlParams['mustversion'];
-    final bool mustDisplayGeneralMessage =
-        controlParams['mustdisplaygeneralmessage'];
-    final String generalMessage = controlParams['generalcontrolmessage'];
-
-    // Tests (Used to traverse sieve, must pass all)
-    final bool killTest = kill ? false : true;
-    final bool nonAdminAllowedTest = nonAdminAllowed
-        ? (true)
-        : (this.appInstanceInfo['admin'] ? (true) : (false));
-    final bool mustUpdateTest = mustUpdate
-        ? (this.appInstanceInfo['version'] >= mustVersion
-            ? (true)
-            : (this.appInstanceInfo['admin'] ? (true) : (false)))
-        : (true);
-    final bool mustLazyUpdateTest = mustUpdateLazy
-        ? (this.appInstanceInfo['version'] >= lazyVersion
-            ? (true)
-            : (this.appInstanceInfo['admin'] ? (true) : (false)))
-        : (true);
-    final bool allowCounterfeitTest = allowCounterfeit
-        ? (true)
-        : (this.appInstanceInfo['admin']
-            ? (true)
-            : (this.appInstanceInfo['counterfeit'] ? (false) : (true)));
-    final bool mustDisplayGeneralMessageTest = mustDisplayGeneralMessage
-        ? (this.appInstanceInfo['admin'] ? (true) : (false))
-        : (true);
-
-    // The Sieve
-    if (killTest &&
-        nonAdminAllowedTest &&
-        allowCounterfeitTest &&
-        mustUpdateTest &&
-        mustLazyUpdateTest &&
-        allowCounterfeitTest &&
-        mustDisplayGeneralMessageTest) {
-      return go();
-    } else if (!killTest) {
-      return controlScaffold('Wazobia has been suspended indefinately. We will notify as soon as the suspension is lifted.');
-    } else if (!nonAdminAllowedTest) {
-      return controlScaffold(
-          'We are sorry, the application is down for maintenance. Check back later.');
-    } else if (!mustUpdateTest) {
-      return controlScaffold(
-          'There are new features included. Update wazobia to continue.');
-    } else if (!mustLazyUpdateTest) {
-      return controlScaffold(
-          'There a new features included. Update wazobia to continue.');
-    } else if (!allowCounterfeitTest) {
-      return controlScaffold('You cannot continue. Check back later');
-    } else if (!mustDisplayGeneralMessageTest) {
-      return controlScaffold(generalMessage);
+    if (firstTime == null || firstTime) {
+      // setFirstTime(false);
+      return WelcomeScreen();
+    } else if (currentUser == null) {
+      return AccountSelectScreen();
     } else {
-      return controlScaffold('Something went wrong. Check back later.');
+      return DashboardScreen();
     }
-
-    // if ((allowCounterfeit? : && appInstanceInfo['counterfeit']) && (!mustUpdate && !mustUpdateLazy)) {
-    //   // Allow access
-    //   if (firstTime == null || firstTime) {
-    //     // setFirstTime(false);
-    //     return WelcomeScreen();
-    //   } else if (currentUser == null) {
-    //     return AccountSelectScreen();
-    //   } else {
-    //     return DashboardScreen();
-    //   }
-    // } else {
-    //   return Scaffold(
-    //     body: Center(
-    //         child: Text(internet
-    //             ? 'You cannot continue checkback later'
-    //             : 'You cannot continue check back later')),
-    //   );
-    // }
   }
 
-  signOut() async {
+  void signOut() async {
     final _instance = (await _auth.currentUser());
     _instance.delete();
     // this._auth.signOut();
     // this._instance.delete();
-    // setCurrentUser(null);
+    setCurrentUser(null);
   }
 }
 

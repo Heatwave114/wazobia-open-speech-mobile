@@ -39,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return position;
   }
 
-  // user.User _user = user.User();
+  user.User _user = user.User();
   @override
   Widget build(BuildContext context) {
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
@@ -48,18 +48,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        // title: Text('Dashboard'),
-        title: FutureBuilder(
-          future: _user.getCurrentUser(),
-          builder: (ctx, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CentrallyUsed().waitingCircle();
-            }
-
-            // final User user = User.fromSharedPreference(snapshot.data);
-            final User user = User.fromSharedPreference(snapshot.data);
-            return Text(user.nickname + '\'s Dashboard');
-          },
+        title: const Text(
+          'DashBoard',
         ),
         actions: <Widget>[
           IconButton(
@@ -68,7 +58,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: const Icon(Icons.menu),
             onPressed: () async {
               final position = buttonMenuPosition(this._moreKey.currentContext);
-              _user.setContext(this._moreKey.currentContext);
               final _result = await showMenu(
                 context: context,
                 position: position,
@@ -78,11 +67,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: const Text('logout'),
                       ),
                       value: 'logout'),
-                  const PopupMenuItem<String>(
-                      child: const InkWell(
-                        child: const Text('delete this user'),
-                      ),
-                      value: 'delete'),
+                  // const PopupMenuItem<String>(
+                  //     child: const InkWell(
+                  //       child: const Text('update account'),
+                  //     ),
+                  //     value: 'update account'),
                 ],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
@@ -94,47 +83,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // Auth().signOut();
                 // _user.setCurrentUser(null);
                 // _user.setInstance(FirebaseAuth.instance.currentUser());
-                final bool internet = await _user.connectionStatus();
-                if (internet) {
-                  _user.signOut().then((_) async {
-                    _user.setCurrentUser(null);
-                    Navigator.of(context)
-                        .pushReplacementNamed(AccountSelectScreen.routeName);
-                  }).catchError((e) {
-                    print(e.toString());
-                  });
-                }
+                _user.signOut();
                 // print(_user.getCurrentUser());
+                Navigator.of(context)
+                    .pushReplacementNamed(AccountSelectScreen.routeName);
               }
-
-              if (_result == 'delete') {
-                // print((await _user.getCurrentUser())['nickname']);
-                final bool internet = await _user.connectionStatus();
-                if (internet) {
-                  _user.signOut().then((_) async {
-                    _user.deleteCurrentUser();
-                    _user.setCurrentUser(null);
-                    Navigator.of(context)
-                        .pushReplacementNamed(AccountSelectScreen.routeName);
-                  }).catchError((e) {
-                    print(e.toString());
-                  });
-                }
-              }
+              // if (_result == 'update account') {
+              //   // TO DO
+              //   // Show a dialog to update account details with circular progress indicator after
+              // }
             },
           ),
         ],
       ),
       body: FutureBuilder(
-        future: _user.getCurrentUser(),
+        future: this._user.getCurrentUser(),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CentrallyUsed().waitingCircle();
           } else if (snapshot.connectionState == ConnectionState.done) {
-            // final User user = User.fromSharedPreference(snapshot.data);
-            final User user = User.fromSharedPreference(snapshot.data);
 
-            final Country userCountry = Country.findByIsoCode(user.country);
+            final User user = User.fromSharedPreference(snapshot.data);
+                  final Country userCountry =
+                      Country.findByIsoCode(user.country);
 
             return SingleChildScrollView(
               physics: BouncingScrollPhysics(),
@@ -234,53 +205,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 title: const Text('Invite to wazobia'),
                                 onTap: () {
-                                  // final databaseRoot = _user.databaseRoot;
-                                  // for (var resource in Resources) {
-                                    
+                        
+                                  final databaseRoot = this._user.databaseRoot;
+                                  for (var resource in Resources) {
+                                    final imin = resource.readTime.inMinutes.toString();
+                                    final isec = (resource.readTime.inSeconds%60).toString();
+                                    final omin = imin == '0' ? '' : (imin + 'min${(int.parse(imin)==1)? '' : 's'}');
+                                    final osec = isec == '0' ? '' : (isec + 'sec${(int.parse(isec)==1)? '' : 's'}');
 
-                                  //   if (resource.paperName != null &&
-                                  //       resource.paperDate != null &&
-                                  //       resource.author != null) {
-                                  //     databaseRoot
-                                  //         .collection('resources')
-                                  //         .document(resource.uid)
-                                  //         .setData({
-                                  //       'title': resource.title,
-                                  //       'author': resource.author,
-                                  //       'genre': resource.genre,
-                                  //       'text': resource.text,
-                                  //       'readtimesecs': resource.readTime.inSeconds,
-                                  //       'papername': resource.paperName,
-                                  //       'paperdate': resource.paperDate,
-                                  //       'credit': resource.credit,
-                                  //     });
-                                  //   } else if (resource.paperName != null &&
-                                  //       resource.paperDate != null &&
-                                  //       resource.author == null) {
-                                  //     databaseRoot
-                                  //         .collection('resources')
-                                  //         .document(resource.uid)
-                                  //         .setData({
-                                  //       'title': resource.title,
-                                  //       'genre': resource.genre,
-                                  //       'text': resource.text,
-                                  //       'readtime': resource.readTime.inSeconds,
-                                  //       'credit': resource.credit,
-                                  //     });
-                                  //   } else {
-                                  //     databaseRoot
-                                  //         .collection('resources')
-                                  //         .document(resource.uid)
-                                  //         .setData({
-                                  //       'title': resource.title,
-                                  //       'author': resource.author,
-                                  //       'genre': resource.genre,
-                                  //       'text': resource.text,
-                                  //       'readtime': resource.readTime.inSeconds,
-                                  //       'credit': resource.credit,
-                                  //     });
-                                  //   }
-                                  // }
+                                    databaseRoot.collection('resources').document(resource.uid).setData({
+                                      'title': resource.title,
+                                      'genre': resource.genre,
+                                      'text': resource.text,
+                                      'readtime': omin + ' ' + osec,
+                                    });
+                                  }
                                 },
                               ),
                             ],

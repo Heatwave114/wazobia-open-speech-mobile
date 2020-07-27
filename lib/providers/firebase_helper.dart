@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 class FireBaseHelper with ChangeNotifier {
   final _databaseRoot = Firestore.instance;
-
   // QuerySnapshot sn;
+  
 
   /////////////
   /// Bulk Get
@@ -18,13 +18,5 @@ class FireBaseHelper with ChangeNotifier {
   get resources => this._databaseRoot.collection('resources'); // Read Only
 
   // All unvalidated URLs
-  get unvalidatedURLs =>
-      this._databaseRoot.collection('unvalidated'); // Read Only
-
-  // All validated URLs
-  get validatedURLs => this._databaseRoot.collection('validated'); // Read Only
-
-  // All invalid URLs
-  get invalidURLs => this._databaseRoot.collection('invalid'); // Read Only
-
+  get unvalidatedURLs => this._databaseRoot.collection('unvalidated'); // Read Only
 }

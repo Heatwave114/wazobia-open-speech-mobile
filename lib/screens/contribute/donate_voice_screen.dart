@@ -16,7 +16,6 @@ import '../../models/user.dart' as userM;
 import '../../providers/firebase_helper.dart';
 import '../../providers/sound_tin.dart';
 import '../../providers/user.dart';
-import '../../widgets/blinking_widget.dart';
 import '../../widgets/centrally_used.dart';
 import '../../widgets/dash_widgets.dart';
 
@@ -59,7 +58,6 @@ class DonateVoiceScreen extends StatelessWidget {
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
     // final resourcesStream = Provider.of<FireBaseHelper>(context).resources.snapshots();
     final SoundTin soundTin = Provider.of<SoundTin>(context);
-    // final SoundDevil soundDevil = SoundDevil();
     return Scaffold(
       appBar: AppBar(
         title: Text('Donate Your Voice'),
@@ -69,52 +67,32 @@ class DonateVoiceScreen extends StatelessWidget {
         child: StreamBuilder(
             stream: Provider.of<FireBaseHelper>(context).resources.snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return Container(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * .35),
-                    child: CentrallyUsed().waitingCircle());
-              final int resourceIndex = (soundTin
-                              .getShouldRefreshDonatingResourceIndex ==
-                          null ||
-                      soundTin.getShouldRefreshDonatingResourceIndex)
-                  ? () {
-                      soundTin.setCurrentDonatingResourceIndex =
-                          this._random.nextInt(snapshot.data.documents.length);
-                      soundTin.setShouldRefreshDonatingResourceIndex = false;
-                      // print(1);
-                      return soundTin.getCurrentDonatingResourceIndex;
-                    }()
-                  : () {
-                      // print(2);
-                      return soundTin.getCurrentDonatingResourceIndex;
-                    }();
-              final Resource resource = Resource.fromFireStore(
-                  snapshot.data.documents[resourceIndex]);
+              if (!snapshot.hasData) return CentrallyUsed().waitingCircle();
+              final int resourceIndex =
+                  (soundTin.getShouldRefreshDonatingResourceIndex == null || soundTin.getShouldRefreshDonatingResourceIndex) ? () {
+                    soundTin.setCurrentDonatingResourceIndex = this._random.nextInt(snapshot.data.documents.length);
+                    soundTin.setShouldRefreshDonatingResourceIndex = false;
+                    // print(1);
+                    return soundTin.getCurrentDonatingResourceIndex;
+                  }() : () {
+                    // print(2);
+                    return soundTin.getCurrentDonatingResourceIndex;
+                  }() ;
+              final Resource resource =
+                  Resource.fromFireStore(snapshot.data.documents[resourceIndex]);
               soundTin.setCurrentDonatingResource = resource;
               return Column(
                 children: <Widget>[
                   const SizedBox(
-                    height: 5.0,
+                    height: 10.0,
                   ),
                   DashWidgets.dashboard([
                     DashWidgets.dashItem('Title', resource.title),
                     DashWidgets.dashItem('Genre', resource.genre),
-                    if (!soundTin.inDanger)
-                      DashWidgets.dashItem(
-                          'Read time', resource.formatedReadTime),
-                    if (soundTin.inDanger)
-                      dangerDashItem('Read time', resource.formatedReadTime)
+                    DashWidgets.dashItem('Read time', resource.readTime),
                   ], _dashWidth),
                   // MediaPanel(dashWidth: _dashWidth),
                   SoundDevil(),
-                  // FlatButton(
-                  //   onPressed: () async {
-                  //     print((await soundTin.getDonatedVoiceDuration()));
-                  //   },
-                  //   child: null,
-                  //   color: Colors.grey,
-                  // ),
                   TextPanel(
                     dashWidth: _dashWidth,
                     resource: resource,
@@ -122,34 +100,6 @@ class DonateVoiceScreen extends StatelessWidget {
                 ],
               );
             }),
-      ),
-    );
-  }
-
-  Widget dangerDashItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-              fontFamily: 'Abel',
-              fontWeight: FontWeight.bold,
-              // color: Color(0xFF4FA978),
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-                fontSize: 18,
-                fontFamily: 'Abel',
-                // color: Color(0xFF4FA978),
-                color: Colors.red[900]),
-          ),
-        ],
       ),
     );
   }
@@ -265,13 +215,12 @@ class TextPanel extends StatefulWidget {
 
 class _TextPanelState extends State<TextPanel> {
   double _textSizePercent = .7;
-  int _submitTapCounter = 0;
 
   @override
   Widget build(BuildContext context) {
-    final SoundTin soundTin = Provider.of<SoundTin>(context);
+    final SoundTin soundTin =
+        Provider.of<SoundTin>(context);
     final user = Provider.of<User>(context);
-    user.setContext(context);
     return Column(children: <Widget>[
       Container(
         width: double.infinity,
@@ -291,8 +240,6 @@ class _TextPanelState extends State<TextPanel> {
                 children: <Widget>[
                   Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(bottom: 7.0),
-                    height: 50.0,
                     child: Row(
                       children: <Widget>[
                         Expanded(
@@ -324,121 +271,56 @@ class _TextPanelState extends State<TextPanel> {
                         Expanded(
                           flex: 3,
                           child: FittedBox(
-                            child: (this._submitTapCounter > 0)
-                                ? CircularProgressIndicator(
-                                    backgroundColor: Color(0xff2A6041),
-                                    strokeWidth: 2.0,
-                                    // value: .5,
-                                  )
-                                : OutlineButton.icon(
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .primaryColor, //Color of the border
-                                      style: BorderStyle
-                                          .solid, //Style of the border
-                                      width: 1.0, //width of the border
-                                    ),
-                                    label: const Text(
-                                      'Submit',
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    icon: const Icon(
-                                      Icons.check,
-                                      color: const Color(0xff2A6041),
-                                    ),
-                                    onPressed: soundTin.getIsRecording
-                                        ? null
-                                        :
-                                        // null
-                                        () async {
-                                            // if (this._submitTapCounter > 0) {
-                                            //   print('waitForUpload');
-                                            // }
-                                            if (soundTin.getDonatedVoicePath ==
-                                                null) {
-                                              user.showSnackBar(
-                                                'Make a recording first',
-                                              );
-                                              // print('No path yet');
-                                              return;
-                                            }
+                            child: OutlineButton.icon(
+                              borderSide: BorderSide(
+                                color: Theme.of(context)
+                                    .primaryColor, //Color of the border
+                                style: BorderStyle.solid, //Style of the border
+                                width: 1.0, //width of the border
+                              ),
+                              label: const Text(
+                                'Submit',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              icon: const Icon(
+                                Icons.check,
+                                color: const Color(0xff2A6041),
+                              ),
+                              onPressed:
+                                  // null
+                                  () async {
+                                if (soundTin.getDonatedVoicePath == null) {
+                                  print('No path yet');
+                                  return;
+                                }
 
-                                            if (!(await user
-                                                .connectionStatus())) {
-                                              user.showSnackBar(
-                                                  'Check your internet');
-                                              return;
-                                            }
-                                            // this._submitTapCounter++;
-                                            setState(() {
-                                              this._submitTapCounter++;
-                                            });
+                                // print(soundTin.getDonatedVoicePath);
+                                user.setContext(context);
+                                user.uploadVoice(
+                                  voiceToUpload: File(soundTin.getDonatedVoicePath),
+                                  resourceID: this.widget.resource.uid,
+                                ).then((_) {
+                                  soundTin.setShouldRefreshDonatingResourceIndex = true;
+                                  soundTin.setDonatedVoicePath = null;
+                                });
 
-                                            // No need for this
-                                            // if ((await soundTin
-                                            //         .getDonatedVoiceDuration()) >
-                                            //     widget.resource.readTime.inSeconds) {
-                                            //   user.showDialogue('Alert',
-                                            //       'Alloted read time has been exceed.');
-                                            //   // print('1: ${await soundTin.getDonatedVoiceDuration()}');
-                                            //   return;
-                                            // }
+                                // print(_user);
+                                // () async {print((await Auth().currentUser()).uid);}();
+                                // _submit();
+                                // print('${_selectedCountry.name}');
 
-                                            // if ((await soundTin
-                                            //         .getDonatedVoiceDuration()) <
-                                            //     (.5 *
-                                            //         widget.resource.readTime
-                                            //             .inSeconds)) {
-                                            //   user.showDialogue(
-                                            //       'Alert', 'Recording too short');
-                                            //   // print('2: ${await soundTin.getDonatedVoiceDuration()}');
-                                            //   return;
-                                            // }
-
-                                            // print(soundTin.getDonatedVoicePath);
-                                            user.setContext(context);
-                                            // print((await soundTin.getDonatedVoiceDuration())/3600);3
-                                            user
-                                                .uploadDonation(
-                                              voiceToUpload: File(
-                                                  soundTin.getDonatedVoicePath),
-                                              resourceID:
-                                                  this.widget.resource.uid,
-                                              duration: await soundTin
-                                                  .getDonatedVoiceDuration(),
-                                            )
-                                                .then((_) {
-                                              // Can now bring a new resource for donation
-                                              soundTin.setShouldRefreshDonatingResourceIndex =
-                                                  true;
-                                              soundTin.setDonatedVoicePath =
-                                                  null;
-                                              this._submitTapCounter = 0;
-                                              user.showDialogue('Thank you',
-                                                  'We sincerely appreciate your donation. You can always make another',
-                                                  whenFinished: () {
-                                                soundTin.setShouldInitDevil =
-                                                    true;
-                                              });
-                                            });
-
-                                            // print(_user);
-                                            // () async {print((await Auth().currentUser()).uid);}();
-                                            // _submit();
-                                            // print('${_selectedCountry.name}');
-
-                                            // Persist Auth ?
-                                            // print(_rememberMe);
-                                            // SSSprint(ur.rememberMe);
-                                          },
-                                  ),
+                                // Persist Auth ?
+                                // print(_rememberMe);
+                                // SSSprint(ur.rememberMe);
+                              },
+                            ),
                           ),
                         )
                       ],
                     ),
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height * .45,
+                    height: MediaQuery.of(context).size.height * .50,
                     padding: const EdgeInsets.all(10.0),
                     // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
                     decoration: BoxDecoration(

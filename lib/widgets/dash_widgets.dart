@@ -5,13 +5,13 @@ class DashWidgets {
   static Widget dashboard(List<Widget> dashes, double _dashWidth) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+      margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
       child: Card(
         elevation: 2.0,
         child: Container(
           width: _dashWidth,
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(15.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[...dashes],

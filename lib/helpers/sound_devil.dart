@@ -21,7 +21,6 @@ import 'package:provider/provider.dart';
 // import 'package:wazobia/fluttter_sound.dart';
 import '../providers/sound_tin.dart';
 import '../providers/user.dart';
-import '../widgets/blinking_widget.dart';
 import '../widgets/centrally_used.dart';
 
 enum t_MEDIA {
@@ -57,11 +56,7 @@ class SoundDevil extends StatefulWidget {
 }
 
 class _SoundDevilState extends State<SoundDevil> {
-  DateTime firstNowForValidate;
-  DateTime timeOfPause;
-  int pausedTimeMilliSecs = 0;
   bool _isRecording = false;
-  bool _isPlaying = false;
   List<String> _path = [null, null, null, null, null, null, null];
   StreamSubscription _recorderSubscription;
   StreamSubscription _dbPeakSubscription;
@@ -90,10 +85,6 @@ class _SoundDevilState extends State<SoundDevil> {
   bool _duckOthers = false;
 
   double _duration = null;
-
-  // void refreshMe() {
-  //   setState(() {});
-  // }
 
   Future<void> _initializeExample(FlutterSoundPlayer module) async {
     playerModule = module;
@@ -234,14 +225,8 @@ class _SoundDevilState extends State<SoundDevil> {
         uri: '${tempDir.path}/${recorderModule.slotNo}-${paths[_codec.index]}',
         codec: _codec,
       );
-      final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
-      final User user = Provider.of<User>(context, listen: false);
-      soundTin.setDonatedVoicePath = path;
-      // print('startRecorder: $path');
-      final double currentResourceReadTime =
-          soundTin.currentDonatingResource.readTime.inSeconds.toDouble();
-      final double currentResourceDangerPosition =
-          currentResourceReadTime - 20.0;
+      Provider.of<SoundTin>(context, listen: false).setDonatedVoicePath = path;
+      print('startRecorder: $path');
 
       _recorderSubscription = recorderModule.onRecorderStateChanged.listen((e) {
         if (e != null && e.currentPosition != null) {
@@ -252,22 +237,6 @@ class _SoundDevilState extends State<SoundDevil> {
 
           this.setState(() {
             this._recorderTxt = txt.substring(0, 8);
-            // print(e.currentPosition);
-
-            // To make timer blink red
-            if ((e.currentPosition / 1000) > currentResourceDangerPosition) {
-              soundTin.setInDanger = true;
-            }
-            // To stop the recorder after time expires
-            if ((e.currentPosition / 1000) > currentResourceReadTime) {
-              this._recorderTxt = (DateFormat('mm:ss:SS', 'en_GB').format(
-                      DateTime.fromMillisecondsSinceEpoch(
-                          currentResourceReadTime.toInt() * 1000)))
-                  .substring(0, 8);
-              stopRecorder();
-              soundTin.setIsRecording = false;
-              user.showDialogue('Alert', 'Cannot exceed read time');
-            }
           });
         }
       });
@@ -302,16 +271,13 @@ class _SoundDevilState extends State<SoundDevil> {
 
       this.setState(() {
         this._isRecording = true;
-        soundTin.setIsRecording = true;
         this._path[_codec.index] = path;
       });
     } catch (err) {
-      final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
       print('startRecorder error: $err');
       setState(() {
         stopRecorder();
         this._isRecording = false;
-        soundTin.setIsRecording = false;
         if (_recorderSubscription != null) {
           _recorderSubscription.cancel();
           _recorderSubscription = null;
@@ -344,9 +310,6 @@ class _SoundDevilState extends State<SoundDevil> {
 
   void stopRecorder() async {
     try {
-    final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
-    soundTin.setInDanger = false;
-    soundTin.setIsRecording = false;
       String result = await recorderModule.stopRecorder();
       print('stopRecorder: $result');
       cancelRecorderSubscriptions();
@@ -358,10 +321,9 @@ class _SoundDevilState extends State<SoundDevil> {
     } catch (err) {
       print('stopRecorder error: $err');
     }
-    // this.setState(() {
-    //   this._isRecording = false;
-    //   soundTin.setInDanger = false;
-    // });
+    this.setState(() {
+      this._isRecording = false;
+    });
   }
 
   Future<bool> fileExists(String path) async {
@@ -394,13 +356,9 @@ class _SoundDevilState extends State<SoundDevil> {
   ];
 
   void _addListeners() {
-    // final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
     cancelPlayerSubscriptions();
     _playerSubscription = playerModule.onPlayerStateChanged.listen((e) {
       if (e != null) {
-        setState(() {
-          
-        });
         maxDuration = e.duration;
         if (maxDuration <= 0) maxDuration = 0.0;
 
@@ -414,29 +372,8 @@ class _SoundDevilState extends State<SoundDevil> {
             isUtc: true);
         String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
         this.setState(() {
-          // this._isPlaying = true;
-          // soundTin.isPlaying = true;
-          // this._playerTxt = txt.substring(0, 8);
-          // final int grossPlayTime = DateTime.now()
-          //     .difference(this.firstNowForValidate)
-          //     .inMilliseconds;
-          // final int netPlayTime = grossPlayTime - this.pausedTimeMilliSecs;
-
-          // // Allow validation if .6 of the voice has been listen
-          // if (netPlayTime >
-          //     (0.6 * soundTin.getCurrentValidatingDonation.duration * 1000)
-          //         .toInt()) {
-          //   // soundTin.setShouldAllowValidation = true;
-          // }
-
-          // print(soundTin.getShouldAllowValidation);
-          // print(netPlayTime.toString() +
-          //     '>>>>>>>' +
-          //     (soundTin.getCurrentValidatingDonation.duration * 1000)
-          //         .toInt()
-          //         .toString());
-
-          // print(this.pausedTimeMilliSecs.toString() + 'gggggggggggggg');
+          //this._isPlaying = true;
+          this._playerTxt = txt.substring(0, 8);
         });
       }
     });
@@ -522,10 +459,7 @@ class _SoundDevilState extends State<SoundDevil> {
         if (audioFilePath != null) {
           path = await playerModule.startPlayer(audioFilePath, codec: _codec,
               whenFinished: () {
-            // initialize pause cumulative to 0
-            this.pausedTimeMilliSecs = 0;
-            // this.sliderCurrentPosition = 0.0;
-            print('Play finished -');
+            print('Play finished');
             setState(() {});
           });
         } else if (dataBuffer != null) {
@@ -563,18 +497,6 @@ class _SoundDevilState extends State<SoundDevil> {
   }
 
   Future<void> stopPlayer() async {
-    print('ffffffffffffffffffffffffff');
-    // final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
-    final double validationDuration = (DateTime.now().millisecondsSinceEpoch -
-            this.firstNowForValidate.millisecondsSinceEpoch) /
-        100;
-    // soundTin.setIsPlaying = false;
-
-    // if (widget.validate &&
-    //     validationDuration >=
-    //         (.85 * soundTin.currentValidatingResource.readTime.inSeconds)) {
-    //   soundTin.setShouldAllowValidation = true;
-    // }
     try {
       String result = await playerModule.stopPlayer();
       print('stopPlayer: $result');
@@ -596,7 +518,7 @@ class _SoundDevilState extends State<SoundDevil> {
     // }
 
     this.setState(() {
-      // this._isPlaying = false;
+      //this._isPlaying = false;
     });
   }
 
@@ -738,17 +660,6 @@ class _SoundDevilState extends State<SoundDevil> {
   //   );
   // }
 
-  // to update the paused time
-  void updatePausedTime() {
-    this.pausedTimeMilliSecs +=
-        DateTime.now().difference(this.timeOfPause).inMilliseconds;
-  }
-
-  // to set the time of pause
-  void setTimeOfPause() {
-    this.timeOfPause = DateTime.now();
-  }
-
   onPauseResumePlayerPressed() {
     switch (audioState) {
       case t_AUDIO_STATE.IS_PAUSED:
@@ -884,14 +795,7 @@ class _SoundDevilState extends State<SoundDevil> {
 
   @override
   Widget build(BuildContext context) {
-    // final user = Provider.of<User>(context);
-    final soundTin = Provider.of<SoundTin>(context, listen: false);
-    // if (soundTin.getShouldInitDevil) {
-    //   // soundTin.setInDanger = false;
-    //   // this.init();
-    //   soundTin.setShouldInitDevil = false;
-    //   this._recorderTxt = '00:00:00';
-    // }
+    final user = Provider.of<User>(context);
     // final dropdowns = makeDropdowns(context);
     // final trackSwitch = Padding(
     //   padding: const EdgeInsets.all(8.0),
@@ -975,49 +879,16 @@ class _SoundDevilState extends State<SoundDevil> {
 
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
 
-    Future<Widget> _timeText(String timeText) async {
-      // final double donatedVoiceDangerPosition =
-      //     (await Provider.of<SoundTin>(context, listen: false)
-      //             .getDonatedVoiceDuration()) -
-      //         20.0;
-      // final double currentPosition =
-      //     double.parse(_recorderSubscription.toString());
-      //     if(currentPosition == donatedVoiceDangerPosition) soundTin.setInDanger = true;
-      // final Widget text = (currentPosition < donatedVoiceDangerPosition)
-      final Widget text = !soundTin.inDanger
-          ? Text(timeText, style: TextStyle(fontSize: 35.0, fontFamily: 'Abel'))
-          : BlinkWidget(
-              children: <Widget>[
-                Text(
-                  timeText,
-                  style: TextStyle(
-                    fontSize: 35.0,
-                    fontFamily: 'Abel',
-                    color: Colors.red[900],
-                  ),
-                ),
-                Text(
-                  timeText,
-                  style: TextStyle(
-                    fontSize: 35.0,
-                    fontFamily: 'Abel',
-                    color: Colors.transparent,
-                  ),
-                )
-              ],
-              interval: 500,
-            );
-      // print(soundTin.inDanger);
-      // print(soundTin.currentDonatingResource.readTime.inSeconds);
-      // print(soundTin.currentDonatingResource.title);
-      return text;
+    Widget _timeText(String timeText) {
+      return Text(timeText,
+          style: TextStyle(fontSize: 35.0, fontFamily: 'Abel'));
     }
 
     Widget _recorderSection = Container(
       // Record/Play Panel
       width: double.infinity,
       margin: const EdgeInsets.only(
-        // bottom: 5.0,
+        bottom: 5.0,
         left: 10.0,
         right: 10.0,
       ),
@@ -1028,30 +899,17 @@ class _SoundDevilState extends State<SoundDevil> {
           child: Container(
             // height: MediaQuery.of(context).size.height * .45,
             width: double.infinity,
-            // padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
 
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                FutureBuilder(
-                    future: _timeText(this._recorderTxt),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting ||
-                          snapshot.connectionState == ConnectionState.none ||
-                          snapshot.connectionState == ConnectionState.active) {
-                        return Expanded(
-                            child: Center(
-                          child: snapshot.data,
-                        ));
-                      }
-                      return Expanded(
-                          child: Center(
-                        // child: Text('00:00:00',
-                        //     style: TextStyle(fontSize: 35.0, fontFamily: 'Abel')),
-                        // child: _timeText(this._recorderTxt),
-                        child: snapshot.data,
-                      ));
-                    }),
+                Expanded(
+                    child: Center(
+                  // child: Text('00:00:00',
+                  //     style: TextStyle(fontSize: 35.0, fontFamily: 'Abel')),
+                  child: _timeText(this._recorderTxt),
+                )),
                 () {
                   return recorderModule.isRecording
                       ? ClipOval(
@@ -1182,7 +1040,7 @@ class _SoundDevilState extends State<SoundDevil> {
       // Record/Play Panel
       width: double.infinity,
       margin: const EdgeInsets.only(
-        // bottom: 5.0,
+        bottom: 5.0,
         left: 10.0,
         right: 10.0,
       ),
@@ -1193,7 +1051,7 @@ class _SoundDevilState extends State<SoundDevil> {
           child: Container(
             // height: MediaQuery.of(context).size.height * .45,
             width: double.infinity,
-            // padding: const EdgeInsets.all(0.0),
+            padding: const EdgeInsets.all(10.0),
 
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1204,18 +1062,11 @@ class _SoundDevilState extends State<SoundDevil> {
                       activeColor: Colors.deepOrange,
                       min: 0.0,
                       max: maxDuration,
-                      onChanged:
-                          //  !this.widget.validate
-                          //     ? null
-                          //     :
-                          (double value) async {
-                        // if (playerModule == null) {
-                        //   print('null-');
-                        //   return;
-                        // }
-
-                        await playerModule.seekToPlayer(value.toInt());
-                      },
+                      onChanged: !this.widget.validate
+                          ? null
+                          : (double value) async {
+                              await playerModule.seekToPlayer(value.toInt());
+                            },
                       // onChanged: null,
                       divisions: maxDuration == 0.0 ? 1 : maxDuration.toInt()),
                 ),
@@ -1230,25 +1081,7 @@ class _SoundDevilState extends State<SoundDevil> {
                                   // borderSide: BorderSide(
                                   //     color: Colors.green, width: 0.5),
                                   // padding: EdgeInsets.all(0.0),
-                                  onTap: () async {
-                                    final User user = Provider.of<User>(context,
-                                        listen: false);
-                                    user.setContext(context);
-                                    final bool internet =
-                                        await user.connectionStatus();
-                                    if (!internet) {
-                                      user.showSnackBar('Check you internet');
-                                      return;
-                                    }
-
-                                    if (widget.validate) {
-                                      soundTin.setIsPlaying = true;
-                                      firstNowForValidate = DateTime.now();
-                                    }
-
-                                    // final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
-                                    startPlayer();
-                                  },
+                                  onTap: startPlayer,
                                   // onTap: () {
                                   //   user.setContext(context);
                                   //   user.connectionStatus().then((netBool) {
@@ -1277,10 +1110,7 @@ class _SoundDevilState extends State<SoundDevil> {
                                       // borderSide: BorderSide(
                                       //     color: Colors.green, width: 0.5),
                                       // padding: EdgeInsets.all(0.0),
-                                      onTap: () {
-                                        this.updatePausedTime();
-                                        onPauseResumePlayerPressed()();
-                                      },
+                                      onTap: onPauseResumePlayerPressed(),
                                       child: SizedBox(
                                         height: 56.0,
                                         width: 56.0,
@@ -1299,13 +1129,9 @@ class _SoundDevilState extends State<SoundDevil> {
                                     color: Colors.white,
                                     child: InkWell(
                                       // borderSide: BorderSide(
-
                                       //     color: Colors.green, width: 0.5),
                                       // padding: EdgeInsets.all(0.0),
-                                      onTap: () {
-                                        this.setTimeOfPause();
-                                        onPauseResumePlayerPressed()();
-                                      },
+                                      onTap: onPauseResumePlayerPressed(),
                                       child: SizedBox(
                                         height: 56.0,
                                         width: 56.0,
@@ -1330,11 +1156,7 @@ class _SoundDevilState extends State<SoundDevil> {
                           child: InkWell(
                             // borderSide: BorderSide(color: Colors.green, width: 0.5),
                             // padding: EdgeInsets.all(0.0),
-                            onTap: () {
-                              print(2222222222222222222);
-                              this.pausedTimeMilliSecs = 0;
-                              onStopPlayerPressed()();
-                            },
+                            onTap: onStopPlayerPressed(),
                             child: SizedBox(
                               height: 56.0,
                               width: 56.0,

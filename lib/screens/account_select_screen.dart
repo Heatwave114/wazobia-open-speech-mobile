@@ -108,18 +108,14 @@ class AccountSelectScreen extends StatelessWidget {
                   //     voiceToUpload: File(
                   //         r'C:\Users\sanis\Desktop\flaps\wazobia\nnf.mp3'),
                   //     title: 'nnf')
-                  // onPressed: () => this._user.clear(),
-                  onPressed: () async {
-                    Map<String, String> ty = {};
-                    ty['t'] = '5';
-                    ty['y'] = '7';
-                    ty['y'] = '4';
-                    print(ty);
-                    final t = ty.remove('t');
-                    print(t);
-                    print(ty);
-                    print(await _user.getUsers());
-                  },
+                  onPressed: () => this._user.clear(),
+                  // onPressed: () {
+                  //   Map<String, String> ty = {};
+                  //   ty['t'] = '5';
+                  //   ty['y'] = '7';
+                  //   ty['y'] = '4';
+                  //   print(ty);
+                  // },
                 ),
                 Expanded(
                   child: FutureBuilder(
