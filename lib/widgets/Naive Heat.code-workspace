@@ -1,0 +1,43 @@
+{
+	"folders": [
+		{
+			"path": "..\\..\\..\\..\\expense"
+		},
+		{
+			"path": "..\\..\\..\\..\\meals"
+		},
+		{
+			"path": "..\\..\\..\\..\\shop"
+		},
+		{
+			"path": "..\\..\\..\\..\\shop_"
+		},
+		{
+			"path": "..\\..\\..\\..\\gplaces"
+		},
+		{
+			"path": "..\\..\\..\\..\\nativebridge"
+		},
+		{
+			"path": "..\\..\\..\\..\\bleicht"
+		},
+		{
+			"path": "..\\..\\..\\..\\leicht"
+		},
+		{
+			"path": "..\\..\\..\\..\\betaleicht"
+		},
+		{
+			"path": "..\\..\\..\\..\\triggers"
+		},
+		{
+			"path": "..\\.."
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\fgml5g_learn"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "interactive"
+	}
+}
