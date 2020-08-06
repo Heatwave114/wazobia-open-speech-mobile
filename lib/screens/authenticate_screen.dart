@@ -353,6 +353,10 @@ class _AuthFormState extends State<AuthForm> {
       barrierDismissible: false,
       context: context,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.0),
+          side: BorderSide(color: Colors.green, width: 2.0),
+        ),
         title: Text(
           title,
           style: const TextStyle(

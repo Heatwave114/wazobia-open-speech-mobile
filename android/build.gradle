@@ -4,6 +4,7 @@
 ext.flutterFFmpegPackage = 'audio-lts'
 
 buildscript {
+    ext.flutterFFmpegPackage = 'audio-lts'
     ext.kotlin_version = '1.3.50'
     repositories {
         google()

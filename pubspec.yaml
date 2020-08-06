@@ -1,5 +1,5 @@
 name: wazobia
-description: A new Flutter project.
+description: This app is for gathering voice data for the African Automatic Speech Recognition Project(wazobia).
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.6+5
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -33,18 +33,28 @@ dependencies:
   shared_preferences: ^0.5.6+3
   # intl: ^0.16.1
   firebase_storage: ^3.1.5
+  share: ^0.6.4+3
+  package_info: ^0.4.1
+  flutter_email_sender: ^3.0.1
+  store_redirect: ^1.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.7.5
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "dev_assets/wazobia_launch_icon_transparent.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "dev_assets/wazobia_launch_icon_transparent.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -102,7 +112,19 @@ flutter:
         - asset: assets/fonts/PTSans/PTSans-Regular.ttf
         - asset: assets/fonts/PTSans/PTSans-Bold.ttf
           weight: 700
-     
+    - family: Armata
+      fonts:
+        - asset: assets/fonts/Armata/Armata-Regular.ttf
+    - family: Dosis
+      fonts:
+        - asset: assets/fonts/Dosis/Dosis-Regular.ttf
+        - asset: assets/fonts/Dosis/Dosis-Bold.ttf
+          weight: 700
+    - family: Rajdhani
+      fonts:
+        - asset: assets/fonts/Rajdhani/Rajdhani-Regular.ttf
+        - asset: assets/fonts/Rajdhani/Rajdhani-Bold.ttf
+          weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

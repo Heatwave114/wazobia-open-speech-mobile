@@ -6,7 +6,7 @@ class CentrallyUsed {
     return Center(
       child: CircularProgressIndicator(
         backgroundColor: Color(0xff2A6041),
-        strokeWidth: 1.0,
+        strokeWidth: 2.0,
       ),
     );
   }

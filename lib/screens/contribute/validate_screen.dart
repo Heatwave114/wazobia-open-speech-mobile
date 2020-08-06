@@ -1,5 +1,6 @@
 // Core
 import 'dart:math';
+import 'dart:convert';
 
 // External
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,9 +11,13 @@ import 'package:provider/provider.dart';
 
 // Internal
 import '../../helpers/sound_devil.dart';
+import '../../models/donation.dart';
 import '../../models/resource.dart';
+import '../../lifters/sieve_lift.dart';
 import '../../providers/firebase_helper.dart';
 import '../../providers/sound_tin.dart';
+import '../../providers/user.dart';
+import '../../terms_about_help.dart';
 import '../../widgets/centrally_used.dart';
 import '../../widgets/dash_widgets.dart';
 
@@ -20,75 +25,250 @@ class ValidateScreen extends StatelessWidget {
   static const routeName = '/validate';
 
   Random _random = Random();
+  final _validationHelpExpansionKey = GlobalKey();
+
+  // To show help text around where button pressed
+  RelativeRect buttonMenuPosition(BuildContext c) {
+    final RenderBox bar = c.findRenderObject();
+    final RenderBox overlay = Overlay.of(c).context.findRenderObject();
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+        bar.localToGlobal(bar.size.bottomRight(Offset.zero), ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+    return position;
+  }
+
+  Widget _helpText(
+      String whatToDoText, String afterwardsText, String privacyText) {
+    Map<String, TextStyle> _style = {
+      'header': const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 11.0,
+        fontFamily: 'PTSans',
+      ),
+      'body': const TextStyle(
+        fontSize: 14.0,
+        fontFamily: 'Abel',
+      ),
+    };
+
+    return RichText(
+      // overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        style: TextStyle(color: Colors.black, fontSize: 14),
+        children: <TextSpan>[
+          // What to do
+          TextSpan(
+            text: 'WHAT TO DO\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: whatToDoText + '\n\n',
+            style: _style['body'],
+          ),
+
+          // Afterwards
+          TextSpan(
+            text: 'WHAT HAPPENS AFTER YOUR VALIDATION\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: afterwardsText + '\n\n',
+            style: _style['body'],
+          ),
+
+          // Privacy
+          TextSpan(
+            text: 'PRIVACY\n',
+            style: _style['header'],
+          ),
+          TextSpan(
+            text: privacyText,
+            style: _style['body'],
+          ),
+        ],
+      ),
+    );
+  }
+
   // final ScrollController _scrollController = ScrollController();
+
+  void _onTapHelp(
+    BuildContext context,
+    Widget content,
+  ) async {
+    final position = buttonMenuPosition(context);
+    showMenu(
+      color: Colors.amber,
+      context: context,
+      position: position,
+      items: <PopupMenuItem<String>>[
+        PopupMenuItem<String>(
+          child: InkWell(
+            // Inkwell redundant
+            child: content,
+          ),
+        ),
+      ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     // _scrollController
     final double _dashWidth = MediaQuery.of(context).size.width * .93;
     final SoundTin soundTin = Provider.of<SoundTin>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Validate'),
-      ),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: StreamBuilder(
-            stream: Provider.of<FireBaseHelper>(context)
-                .unvalidatedURLs
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) return CentrallyUsed().waitingCircle();
-              final int unvalidatedVoiceIndex = (soundTin
-                              .getShouldRefreshValidatingResourceIndex ==
-                          null ||
-                      soundTin.getShouldRefreshValidatingResourceIndex)
-                  ? () {
-                      soundTin.setCurrentValidatingResourceIndex =
-                          this._random.nextInt(snapshot.data.documents.length);
-                      soundTin.setShouldRefreshValidatingResourceIndex = false;
-                      // print(1);
-                      return soundTin.getCurrentValidatingResourceIndex;
-                    }()
-                  : () {
-                      // print(2);
-                      return soundTin.getCurrentValidatingResourceIndex;
-                    }();
-              final DocumentSnapshot unvalidatedVoiceAsDocument =
-                  snapshot.data.documents[unvalidatedVoiceIndex];
-              final String resourceID = unvalidatedVoiceAsDocument['resource'];
+    final FireBaseHelper fbHelper = Provider.of<FireBaseHelper>(context);
 
-              soundTin.setValidatingVoiceURL = unvalidatedVoiceAsDocument['url'];
-
-              return FutureBuilder(
-                  future: Provider.of<FireBaseHelper>(context)
-                      .resources
-                      .document(resourceID)
-                      .get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CentrallyUsed().waitingCircle();
-                    }
-                    final Resource resource =
-                        Resource.fromFireStore(snapshot.data);
-                    soundTin.setCurrentValidatingResource = resource;
-                    return Column(
-                      children: <Widget>[
-                        const SizedBox(
-                          height: 10.0,
+    return SieveLift(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Validate'),
+          actions: <Widget>[
+            IconButton(
+              key: this._validationHelpExpansionKey,
+              padding: EdgeInsets.only(right: 15),
+              icon: Icon(Icons.help),
+              onPressed: () => this._onTapHelp(
+                this._validationHelpExpansionKey.currentContext,
+                this._helpText(
+                  validationHelpTexts['whattodo'],
+                  validationHelpTexts['afterwards'],
+                  validationHelpTexts['privacy'],
+                ),
+              ),
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: StreamBuilder(
+              stream: fbHelper.unvalidatedURLs.snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData)
+                  return Container(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * .35),
+                      child: CentrallyUsed().waitingCircle());
+                if (snapshot.data.documents.length == 0 ||
+                    snapshot.data.documents.length == null)
+                  return Container(
+                    margin: EdgeInsets.all(20.0),
+                    padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.height * .35),
+                    child: Center(
+                      child: Text(
+                        'No donations to validate. Please make a donation and invite to wazobia.',
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontFamily: 'Abel',
+                          // color: Colors.red,
                         ),
-                        DashWidgets.dashboard([
-                          DashWidgets.dashItem('Title', resource.title),
-                          DashWidgets.dashItem('Genre', resource.genre),
-                          DashWidgets.dashItem('Read time', resource.readTime),
-                        ], _dashWidth),
-                        // MediaPanel(dashWidth: _dashWidth),
-                        SoundDevil()..validating(),
-                        TextPanel(dashWidth: _dashWidth, resource: resource),
-                      ],
-                    );
-                  });
-            }),
+                      ),
+                    ),
+                  );
+                final int unvalidatedVoiceIndex =
+                    (soundTin.getShouldRefreshValidatingDonationIndex == null ||
+                            soundTin.getShouldRefreshValidatingDonationIndex)
+                        ? () {
+                            soundTin.setCurrentValidatingDonationIndex = this
+                                ._random
+                                .nextInt(snapshot.data.documents.length);
+                            soundTin.setShouldRefreshValidatingDonationIndex =
+                                false;
+                            // print(1);
+                            return soundTin.getCurrentValidatingDonationIndex;
+                          }()
+                        : () {
+                            // print(2);
+                            return soundTin.getCurrentValidatingDonationIndex;
+                          }();
+                final DocumentSnapshot unvalidatedDonationAsDocument =
+                    snapshot.data.documents[unvalidatedVoiceIndex];
+                final String resourceID =
+                    unvalidatedDonationAsDocument['resourceid'];
+                // print(unvalidatedVoiceIndex);
+                // print(unvalidatedDonationAsDocument);
+                // print(resourceID);
+
+                // print(unvalidatedVoiceIndex);
+
+                // Tell sound devil to play this
+                soundTin.setValidatingVoiceURL =
+                    unvalidatedDonationAsDocument['url'];
+
+                final Donation donation =
+                    Donation.fromFireStore(unvalidatedDonationAsDocument);
+                soundTin.setCurrentValidatingDonation = donation;
+                // print(donation.reader);
+
+                return StreamBuilder(
+                    stream: fbHelper.resources.document(resourceID).snapshots(),
+                    builder: (context, snapshot) {
+                      // print(resourceID);
+                      // print('zzzzzzzzzzzzzzzzzzzzzz');
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                            padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.height * .35),
+                            child: CentrallyUsed().waitingCircle());
+                      }
+                      final Resource resource =
+                          Resource.fromFireStore(snapshot.data);
+                      print(MediaQuery.of(context).textScaleFactor);
+                      soundTin.setCurrentValidatingResource = resource;
+                      return Column(
+                        children: <Widget>[
+                          const SizedBox(
+                            height: 5.0,
+                          ),
+                          DashWidgets.dashboard(
+                            context,
+                            _dashWidth,
+                            [
+                              DashWidgets.dashItem('Title', resource.title),
+                              DashWidgets.dashItem('Genre', resource.genre),
+                              DashWidgets.dashItem(
+                                  'Duration', donation.formatedDurationTime),
+                              if (resource.credit != '')
+                                DashWidgets.customDashItem(
+                                  'Credit',
+                                  resource.credit,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Abel',
+                                    // color: Color(0xFF4FA978),
+                                    // color: Colors.red[900],
+                                    color: Colors.grey[600],
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          // MediaPanel(dashWidth: _dashWidth),
+                          SoundDevil()..validating(),
+                          // FlatButton(
+                          //   onPressed: () {
+                          //     print(snapshot.data.documents.length);
+                          //   },
+                          //   child: null,
+                          //   color: Colors.grey,
+                          // ),
+                          TextPanel(
+                              dashWidth: _dashWidth,
+                              resource: resource,
+                              donation: donation),
+                        ],
+                      );
+                    });
+              }),
+        ),
       ),
     );
   }
@@ -192,10 +372,12 @@ class ValidateScreen extends StatelessWidget {
 class TextPanel extends StatefulWidget {
   final double dashWidth;
   final Resource resource;
+  final Donation donation;
   const TextPanel({
     Key key,
     @required this.dashWidth,
     @required this.resource,
+    @required this.donation,
   }) : super(key: key);
 
   @override
@@ -204,123 +386,746 @@ class TextPanel extends StatefulWidget {
 
 class _TextPanelState extends State<TextPanel> {
   double _textSizePercent = .7;
+  int _validateTapCounter = 0;
+  int _invalidateTapCounter = 0;
+  // bool proceedWithEvaluation;
+
+  void stopLoadingForValidation() {
+    if (this.mounted)
+      setState(() {
+        this._validateTapCounter = 0;
+        this._invalidateTapCounter = 0;
+      });
+  }
+
+  final TextEditingController _validationTextController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _validationTextController.dispose();
+  }
+
+  // int _validationTextReasonLength = 30;
+
+  // Whether to proceed with validate or invalidate
+  Future<void> confirmProceedWithDonation(
+      {@required bool isValid, @required Function submitEvaluation}) async {
+    // print('before:' + proceedWithEvaluation.toString());
+    // final bool evaluate = await showDialog(
+    final soundTin = Provider.of<SoundTin>(context, listen: false);
+    final String validInvalidLowerPreText = isValid ? 'v' : 'i';
+    final String validInvalidUpperPreText = isValid ? 'V' : 'I';
+    final String validInvalidText = isValid ? 'alid' : 'nvalid';
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (ctx) => WillPopScope(
+        onWillPop: () => Future(() => false),
+        child: SubmitValidationAlertDialog(
+          validateTapCounter: _validateTapCounter,
+          invalidateTapCounter: _invalidateTapCounter,
+          validInvalidUpperPreText: validInvalidUpperPreText,
+          validInvalidText: validInvalidText,
+          validInvalidLowerPreText: validInvalidLowerPreText,
+        ),
+      ),
+    ).then((_) {
+      // print('ggg');
+      if (soundTin.getProceedWithDonationEvaluation) {
+        // print('fff');
+        submitEvaluation();
+        soundTin.setProceedWithDonationEvaluation = false;
+        soundTin.setShouldAllowValidation = false;
+      } else {
+        this.stopLoadingForValidation();
+      }
+    });
+    // print('after:' + proceedWithEvaluation.toString());
+    // Navigator.of(context).pop();
+    // return proceed;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(
-          // vertical: 5.0,
-          horizontal: 10.0,
-        ),
-        child: Card(
-          elevation: 2.0,
-          child: Container(
-            width: this.widget.dashWidth,
-            child: Padding(
-              padding: EdgeInsets.all(15.0),
-              // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    width: double.infinity,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          flex: 7,
-                          child: FittedBox(
-                            child: Row(
-                              children: <Widget>[
-                                const Text(
-                                  'Font Size',
-                                  style: const TextStyle(
-                                    fontSize: 14.0,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Slider.adaptive(
-                                  value: _textSizePercent,
-                                  // divisions: 5,
-                                  min: .5, activeColor: Colors.deepOrange,
-                                  onChanged: (_textSizePercent) {
-                                    setState(() => this._textSizePercent =
-                                        _textSizePercent);
-                                  },
-                                ),
-                              ],
+    final SoundTin soundTin = Provider.of<SoundTin>(context);
+    final fbHelper = Provider.of<FireBaseHelper>(context, listen: false);
+    final user = Provider.of<User>(context);
+    user.setContext(context);
+    return Container(
+      width: double.infinity,
+      // width: 200.0,
+      margin: const EdgeInsets.symmetric(
+        // vertical: 5.0,
+        horizontal: 10.0,
+      ),
+      child: Card(
+        elevation: 2.0,
+        child: Container(
+          width: this.widget.dashWidth,
+          child: Padding(
+            padding: EdgeInsets.all(15.0),
+            // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(bottom: 7.0),
+                  // height: 63.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Flexible(
+                        flex: 7,
+                        child: Column(
+                          // mainAxisAlignment: MainAxisAlignment.end,
+                    // crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const Text(
+                              'Font Size',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 3,
-                          child: FittedBox(
-                            child: OutlineButton.icon(
-                              borderSide: BorderSide(
-                                color: Theme.of(context)
-                                    .primaryColor, //Color of the border
-                                style: BorderStyle.solid, //Style of the border
-                                width: 1.0, //width of the border
-                              ),
-                              label: const Text(
-                                'Validate',
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              icon: const Icon(
-                                Icons.check,
-                                color: const Color(0xff2A6041),
-                              ),
-                              onPressed:
-                                  // null
-                                  () {
-                                // print(_user);
-                                // () async {print((await Auth().currentUser()).uid);}();
-                                // _submit();
-                                // print('${_selectedCountry.name}');
-
-                                // Persist Auth ?
-                                // print(_rememberMe);
-                                // SSSprint(ur.rememberMe);
+                            Slider.adaptive(
+                              value: _textSizePercent,
+                              // divisions: 5,
+                              min: .5, activeColor: Colors.deepOrange,
+                              onChanged: (_textSizePercent) {
+                                setState(() =>
+                                    this._textSizePercent = _textSizePercent);
                               },
                             ),
-                          ),
-                        )
-                      ],
-                    ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          children: <Widget>[
+                            FittedBox(
+                              child: (this._invalidateTapCounter > 0)
+                                  ? CircularProgressIndicator(
+                                      backgroundColor: Colors.red,
+                                      strokeWidth: 2.0,
+                                      // value: .5,
+                                    )
+                                  : Container(
+                                      // height: 50.0,
+                                      child: OutlineButton.icon(
+                                        borderSide: BorderSide(
+                                          color: Colors
+                                              .red[900], //Color of the border
+                                          style: BorderStyle
+                                              .solid, //Style of the border
+                                          width: 1.0, //width of the border
+                                        ),
+                                        label: const Text(
+                                          'Invalidate',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              // fontFamily: 'AdventPro'
+                                              ),
+                                        ),
+                                        icon: const Icon(
+                                          Icons.clear,
+                                          // color: const Color(0xff2A6041),
+                                          color: Colors.red,
+                                        ),
+                                        onPressed:
+                                            // soundTin.getIsPlaying
+                                            //     ? null
+                                            //     : // null
+                                            () async {
+                                          if (!(await user
+                                              .connectionStatus())) {
+                                            user.showSnackBar(
+                                                'Check your internet');
+                                            return;
+                                          }
+                                          // if(soundTin.)
+                                          // print(soundTin
+                                          //     .currentValidatingResource.title);
+                                          // soundTin.setShouldAllowValidate = false;
+
+                                          if (!soundTin
+                                              .getShouldAllowValidation) {
+                                            user.showDialogue('Alert',
+                                                'Ensure the whole audio corresponds to the this text resource. Listen more.',
+                                                isRed: true);
+                                            return;
+                                          }
+
+                                          setState(() {
+                                            this._invalidateTapCounter++;
+                                          });
+
+                                          // Remain in unvalidated if validCount > -2 with the following valid count
+                                          widget.donation.validCount++;
+                                          widget.donation.bias--;
+
+                                          this.confirmProceedWithDonation(
+                                              isValid: false,
+                                              submitEvaluation: () async {
+                                                // print(
+                                                //     widget.donation.invalidReasons);
+                                                if (widget.donation
+                                                        .invalidReasons ==
+                                                    null) {
+                                                  widget.donation
+                                                      .setInvalidReasons = [];
+                                                  widget.donation
+                                                      .addInvalidReason({
+                                                    '${DateTime.now().millisecondsSinceEpoch}':
+                                                        '${soundTin.getReasonForEvaluation}',
+                                                    'valid': false,
+                                                  });
+                                                }
+                                                // print(
+                                                //     widget.donation.invalidReasons);
+                                                // print(widget.donation.invalidReasons
+                                                //     .length);
+
+                                                if (widget.donation.bias > -2) {
+                                                  fbHelper.unvalidatedURLs
+                                                      .document(
+                                                          widget.donation.name)
+                                                      .updateData({
+                                                    'bias':
+                                                        widget.donation.bias,
+                                                    'validcount': widget
+                                                        .donation.validCount,
+                                                    if (soundTin
+                                                            .getReasonForEvaluation
+                                                            .trim() !=
+                                                        '')
+                                                      'invalidreasons': (widget
+                                                                  .donation
+                                                                  .invalidReasons
+                                                                  .length >
+                                                              0)
+                                                          ? FieldValue
+                                                              .arrayUnion([
+                                                              {
+                                                                '${DateTime.now().millisecondsSinceEpoch}':
+                                                                    '${soundTin.getReasonForEvaluation}',
+                                                                'valid': false,
+                                                              }
+                                                            ])
+                                                          : FieldValue
+                                                              .arrayUnion(widget
+                                                                  .donation
+                                                                  .invalidReasons),
+                                                  }).then((_) {
+                                                    // Can now bring a new donation for validation
+                                                    soundTin.setShouldRefreshValidatingDonationIndex =
+                                                        true;
+                                                    this.stopLoadingForValidation();
+
+                                                    // this._invalidateTapCounter = 0;
+
+                                                    // Appreciation
+                                                    user.showDialogue(
+                                                        'Thank you',
+                                                        'We sincerely appreciate your validation. You can always do another');
+                                                  });
+                                                } else {
+                                                  // Change validation status in FBStorage
+                                                  user
+                                                      .changeValidationStatus(
+                                                    donationName:
+                                                        widget.donation.name,
+                                                    validationStatus: 'invalid',
+                                                  )
+                                                      .then((_) async {
+                                                    // Move to invalid
+                                                    fbHelper.invalidURLs
+                                                        .document(widget
+                                                            .donation.name)
+                                                        .setData({
+                                                      'reader': widget
+                                                          .donation.reader,
+                                                      'donationdatelocal': widget
+                                                          .donation
+                                                          .donationDateLocal
+                                                          .toIso8601String(),
+                                                      'duration': widget
+                                                          .donation.duration,
+                                                      // 'cqi': widget.donation.cqi,
+                                                      // 'snr': widget.donation.snr,
+                                                      'invalidreasons': widget
+                                                          .donation
+                                                          .invalidReasons,
+                                                      'validcount': widget
+                                                          .donation.validCount,
+                                                      'resourceid': widget
+                                                          .donation.resourceId,
+                                                      'url':
+                                                          widget.donation.url,
+                                                      'timeofvalidation':
+                                                          DateTime.now()
+                                                              .toIso8601String(),
+                                                    }).then((_) async {
+                                                      // Delete from unvalidated
+                                                      await fbHelper
+                                                          .unvalidatedURLs
+                                                          .document(widget
+                                                              .donation.name)
+                                                          .delete()
+                                                          .then((_) {
+                                                        // setState(() {});
+
+                                                        // Can now bring a new donation for validation
+                                                        soundTin.setShouldRefreshValidatingDonationIndex =
+                                                            true;
+                                                      });
+                                                      this.stopLoadingForValidation();
+
+                                                      // this._invalidateTapCounter =
+                                                      //     0; // redundant because of this.stopLoadingForValidation ??
+                                                      // Appreciation
+                                                      user.showDialogue(
+                                                          'Thank you',
+                                                          'We sincerely appreciate your validation. You can always do another');
+                                                    });
+                                                  });
+
+                                                  // fbHelper.validatedURLs
+                                                  //     .document(widget.donation.name)
+                                                  //     .setData({
+
+                                                  //     });
+                                                }
+                                              });
+
+                                          // print(_user);
+                                          // () async {print((await Auth().currentUser()).uid);}();
+                                          // _submit();
+                                          // print('${_selectedCountry.name}');
+
+                                          // Persist Auth ?
+                                          // print(_rememberMe);
+                                          // SSSprint(ur.rememberMe);
+                                        },
+                                      ),
+                                    ),
+                            ),
+                            FittedBox(
+                              child: (this._validateTapCounter > 0)
+                                  ? CircularProgressIndicator(
+                                      backgroundColor: Color(0xff2A6041),
+                                      strokeWidth: 2.0,
+                                      // value: .5,
+                                    )
+                                  : OutlineButton.icon(
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context)
+                                            .primaryColor, //Color of the border
+                                        style: BorderStyle
+                                            .solid, //Style of the border
+                                        width: 1.0, //width of the border
+                                      ),
+                                      label: const Text(
+                                        'Validate',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      icon: const Icon(
+                                        Icons.check,
+                                        color: const Color(0xff2A6041),
+                                      ),
+                                      onPressed:
+                                          // soundTin.getIsPlaying
+                                          //     ? null
+                                          //     : // null
+                                          () async {
+                                        if (!(await user.connectionStatus())) {
+                                          user.showSnackBar(
+                                              'Check your internet');
+                                          return;
+                                        }
+                                        // if(soundTin.)
+                                        // print(soundTin
+                                        //     .currentValidatingResource.title);
+                                        // soundTin.setShouldAllowValidate = false;
+
+                                        if (!soundTin
+                                            .getShouldAllowValidation) {
+                                          user.showDialogue('Alert',
+                                              'Ensure the whole audio corresponds to the this text resource. Listen more.');
+                                          return;
+                                        }
+
+                                        setState(
+                                            () => this._validateTapCounter++);
+
+                                        // Remain in unvalidated with the following validcount
+                                        widget.donation.validCount++;
+                                        widget.donation.bias++;
+
+                                        this.confirmProceedWithDonation(
+                                            isValid: true,
+                                            submitEvaluation: () {
+                                              if (widget.donation
+                                                      .invalidReasons ==
+                                                  null) {
+                                                widget.donation
+                                                    .setInvalidReasons = [];
+                                                widget.donation
+                                                    .addInvalidReason({
+                                                  '${DateTime.now().millisecondsSinceEpoch}':
+                                                      '${soundTin.getReasonForEvaluation}',
+                                                  'valid': true,
+                                                });
+                                              }
+
+                                              if (widget.donation.bias < 2) {
+                                                fbHelper.unvalidatedURLs
+                                                    .document(
+                                                        widget.donation.name)
+                                                    .updateData({
+                                                  'bias': widget.donation.bias,
+                                                  'validcount': widget
+                                                      .donation.validCount,
+                                                  if (soundTin
+                                                          .getReasonForEvaluation
+                                                          .trim() !=
+                                                      '')
+                                                    'invalidreasons': (widget
+                                                                .donation
+                                                                .invalidReasons
+                                                                .length >
+                                                            0)
+                                                        ? FieldValue
+                                                            .arrayUnion([
+                                                            {
+                                                              '${DateTime.now().millisecondsSinceEpoch}':
+                                                                  '${soundTin.getReasonForEvaluation}',
+                                                              'valid': true,
+                                                            }
+                                                          ])
+                                                        : FieldValue.arrayUnion(
+                                                            widget.donation
+                                                                .invalidReasons),
+                                                }).then((_) {
+                                                  // Can now bring a new donation for validation
+                                                  soundTin.setShouldRefreshValidatingDonationIndex =
+                                                      true;
+                                                  this.stopLoadingForValidation();
+                                                  // this._validateTapCounter = 0;
+                                                  // Appreciation
+                                                  user.showDialogue('Thank you',
+                                                      'We sincerely appreciate your validation. You can always do another');
+                                                });
+                                              } else {
+                                                // Change validation status in FBStorage
+                                                user
+                                                    .changeValidationStatus(
+                                                  donationName:
+                                                      widget.donation.name,
+                                                  validationStatus: 'validated',
+                                                )
+                                                    .then((_) async {
+                                                  // Move to validated
+                                                  fbHelper.validatedURLs
+                                                      .document(
+                                                          widget.donation.name)
+                                                      .setData({
+                                                    'reader':
+                                                        widget.donation.reader,
+                                                    'donationdatelocal': widget
+                                                        .donation
+                                                        .donationDateLocal
+                                                        .toIso8601String(),
+                                                    'duration': widget
+                                                        .donation.duration,
+                                                    // 'cqi': widget.donation.cqi,
+                                                    // 'snr': widget.donation.snr,
+                                                    'invalidreasons': widget
+                                                        .donation
+                                                        .invalidReasons,
+                                                    'validcount': widget
+                                                        .donation.validCount,
+                                                    'resourceid': widget
+                                                        .donation.resourceId,
+                                                    'url': widget.donation.url,
+                                                    'timeofvalidation':
+                                                        DateTime.now()
+                                                            .toIso8601String(),
+                                                  }).then((_) async {
+                                                    // Delete from unvalidated
+                                                    await fbHelper
+                                                        .unvalidatedURLs
+                                                        .document(widget
+                                                            .donation.name)
+                                                        .delete()
+                                                        .then((_) {
+                                                      // setState(() {});
+
+                                                      // Can now bring a new donation for validation
+                                                      soundTin.setShouldRefreshValidatingDonationIndex =
+                                                          true;
+
+                                                      this.stopLoadingForValidation();
+                                                      // this._validateTapCounter =
+                                                      //     0; // redundant because of this.stopLoadingForValidation ??
+                                                      // Appreciation
+                                                      user.showDialogue(
+                                                          'Thank you',
+                                                          'We sincerely appreciate your validation. You can always do another');
+                                                    });
+                                                  });
+                                                });
+                                              }
+                                            });
+
+                                        // print(_user);
+                                        // () async {print((await Auth().currentUser()).uid);}();
+                                        // _submit();
+                                        // print('${_selectedCountry.name}');
+
+                                        // Persist Auth ?
+                                        // print(_rememberMe);
+                                        // SSSprint(ur.rememberMe);
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * .50,
-                    padding: const EdgeInsets.all(10.0),
-                    // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.green),
-                      borderRadius: BorderRadius.circular(5.0),
-                      // color: Colors.grey,
-                    ),
-                    child: Scrollbar(
-                      // controller: _scrollController,
-                      child: SingleChildScrollView(
-                        physics: BouncingScrollPhysics(),
-                        child: Text(
-                          // 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making i t over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
-                          this.widget.resource.text,
-                          style: TextStyle(
-                            fontSize: 30.0 * _textSizePercent,
-                            fontFamily: 'Abel',
-                            // fontWeight: FontWeight.bold,
-                          ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * .54,
+                  padding: const EdgeInsets.all(10.0),
+                  // padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, top: 15.0, right: 0.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.green),
+                    borderRadius: BorderRadius.circular(5.0),
+                    // color: Colors.grey,
+                  ),
+                  child: Scrollbar(
+                    // controller: _scrollController,
+                    child: SingleChildScrollView(
+                      physics: BouncingScrollPhysics(),
+                      child: Text(
+                        // 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a latin professor at Hampden Sydney College Virginia, looked up one of the more obscure Lation words,consectetur, from a Lorem Ipsum passage, and going through the cities of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.\n\nThe standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
+                        this.widget.resource.text,
+                        style: TextStyle(
+                          fontSize: 30.0 * _textSizePercent,
+                          fontFamily: 'Abel',
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-      )
-    ]);
+      ),
+    );
+  }
+}
+
+class SubmitValidationAlertDialog extends StatefulWidget {
+  SubmitValidationAlertDialog({
+    Key key,
+    @required int validateTapCounter,
+    @required int invalidateTapCounter,
+    @required this.validInvalidUpperPreText,
+    @required this.validInvalidText,
+    @required this.validInvalidLowerPreText,
+
+    // @required this.mounted,
+  })  : _validateTapCounter = validateTapCounter,
+        super(key: key);
+
+  int _validateTapCounter;
+  // int _invalidateTapCounter;
+  final String validInvalidUpperPreText;
+  final String validInvalidText;
+  final String validInvalidLowerPreText;
+
+  // final bool mounted;
+
+  @override
+  _SubmitValidationAlertDialogState createState() =>
+      _SubmitValidationAlertDialogState();
+}
+
+class _SubmitValidationAlertDialogState
+    extends State<SubmitValidationAlertDialog> {
+  TextEditingController _validationTextController;
+  @override
+  initState() {
+    _validationTextController = new TextEditingController();
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    _validationTextController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final SoundTin soundTin = Provider.of<SoundTin>(context, listen: false);
+    final user = Provider.of<User>(context, listen: false);
+    user.setContext(context);
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        side: BorderSide(color: Colors.green, width: 2.0),
+      ),
+      title: Text(
+        'Submit ${widget.validInvalidUpperPreText}${widget.validInvalidText}ation',
+        style: TextStyle(
+          fontFamily: 'Abel',
+          fontSize: 20.0,
+          fontWeight: FontWeight.bold,
+          color: (this.widget._validateTapCounter > 0)
+              ? Colors.green
+              : Colors.red[700],
+        ),
+      ),
+      content: Container(
+        // height: (this.widget._validateTapCounter > 0) ? null : 90.0,
+        height: 90.0,
+        child:
+            // (this.widget._validateTapCounter > 0)
+            // ? Text(
+            //     'Are you sure you want to submit your evaluation?',
+            //     style: const TextStyle(
+            //       fontFamily: 'Abel',
+            //       fontSize: 17.0,
+            //       // fontWeight: FontWeight.bold
+            //     ),
+            //   )
+            // :
+            Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              (this.widget._validateTapCounter > 0)
+                  ? '(Optional) Tell us any deficiency in this recording if any'
+                  : '(Optional) Tell us why this recording is Invalid',
+              style: const TextStyle(
+                fontFamily: 'Abel',
+                fontSize: 17.0,
+                // fontWeight: FontWeight.bold
+              ),
+            ),
+            TextFormField(
+              controller: this._validationTextController,
+              cursorColor: (this.widget._validateTapCounter > 0)
+                  ? Colors.lightGreen[900]
+                  : Colors.redAccent,
+              maxLength: 30,
+              decoration: InputDecoration(
+                counterText: '',
+
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    // color: (this._validateTapCounter > 0)
+                    //     ? Colors.lightGreen
+                    //     : Colors.red[900],
+                    color: Colors.grey,
+                  ),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: (this.widget._validateTapCounter > 0)
+                        ? Colors.lightGreen
+                        : Colors.red[900],
+                  ),
+                ),
+                // counter: Text(
+                //   '$_validationTextReasonLength',
+                //   style: TextStyle(
+                //     fontFamily: 'ComicNeue',
+                //     color: Colors.red[700],
+                //   ),
+                // ),
+
+                labelStyle: const TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 14.0,
+                ),
+                // prefixText: '+234-',
+                // labelText:
+                //     '(Optional) Tell us why this recording is $validInvalidLowerPreText$validInvalidText',
+                // hintText:
+                //     'Tell us why this recording is $validInvalidText',
+
+                // fillColor: Theme.of(context).primaryColor.withOpacity(.45),
+              ),
+              // onChanged: (value) {
+              //   if(this.mounted)
+              //   setState(() {});
+              // },
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text(
+            'Re-evaluate',
+            style: TextStyle(
+              fontFamily: 'PTSans',
+              fontSize: 17.0,
+              // fontWeight: FontWeight.bold
+              color: (this.widget._validateTapCounter > 0)
+                  ? Colors.lightGreen
+                  : Colors.red[400],
+            ),
+          ),
+          onPressed: () {
+            setState(() {
+              // soundTin.setProceedWithDonationEvaluation = false;
+              Navigator.of(context).pop();
+            });
+          },
+        ),
+        RaisedButton(
+          color: (this.widget._validateTapCounter > 0)
+              ? Colors.lightGreen
+              : Colors.red,
+          child: Text(
+            (this.widget._validateTapCounter > 0) ? 'Validate' : 'Invalidate',
+            style: const TextStyle(
+              fontFamily: 'PTSans',
+              fontSize: 17.0,
+              // fontWeight: FontWeight.bold
+              color: Colors.white,
+            ),
+          ),
+          onPressed: () async {
+            final bool internet = await user.connectionStatus();
+            if (!internet) {
+              user.showSnackBar('Check your internet');
+              soundTin.setProceedWithDonationEvaluation = false; // Redundant ??
+              Navigator.of(context).pop();
+              return;
+            }
+
+            setState(() {
+              soundTin
+                ..setReasonForEvaluation = this._validationTextController.text;
+              soundTin.setProceedWithDonationEvaluation = true;
+              Navigator.of(context).pop();
+            });
+          },
+        ),
+      ],
+    );
   }
 }

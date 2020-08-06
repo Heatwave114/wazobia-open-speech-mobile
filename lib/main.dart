@@ -1,4 +1,6 @@
 // External
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +17,9 @@ import './screens/metadata_screen.dart';
 import './screens/welcome_screen.dart';
 import './screens/contribute/donate_voice_screen.dart';
 import './screens/contribute/validate_screen.dart';
+import './screens/legal/about_us_screen.dart';
+import './screens/legal/terms_and_conditions_screen.dart';
+import './screens/legal/privacy_policy_screen.dart';
 import './widgets/centrally_used.dart';
 
 // Sound _
@@ -25,6 +30,8 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+  bool counterfeit = true;
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -42,6 +49,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.green,
           primaryColor: const Color(0xFF4FA978),
+          accentColor: Colors.deepOrange[600],
           appBarTheme: AppBarTheme(
             textTheme: TextTheme(
               title: const TextStyle(
@@ -60,28 +68,90 @@ class MyApp extends StatelessWidget {
 
           body: Consumer<User>(
             builder: (ctx, user, _) {
-              return FutureBuilder(
-                future: user.getLandingPage(),
-                builder: (ctx, userSnapshot) {
-                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+              return StreamBuilder<FirebaseUser>(
+                stream: Auth().onAuthStateChanged,
+                builder: (ctx, snp) {
+                  if (snp.connectionState == ConnectionState.waiting) {
                     return CentrallyUsed().waitingCircle();
-                  } else if (userSnapshot.connectionState ==
-                      ConnectionState.done) {
-                    return userSnapshot.data;
                   }
-                  return null;
+                  // if (!snp.hasData) {
+                  //   return AccountSelectScreen();
+                  // }
+                  // print('data: ${snp.data}');
+
+                  final device = MediaQuery.of(ctx);
+
+                  return StreamBuilder(
+                      stream:
+                          Firestore.instance.collection('critical').snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: Container(
+                              margin: EdgeInsets.all(20.0),
+                              padding: EdgeInsets.only(
+                                  top: (device.size.height -
+                                          device.padding.vertical -
+                                          40.0) *
+                                      .50), // 40.0 is the vertical margin
+                              child: Column(children: <Widget>[
+                                CentrallyUsed().waitingCircle(),
+                                Text(
+                                  'Please wait a moment. If this message persists check your internet connection.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'Abel',
+                                    // color: Colors.red,
+                                  ),
+                                ),
+                              ]),
+                            ),
+                          );
+                        }
+
+                        return FutureBuilder(
+                          future: user.getFirstTime,
+                          builder: (ctxFirstTime, snpFirstTime) {
+                            if (snpFirstTime.connectionState ==
+                                ConnectionState.waiting) {
+                              return CentrallyUsed().waitingCircle();
+                            }
+                            return FutureBuilder(
+                              future: user.getLandingPage(snp.hasData),
+                              builder: (ctx, userSnapshot) {
+                                // print(snp.hasData);
+                                if (userSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CentrallyUsed().waitingCircle();
+                                } else if (userSnapshot.data == null) {
+                                  return (snp.hasData)
+                                      ? DashboardScreen()
+                                      : snpFirstTime.data
+                                          ? WelcomeScreen()
+                                          : AccountSelectScreen();
+                                }
+                                return userSnapshot.data;
+                              },
+                            );
+                          },
+                        );
+                      });
                 },
               );
             },
           ),
-
         ),
         routes: {
           // AuthenticateScreen.routeName: (ctx) => AuthenticateScreen(),
+          AboutUsScreen.routeName: (ctx) => AboutUsScreen(),
           AccountSelectScreen.routeName: (ctx) => AccountSelectScreen(),
           DashboardScreen.routeName: (ctx) => DashboardScreen(),
           DonateVoiceScreen.routeName: (ctx) => DonateVoiceScreen(),
           MetadataScreen.routeName: (ctx) => MetadataScreen(),
+          PrivacyPolicyScreen.routeName: (ctx) => PrivacyPolicyScreen(),
+          TermsAndConditionsScreen.routeName: (ctx) =>
+              TermsAndConditionsScreen(),
           ValidateScreen.routeName: (ctx) => ValidateScreen(),
           WelcomeScreen.routeName: (ctx) => WelcomeScreen(),
         },
