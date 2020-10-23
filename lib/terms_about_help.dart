@@ -80,6 +80,10 @@ The recordings you submit to Wazobia will remain publicly available as part of W
 Nigerian law applies to these Terms. These terms are the entire agreement between you and Wazobia.
 """;
 
+//////////////////
+/// Privacy Policy
+//////////////////
+
 const String privacyPolicyText = '''Wazobia Privacy Notice
 
 $effectiveDate

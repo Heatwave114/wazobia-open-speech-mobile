@@ -26,6 +26,7 @@ import '../providers/user.dart' as userP;
 import '../screens/account_select_screen.dart';
 import '../widgets/centrally_used.dart';
 import '../widgets/dash_widgets.dart';
+import '../util/firebase_helpers.dart' as util;
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -405,55 +406,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                         box.localToGlobal(
                                                                 Offset.zero) &
                                                             box.size);
-
-                                                // final databaseRoot = _user.databaseRoot;
-                                                // for (var resource in Resources) {
-                                                //   if (resource.paperName != null &&
-                                                //       resource.paperDate != null &&
-                                                //       resource.author != null) {
-                                                //     databaseRoot
-                                                //         .collection('resources')
-                                                //         .document(resource.uid)
-                                                //         .setData({
-                                                //       'title': resource.title,
-                                                //       'author': resource.author,
-                                                //       'genre': resource.genre,
-                                                //       'text': resource.text,
-                                                //       'readtimesecs':
-                                                //           resource.readTime.inSeconds,
-                                                //       'papername': resource.paperName,
-                                                //       'paperdate': resource.paperDate,
-                                                //       'credit': resource.credit,
-                                                //     });
-                                                //   } else if (resource.paperName != null &&
-                                                //       resource.paperDate != null &&
-                                                //       resource.author == null) {
-                                                //     databaseRoot
-                                                //         .collection('resources')
-                                                //         .document(resource.uid)
-                                                //         .setData({
-                                                //       'title': resource.title,
-                                                //       'genre': resource.genre,
-                                                //       'text': resource.text,
-                                                //       'readtime':
-                                                //           resource.readTime.inSeconds,
-                                                //       'credit': resource.credit,
-                                                //     });
-                                                //   } else {
-                                                //     databaseRoot
-                                                //         .collection('resources')
-                                                //         .document(resource.uid)
-                                                //         .setData({
-                                                //       'title': resource.title,
-                                                //       'author': resource.author,
-                                                //       'genre': resource.genre,
-                                                //       'text': resource.text,
-                                                //       'readtime':
-                                                //           resource.readTime.inSeconds,
-                                                //       'credit': resource.credit,
-                                                //     });
-                                                //   }
-                                                // }
+                                              
+                                                // UTIlS
+                                                // util.downloadAllDonations();
+                                                // util.uploadAllResources();
                                               }
                                             : null,
                                       ),

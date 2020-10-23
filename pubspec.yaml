@@ -37,6 +37,8 @@ dependencies:
   package_info: ^0.4.1
   flutter_email_sender: ^3.0.1
   store_redirect: ^1.0.2
+  http: ^0.12.2
+  path_provider: ^1.6.21
 
 dev_dependencies:
   flutter_test:
