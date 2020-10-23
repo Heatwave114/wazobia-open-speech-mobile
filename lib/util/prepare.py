@@ -1,6 +1,7 @@
 # Core
 import os
 import re
+import shutil
 # External
 import pydub
 import requests
@@ -42,11 +43,22 @@ def delete_all_codec(codec, directory='wazobia'):
 
     for subdir, dirs, files in os.walk(directory):
         for f in files:
-            if f.endswith(codec):
+            if f.endswith(codec) and len(f.split('__')) <= 3:
                 file_path = os.path.join(subdir, f)
                 os.remove(file_path)
+
+
+def delete_all_chunks(directory='wazobia'):
+    for subdir, dirs, files in os.walk(directory):
+        for d in dirs:
+            if d.endswith('chunks'):
+                directory_path = os.path.join(subdir, d)
+                print('Deleting: ', d)
+                # os.remove(directory_path)
+                shutil.rmtree(directory_path)
 
 
 # download_all_aac(directory='test')               
 # convert_aac_to_flac(directory='test')
 # delete_all_codec(codec='flac', directory='test')
+# delete_all_chunks(directory='test')
